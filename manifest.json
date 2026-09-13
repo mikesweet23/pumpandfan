@@ -1,0 +1,28 @@
+{
+  "name": "Flow2kW Defence Tool",
+  "short_name": "Flow2kW",
+  "description": "Hydronic & Air Defence Calculator - Flow, \u0394T, Glycol, Pumps & Fans",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0ea5e9",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "favicon.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ]
+}
