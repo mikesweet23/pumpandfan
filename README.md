@@ -5,30 +5,39 @@ PWA tool for HVAC / Building Services engineers to quickly defend pump & fan ene
 **Live demo:** Enable GitHub Pages on this repo (Settings > Pages > main / root) → https://YOURNAME.github.io/flow2kw/
 
 ### Features
-- **Fluid toggle:** Water | Glycol Mix (EG/PG %) | Air - temperature slider affects density
+- **Fluid toggle:** Water | Glycol Mix (EG/PG %) | Air — temperature slider affects density
 - **Thermal kW from Flow & ΔT:** Q = ṁ·Cp·ΔT with glycol & temp corrections (ρ, Cp shown)
-- **Pump/Fan defence presets:**
-  - Pumps: Pre-1975 42% up to Premium EC 87% + custom
-  - Fans: 1970s forward curved 45% up to EC Plug 86%
-  - Motors: Pre-IE 80%, IE1 85%, IE2 88.5%, IE3 92.5%, IE4 94.5%, IE5 96.5% (size corrected)
-  - Drives: Direct, Belt old/new, VSD
+- **2026 catalogue defaults** for existing plant, with older and premium options still available:
+  - Pumps: Pre-1975 42% up to 2026 typical packaged 84% and 2026 premium EC / mag-drive 88%
+  - Fans: 1970s forward curved 45% up to 2026 typical EC plug 86% and premium aerofoil / EC axial 89%
+  - Motors: Pre-IE 80% through IE3, default **IE4 Super Premium 94.5%** (typical 2026 spec), plus IE5 / included-in-EC
+  - Drives: Direct, belt old/new, **VSD 97% (2026 typical)**, integrated EC electronics
+  - Era chips: 2026 typical | 2026 premium | 2010s | 1990s | Legacy / worn
+- **Proposed side** defaults to 2026 premium (EC / IE5 / VSD) so the comparison is ready on first open
 - **Actual data mode:** Enter measured flow, head, electrical kW (or V·A·PF) to back-calc wire-to-water eff
-- **Results:** Hydraulic power Ph = Q·ΔP, Shaft, Electrical, Wire-to-water %, annual kWh, £/yr, CO2
-- **Defence comparison:** Existing vs Proposed (modern) with savings + copy-ready text for reports
-- **Extras:** Pipe/Duct velocity check, affinity laws (N% scaling), glycol correction
-- **Working & Learning box:** Every formula shown with live numbers for audit trail
+- **Results overview:** Hydraulic Ph = Q·ΔP, shaft, electrical, wire-to-water %, annual kWh, £/yr, CO₂, existing vs proposed
+- **Affinity / fan laws explorer:**
+  - Flow ∝ N, head ∝ N², power ∝ Nⁿ
+  - System curve: friction / fans (n=3), mixed (n=2.5), static-head (n=2)
+  - Every 5% speed step from 40–120% in kW, kWh/yr, £/yr and CO₂
+  - Cumulative saving vs 100% **and** the extra £ from that 5% step
+  - +1% / −1% marginal cost from the selected speed
+  - Overspeed shown as extra annual cost
+- **Extras:** Pipe/duct velocity check, glycol correction, copy-ready defence note
+- **Working & Learning box:** Every formula shown with live numbers for an audit trail
 
 ### How to use
-1. Select fluid, set flow, temp, glycol % if needed, ΔT → get thermal kW
-2. Set head (m/kPa/bar for pumps, Pa for fans)
-3. Pick age presets for pump/fan & motor → get electrical kW
-4. Set hours, £/kWh, compare to new → copy defence text
+1. The calculator opens on a **typical 2026** pump + IE4 + VSD (or EC plug fan in air/fan mode)
+2. Change era or pick any catalogue item if the existing plant is older, worn, or a premium EC machine
+3. Set flow, temperature, glycol % if needed, ΔT and head → thermal and hydraulic kW
+4. Review existing vs 2026 premium proposed savings
+5. Move the affinity speed slider (or click a table row / chart bar) to see how each % change hits kW, kWh, £ and CO₂
 
 ### Install as PWA
 Chrome/Edge on desktop or phone → Install icon in address bar. Works offline.
 
 ### Tech
-Single-page React + Tailwind, no build needed. Just `index.html`.
+Single-page HTML/CSS/JS, no build needed. Just `index.html`.
 
 ### Upload to GitHub
 1. Create repo `flow2kw`

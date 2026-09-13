@@ -1,7 +1,7 @@
 {
   "name": "Flow2kW Defence Tool",
   "short_name": "Flow2kW",
-  "description": "Hydronic & Air Defence Calculator - Flow, \u0394T, Glycol, Pumps & Fans",
+  "description": "Hydronic & Air Defence Calculator - 2026 pump/fan catalogue, affinity-law savings",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#0f172a",
