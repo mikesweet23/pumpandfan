@@ -122,6 +122,11 @@
     .size-card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px; display: grid; gap: 4px; }
     .size-card .kw { font-family: var(--mono); font-size: 20px; font-weight: 600; }
     .size-card .band { font-size: 11px; font-weight: 700; color: var(--sky-ink); }
+    .size-legend { display: grid; gap: 6px; background: #f8fafc; border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; }
+    .size-legend .rowish { display: grid; grid-template-columns: 170px 1fr; gap: 10px; align-items: start; }
+    .size-legend b { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--sky-ink); }
+    .size-legend .sizes { font-family: var(--mono); font-size: 12px; }
+    .size-legend .apps { font-size: 11px; color: var(--muted); }
     .aff-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .aff-toggle { margin: 0; }
     body.new-job .existing-only { display: none !important; }
@@ -177,7 +182,7 @@
     @media (max-width: 720px) {
       .wrap { width: min(100% - 20px, 1440px); }
       .header-actions .badge { display: none; }
-      .row.2, .row.2e, .row.3, .row.auto, .glycol { grid-template-columns: 1fr; }
+      .row.2, .row.2e, .row.3, .row.auto, .glycol, .size-legend .rowish { grid-template-columns: 1fr; }
       .seg { flex-wrap: wrap; }
     }
   </style>
@@ -224,9 +229,9 @@
     <section class="kpis" aria-label="Overview">
       <article class="card kpi"><div class="k">Thermal</div><div class="v" id="kpi-thermal">—</div><div class="u">kW from flow × ΔT</div></article>
       <article class="card kpi"><div class="k">Hydraulic Ph</div><div class="v" id="kpi-hyd">—</div><div class="u">Q · ΔP</div></article>
-      <article class="card kpi"><div class="k">Electrical Pe</div><div class="v" id="kpi-elec">—</div><div class="u">Existing wire power</div></article>
+      <article class="card kpi"><div class="k">Electrical Pe</div><div class="v" id="kpi-elec">—</div><div class="u" id="kpi-elec-u">Existing wire power</div></article>
       <article class="card kpi"><div class="k" id="kpi-w2w-label">Wire-to-water</div><div class="v" id="kpi-w2w">—</div><div class="u">η machine × motor × drive</div></article>
-      <article class="card kpi"><div class="k">Existing cost</div><div class="v" id="kpi-cost">—</div><div class="u">£ / year at entered hours</div></article>
+      <article class="card kpi"><div class="k" id="kpi-cost-k">Existing cost</div><div class="v" id="kpi-cost">—</div><div class="u" id="kpi-cost-u">£ / year at entered hours</div></article>
       <article class="card kpi"><div class="k">CO₂</div><div class="v" id="kpi-co2">—</div><div class="u">kg / year</div></article>
     </section>
 
@@ -405,6 +410,7 @@
                 <div class="note" id="pr-meta"></div>
               </div>
             </div>
+            <div class="size-legend" id="size-legend" aria-label="Typical IEC motor sizes"></div>
             <div class="savings">
               <div class="save"><div class="k" id="sv-kw-k">kW saved</div><div class="v" id="sv-kw">—</div></div>
               <div class="save"><div class="k" id="sv-gbp-k">£ / year</div><div class="v" id="sv-gbp">—</div></div>
@@ -703,13 +709,13 @@
       if (value === "auto" || value === "") return suggested.kw;
       return Number(value) || suggested.kw;
     }
-    function frameNote(size, ratedKw, absorbed, kind) {
+    function frameNote(size, ratedKw, shaft, kind, elec) {
       const label = size.oversize ? `Specify ${fmt(size.need, 1)} kW+` : `${ratedKw} kW IEC`;
-      const load = ratedKw > 0 ? absorbed / ratedKw * 100 : 0;
+      const load = ratedKw > 0 ? shaft / ratedKw * 100 : 0;
       return {
         html: `<div class="kw">${label}</div>
           <div class="band">${size.band.label}</div>
-          <div class="note">Shaft ${fmt(size.shaft, 3)} kW × 1.15 → ${fmt(size.need, 2)} kW. Next typical frame ${size.oversize ? "is above 75 kW" : ratedKw + " kW"}. Absorbed ${fmt(absorbed, 3)} kW · nameplate load ${fmt(load, 0)}%.</div>
+          <div class="note">Shaft ${fmt(shaft, 3)} kW × 1.15 → ${fmt(size.need, 2)} kW. Next typical frame ${size.oversize ? "is above 75 kW" : ratedKw + " kW"}. Wire ${fmt(elec, 3)} kW · nameplate load ${fmt(load, 0)}% of ${label}.</div>
           <div class="note">${size.band.apps}</div>
           <div class="note">${kind}</div>`
       };
@@ -917,9 +923,12 @@
       setText("kpi-thermal", fmt(c.thermal, 2));
       setText("kpi-hyd", fmt(c.Ph, 3));
       setText("kpi-elec", fmt(kpiElec, 3));
+      setText("kpi-elec-u", hasExisting() ? "Existing wire power" : "New plant wire power");
       setText("kpi-w2w-label", `Wire-to-${w2wName}`);
       setText("kpi-w2w", fmt(kpiW2w, 1) + "%");
+      setText("kpi-cost-k", hasExisting() ? "Existing cost" : "New plant cost");
       setText("kpi-cost", money(kpiCost));
+      setText("kpi-cost-u", "£ / year at entered hours");
       setText("kpi-co2", fmt(kpiCo2, 0));
       setText("thermal-chip", `Thermal ${fmt(c.thermal, 1)} kW`);
       setText("temp-label", `${c.T}°C`);
@@ -931,9 +940,13 @@
       setText("machine-note", c.machine.note || "");
       const sizeNote = c.motor.custom || c.motor.bundled ? "as entered" : (c.existKw < 2.2 ? "−2% below 2.2 kW" : c.existKw < 7.5 ? "−1% below 7.5 kW" : "no size derate ≥ 7.5 kW");
       setText("motor-adj-note", `(${sizeNote})`);
-      $("exist-frame-note").innerHTML = frameNote(c.existSuggest, c.existKw, c.elec, $("motor-frame").value === "auto" ? "Auto from existing duty." : "Manual IEC frame.").html;
-      $("ex-size").innerHTML = frameNote(c.existSuggest, c.existKw, c.elec, "Existing motor / packaged pump size.").html;
-      $("pr-size").innerHTML = frameNote(c.propSuggest, c.propKw, c.propElec, "Proposed motor / packaged pump size.").html;
+      $("exist-frame-note").innerHTML = frameNote(c.existSuggest, c.existKw, c.existShaft, $("motor-frame").value === "auto" ? "Auto from existing duty." : "Manual IEC frame.", c.elec).html;
+      $("ex-size").innerHTML = frameNote(c.existSuggest, c.existKw, c.existShaft, "Existing motor / packaged pump size.", c.elec).html;
+      $("pr-size").innerHTML = frameNote(c.propSuggest, c.propKw, c.propShaft, "Proposed motor / packaged pump size.", c.propElec).html;
+      $("size-legend").innerHTML = MOTOR_BANDS.map((band) => {
+            const active = (hasExisting() && c.existSuggest.band.id === band.id) || c.propSuggest.band.id === band.id;
+        return `<div class="rowish"${active ? ' style="background:#e0f2fe;border-radius:10px;padding:6px 8px;margin:0 -8px;"' : ""}><div><b>${band.label}</b><div class="sizes">${band.sizes.join(" · ")} kW</div></div><div class="apps">${band.apps}</div></div>`;
+      }).join("");
       setText("st-m", fmt(c.hyd, 1) + "%");
       setText("st-mot", fmt(c.mot, 1) + "%");
       setText("st-d", fmt(c.drv, 1) + "%");

@@ -19,6 +19,7 @@ PWA tool for HVAC / Building Services engineers to quickly defend pump & fan ene
   - Medium commercial: 7.5, 11, 15, 18.5, 22, 30 kW — offices, secondary LTHW/CHW, modular chillers
   - Large commercial / institutional: 37, 45, 55, 75 kW
   - Frame = next catalogue size ≥ 1.15 × motor shaft; overridable
+  - Overview shows the Small / Medium / Large catalogue and highlights the band the duty lands in
 - **Proposed side** defaults to 2026 premium (EC / IE5 / VSD) so the comparison is ready on first open
 - **Actual data mode:** Enter measured flow, head, electrical kW (or V·A·PF) to back-calc wire-to-water eff
 - **Results overview:** Hydraulic Ph = Q·ΔP, shaft, electrical, wire-to-water %, annual kWh, £/yr, CO₂, existing vs proposed
