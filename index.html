@@ -68,6 +68,7 @@
     .btn.dark { background: #0f172a; color: #fff; }
     .btn.lite { background: #f8fafc; border: 1px solid var(--line); }
     .toolbar { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 12px; padding: 18px 0 0; }
+    .toolbar .job-seg { grid-column: 1 / -1; }
     .seg, .card {
       background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
     }
@@ -118,6 +119,13 @@
     .side.proposed { background: #f0fdf4; border-color: #bbf7d0; }
     .side h4 { margin: 0; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
     .side .big { font-family: var(--mono); font-size: 28px; font-weight: 600; }
+    .size-card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px; display: grid; gap: 4px; }
+    .size-card .kw { font-family: var(--mono); font-size: 20px; font-weight: 600; }
+    .size-card .band { font-size: 11px; font-weight: 700; color: var(--sky-ink); }
+    .aff-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .aff-toggle { margin: 0; }
+    body.new-job .existing-only { display: none !important; }
+    body.new-job .compare, body.new-job .aff-duo { grid-template-columns: 1fr; }
     .savings { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .save { background: #064e3b; color: #ecfdf5; border-radius: 14px; padding: 12px; }
     .save .k { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #6ee7b7; }
@@ -162,7 +170,7 @@
     footer { color: rgba(255,255,255,0.55); font-size: 12px; padding: 8px 0 28px; }
     .mono { font-family: var(--mono); }
     @media (max-width: 1100px) {
-      .toolbar, .layout, .hero-save, .kpis, .compare, .work.open { grid-template-columns: 1fr; }
+      .toolbar, .layout, .hero-save, .kpis, .compare, .aff-duo, .work.open { grid-template-columns: 1fr; }
       .kpis { grid-template-columns: repeat(2, 1fr); }
       .savings, .laws, .stack { grid-template-columns: 1fr 1fr; }
     }
@@ -205,6 +213,11 @@
         <div class="lbl">System</div>
         <button type="button" data-system="pump" class="active sky">Pump circuit</button>
         <button type="button" data-system="fan">Fan system</button>
+      </div>
+      <div class="seg job-seg" role="group" aria-label="Job type">
+        <div class="lbl">Job</div>
+        <button type="button" data-job="upgrade" class="active">Upgrade existing</button>
+        <button type="button" data-job="new">New installation</button>
       </div>
     </div>
 
@@ -262,7 +275,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card existing-only">
           <div class="card-h">
             <h2>2. Equipment — 2026 catalogue</h2>
             <span class="pill">Default = typical 2026 spec</span>
@@ -271,7 +284,7 @@
             <div>
               <div class="name" style="margin-bottom:8px">Existing plant era</div>
               <div class="eras" id="eras"></div>
-              <p class="note" style="margin:8px 0 0">Defaults to a typical 2026 selection. Switch era or pick any catalogue item if the plant is older, worn, or a premium EC machine.</p>
+              <p class="note" style="margin:8px 0 0">Defaults to a typical 2026 selection. Switch era or pick any catalogue item if the plant is older, worn, or a premium EC machine. Motor frame defaults from duty onto the next IEC size.</p>
             </div>
             <label class="field">
               <span id="machine-label">Pump</span>
@@ -287,8 +300,9 @@
             <div class="machine-note" id="machine-note"></div>
             <div class="row 2">
               <label class="field"><span>Motor</span><select id="motor-select"></select></label>
-              <label class="field"><span>Motor kW rating</span><input id="motor-kw" type="number" min="0.37" max="400" step="0.1" value="4"></label>
+              <label class="field"><span>Motor frame (IEC kW)</span><select id="motor-frame"></select></label>
             </div>
+            <div class="size-card" id="exist-frame-note">Typical motor size from duty</div>
             <label class="field">
               <span>Motor efficiency <small id="motor-adj-note"></small></span>
               <div class="row auto">
@@ -364,34 +378,40 @@
       <div class="col">
         <section class="card">
           <div class="card-h">
-            <h2>Overview — existing vs proposed</h2>
-            <span class="pill green">Proposed defaults to 2026 premium</span>
+            <h2 id="overview-title">Overview — existing vs proposed</h2>
+            <span class="pill green" id="overview-pill">Proposed defaults to 2026 premium</span>
           </div>
           <div class="card-b">
+            <p class="note" id="new-install-note" hidden>New installation — there is no existing plant. Ratings, affinity savings and annual cost use the proposed machine only.</p>
             <div class="compare">
-              <div class="side">
+              <div class="side existing-only">
                 <h4>Existing</h4>
                 <div class="big" id="ex-kw">—</div>
+                <div class="size-card" id="ex-size"></div>
                 <div class="note" id="ex-meta"></div>
               </div>
               <div class="side proposed">
-                <h4>Proposed 2026</h4>
+                <h4 id="prop-side-title">Proposed 2026</h4>
                 <div class="row 2e">
                   <label class="field"><span id="prop-machine-lbl">Pump</span><select id="prop-machine"></select></label>
                   <label class="field"><span>Motor</span><select id="prop-motor"></select></label>
                 </div>
-                <label class="field"><span>Drive</span><select id="prop-drive"></select></label>
+                <div class="row 2e">
+                  <label class="field"><span>Drive</span><select id="prop-drive"></select></label>
+                  <label class="field"><span>Motor frame (IEC kW)</span><select id="prop-motor-frame"></select></label>
+                </div>
                 <div class="big" id="pr-kw">—</div>
+                <div class="size-card" id="pr-size"></div>
                 <div class="note" id="pr-meta"></div>
               </div>
             </div>
             <div class="savings">
-              <div class="save"><div class="k">kW saved</div><div class="v" id="sv-kw">—</div></div>
-              <div class="save"><div class="k">£ / year</div><div class="v" id="sv-gbp">—</div></div>
-              <div class="save"><div class="k">kWh / year</div><div class="v" id="sv-kwh">—</div></div>
-              <div class="save"><div class="k">CO₂ kg / year</div><div class="v" id="sv-co2">—</div></div>
-              <div class="save"><div class="k">Reduction</div><div class="v" id="sv-pct">—</div></div>
-              <div class="save"><div class="k">Simple payback</div><div class="v" id="sv-pb">—</div></div>
+              <div class="save"><div class="k" id="sv-kw-k">kW saved</div><div class="v" id="sv-kw">—</div></div>
+              <div class="save"><div class="k" id="sv-gbp-k">£ / year</div><div class="v" id="sv-gbp">—</div></div>
+              <div class="save"><div class="k" id="sv-kwh-k">kWh / year</div><div class="v" id="sv-kwh">—</div></div>
+              <div class="save"><div class="k" id="sv-co2-k">CO₂ kg / year</div><div class="v" id="sv-co2">—</div></div>
+              <div class="save"><div class="k" id="sv-pct-k">Reduction</div><div class="v" id="sv-pct">—</div></div>
+              <div class="save"><div class="k" id="sv-pb-k">Simple payback</div><div class="v" id="sv-pb">—</div></div>
             </div>
           </div>
         </section>
@@ -402,6 +422,11 @@
             <span class="pill">Each % in real £</span>
           </div>
           <div class="card-b">
+            <div class="seg aff-toggle" role="group" aria-label="Affinity plant">
+              <div class="lbl">Show plant</div>
+              <button type="button" data-aff="existing" class="active existing-only" id="aff-btn-existing">Existing</button>
+              <button type="button" data-aff="proposed" id="aff-btn-proposed">Proposed</button>
+            </div>
             <div class="laws">
               <div class="law"><b>Flow</b><span>Q₂ / Q₁ = N₂ / N₁</span></div>
               <div class="law"><b>Head / pressure</b><span>H₂ / H₁ = (N₂ / N₁)²</span></div>
@@ -431,6 +456,8 @@
                 <div class="note" id="aff-hero-detail"></div>
               </div>
             </div>
+            <div class="machine-note" id="aff-hero-motor">Motor frame —</div>
+            <div class="aff-duo" id="aff-duo"></div>
             <div class="row 3">
               <div class="machine-note"><b>Flow</b><div class="mono" id="aff-q">—</div><div class="note">∝ N</div></div>
               <div class="machine-note"><b>Head / ΔP</b><div class="mono" id="aff-h">—</div><div class="note">∝ N²</div></div>
@@ -446,6 +473,7 @@
                     <th>Head</th>
                     <th>Power kW</th>
                     <th>Power %</th>
+                    <th>Frame load</th>
                     <th>kWh/yr</th>
                     <th>£/yr</th>
                     <th>vs 100%</th>
@@ -560,6 +588,28 @@
     const HEAD_PUMP = ["m", "kPa", "bar", "ft"];
     const HEAD_FAN = ["Pa", "kPa", "in w.g."];
     const AFF_STEPS = [120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40];
+    const MOTOR_MARGIN = 1.15;
+    const MOTOR_BANDS = [
+      {
+        id: "small",
+        label: "Small commercial",
+        sizes: [0.75, 1.1, 1.5, 2.2, 3.0, 4.0, 5.5],
+        apps: "Individual AHU coils, small boiler shunt loops, local zone heating/cooling."
+      },
+      {
+        id: "medium",
+        label: "Medium commercial",
+        sizes: [7.5, 11, 15, 18.5, 22, 30],
+        apps: "Small to mid-sized office buildings, secondary LTHW/chilled loops, standard modular chiller plants."
+      },
+      {
+        id: "large",
+        label: "Large commercial / institutional",
+        sizes: [37, 45, 55, 75],
+        apps: "Primary LTHW/CHW, district energy, hospitals, campuses, large air-handling or chiller plants."
+      }
+    ];
+    const IEC_KW = MOTOR_BANDS.flatMap((band) => band.sizes.map((kw) => ({ kw, band })));
 
     const S = {
       fluid: "water",
@@ -567,6 +617,8 @@
       glycol: "EG",
       era: "y2026",
       curve: "friction",
+      job: "upgrade",
+      affPlant: "existing",
       showWork: false,
       suppress: false
     };
@@ -624,6 +676,54 @@
       else if (kw < 7.5) e -= 1;
       return Number(e.toFixed(1));
     }
+    function isMechanicalDrive(drive) {
+      return drive.id === "belt-old" || drive.id === "belt-new";
+    }
+    function shaftKw(Ph, hydPct, drive) {
+      const hyd = hydPct / 100;
+      if (hyd <= 0) return 0;
+      let shaft = Ph / hyd;
+      if (isMechanicalDrive(drive)) shaft /= Math.max(drive.eff / 100, 0.01);
+      return shaft;
+    }
+    function nextIecMotor(shaft) {
+      const need = shaft * MOTOR_MARGIN;
+      const found = IEC_KW.find((item) => item.kw + 1e-9 >= need);
+      if (found) return { kw: found.kw, need, shaft, band: found.band, oversize: false };
+      return {
+        kw: need,
+        need,
+        shaft,
+        band: { id: "xl", label: "Above 75 kW catalogue", sizes: [], apps: "Specify from the manufacturer range — this catalogue stops at 75 kW." },
+        oversize: true
+      };
+    }
+    function frameKwFromSelect(id, suggested) {
+      const value = $(id).value;
+      if (value === "auto" || value === "") return suggested.kw;
+      return Number(value) || suggested.kw;
+    }
+    function frameNote(size, ratedKw, absorbed, kind) {
+      const label = size.oversize ? `Specify ${fmt(size.need, 1)} kW+` : `${ratedKw} kW IEC`;
+      const load = ratedKw > 0 ? absorbed / ratedKw * 100 : 0;
+      return {
+        html: `<div class="kw">${label}</div>
+          <div class="band">${size.band.label}</div>
+          <div class="note">Shaft ${fmt(size.shaft, 3)} kW × 1.15 → ${fmt(size.need, 2)} kW. Next typical frame ${size.oversize ? "is above 75 kW" : ratedKw + " kW"}. Absorbed ${fmt(absorbed, 3)} kW · nameplate load ${fmt(load, 0)}%.</div>
+          <div class="note">${size.band.apps}</div>
+          <div class="note">${kind}</div>`
+      };
+    }
+    function fillMotorFrameSelect(el, selected) {
+      el.innerHTML = `<option value="auto">Auto from duty (recommended)</option>` + MOTOR_BANDS.map((band) => {
+        const opts = band.sizes.map((kw) => `<option value="${kw}">${kw} kW</option>`).join("");
+        return `<optgroup label="${band.label} — ${band.sizes[0]} to ${band.sizes[band.sizes.length - 1]} kW">${opts}</optgroup>`;
+      }).join("");
+      el.value = selected;
+    }
+    function hasExisting() {
+      return S.job === "upgrade";
+    }
     function fillSelect(el, items, getLabel, selected) {
       el.innerHTML = items.map((item) => `<option value="${item.id}">${getLabel(item)}</option>`).join("");
       el.value = selected;
@@ -670,11 +770,12 @@
       $("drive-select").value = driveSel;
       const motor = byId(MOTORS, motorSel);
       const drive = byId(DRIVES, driveSel);
-      if (!motor.custom) $("motor-eff").value = motorAdjusted(motor.eff, Number($("motor-kw").value) || 4, false);
+      const frameGuess = $("motor-frame") && $("motor-frame").value !== "auto" ? Number($("motor-frame").value) || 0.75 : 0.75;
+      if (!motor.custom) $("motor-eff").value = motorAdjusted(motor.eff, frameGuess, false);
       if (!drive.custom) $("drive-eff").value = drive.eff;
     }
 
-    function proposedEffs() {
+    function proposedEffs(motorKw) {
       const machine = byId(machines(), $("prop-machine").value);
       let motor = byId(MOTORS, $("prop-motor").value);
       let drive = byId(DRIVES, $("prop-drive").value);
@@ -684,7 +785,7 @@
       } else if (machine.bundled === "motor" && $("prop-motor").value !== "custom") {
         motor = byId(MOTORS, "included");
       }
-      const motEff = motorAdjusted(motor.eff, Number($("motor-kw").value) || 4, motor.custom);
+      const motEff = motorAdjusted(motor.eff, motorKw, motor.custom);
       return { machine, motor, drive, hyd: machine.eff, mot: motEff, drv: drive.eff };
     }
 
@@ -692,6 +793,8 @@
       const n = nPct / 100;
       const powerRatio = Math.pow(n, exp);
       const power = design.elec * powerRatio;
+      const shaftNow = (design.shaft || 0) * powerRatio;
+      const motorLoad = design.motorKw > 0 ? shaftNow / design.motorKw * 100 : 0;
       const kwh = power * design.hours;
       const gbp = kwh * design.tariff;
       const co2 = kwh * design.carbon;
@@ -699,7 +802,7 @@
         nPct, n,
         flow: design.Q * n,
         head: design.dP * n * n,
-        powerRatio, power, kwh, gbp, co2
+        powerRatio, power, shaftNow, motorLoad, kwh, gbp, co2
       };
     }
 
@@ -721,8 +824,11 @@
       const hyd = Number($("machine-eff").value) || machine.eff;
       const motor = byId(MOTORS, $("motor-select").value);
       const drive = byId(DRIVES, $("drive-select").value);
-      const mot = Number($("motor-eff").value) || motor.eff;
       const drv = Number($("drive-eff").value) || drive.eff;
+      const existShaft = shaftKw(Ph, hyd, drive);
+      const existSuggest = nextIecMotor(existShaft);
+      const existKw = frameKwFromSelect("motor-frame", existSuggest);
+      const mot = motor.custom ? (Number($("motor-eff").value) || motor.eff) : motorAdjusted(motor.eff, existKw, false);
       const shaft = hyd > 0 ? Ph / (hyd / 100) : 0;
       const elec = (mot > 0 && drv > 0) ? shaft / (mot / 100) / (drv / 100) : 0;
       const w2w = elec > 0 ? Ph / elec * 100 : 0;
@@ -733,8 +839,13 @@
       const kwh = elec * hours;
       const gbp = kwh * tariff;
       const co2 = kwh * carbon;
-      const prop = proposedEffs();
-      const propElec = (prop.hyd > 0 && prop.mot > 0 && prop.drv > 0) ? Ph / (prop.hyd / 100) / (prop.mot / 100) / (prop.drv / 100) : 0;
+      const propDraft = proposedEffs(4);
+      const propShaft = shaftKw(Ph, propDraft.hyd, propDraft.drive);
+      const propSuggest = nextIecMotor(propShaft);
+      const propKw = frameKwFromSelect("prop-motor-frame", propSuggest);
+      const prop = proposedEffs(propKw);
+      const propHydShaft = prop.hyd > 0 ? Ph / (prop.hyd / 100) : 0;
+      const propElec = (prop.hyd > 0 && prop.mot > 0 && prop.drv > 0) ? propHydShaft / (prop.mot / 100) / (prop.drv / 100) : 0;
       const propW2w = propElec > 0 ? Ph / propElec * 100 : 0;
       const saveKw = elec - propElec;
       const saveKwh = saveKw * hours;
@@ -754,7 +865,10 @@
       })();
       const curve = byId(CURVES, S.curve);
       const speed = Number($("speed").value) || 100;
-      const design = { Q, dP, elec, hours, tariff, carbon, Ph };
+      const affPlant = hasExisting() ? S.affPlant : "proposed";
+      const existDesign = { Q, dP, elec, shaft: existShaft, motorKw: existKw, hours, tariff, carbon, Ph };
+      const propDesign = { Q, dP, elec: propElec, shaft: propShaft, motorKw: propKw, hours, tariff, carbon, Ph };
+      const design = affPlant === "proposed" ? propDesign : existDesign;
       const selected = affinityRow(speed, curve.exp, design);
       const steps = AFF_STEPS.map((n) => affinityRow(n, curve.exp, design));
       if (!AFF_STEPS.includes(speed)) {
@@ -765,6 +879,8 @@
       const up = affinityRow(Math.min(120, speed + 1), curve.exp, design);
       const marginalDown = (selected.power - down.power) * hours * tariff;
       const marginalUp = (up.power - selected.power) * hours * tariff;
+      const existAtSpeed = affinityRow(speed, curve.exp, existDesign);
+      const propAtSpeed = affinityRow(speed, curve.exp, propDesign);
       let meas = null;
       if ($("use-meas").checked) {
         const q = (Number($("meas-q").value) || 0) * 0.001;
@@ -781,9 +897,11 @@
       return {
         fluid, system, T, props, flow, Q, mdot, dT, thermal, head, dP, Ph,
         machine, hyd, motor, mot, drive, drv, shaft, elec, w2w,
+        existShaft, existSuggest, existKw,
         hours, tariff, carbon, capex, kwh, gbp, co2,
-        prop, propElec, propW2w, saveKw, saveKwh, saveGbp, saveCo2, savePct, payback,
-        vel, ductV, curve, speed, selected, steps, marginalDown, marginalUp, meas
+        prop, propElec, propW2w, propShaft, propSuggest, propKw, saveKw, saveKwh, saveGbp, saveCo2, savePct, payback,
+        vel, ductV, curve, speed, affPlant, design, selected, steps, marginalDown, marginalUp,
+        existAtSpeed, propAtSpeed, meas
       };
     }
 
@@ -792,37 +910,71 @@
     function render(c) {
       const w2wName = c.system === "pump" ? "water" : "air";
       setText("fluid-props", `${c.props.notes} · ρ ${fmt(c.props.rho, 2)} kg/m³ · Cp ${fmt(c.props.cp, 3)}`);
+      const kpiElec = hasExisting() ? c.elec : c.propElec;
+      const kpiW2w = hasExisting() ? c.w2w : c.propW2w;
+      const kpiCost = hasExisting() ? c.gbp : c.propElec * c.hours * c.tariff;
+      const kpiCo2 = hasExisting() ? c.co2 : c.propElec * c.hours * c.carbon;
       setText("kpi-thermal", fmt(c.thermal, 2));
       setText("kpi-hyd", fmt(c.Ph, 3));
-      setText("kpi-elec", fmt(c.elec, 3));
+      setText("kpi-elec", fmt(kpiElec, 3));
       setText("kpi-w2w-label", `Wire-to-${w2wName}`);
-      setText("kpi-w2w", fmt(c.w2w, 1) + "%");
-      setText("kpi-cost", money(c.gbp));
-      setText("kpi-co2", fmt(c.co2, 0));
+      setText("kpi-w2w", fmt(kpiW2w, 1) + "%");
+      setText("kpi-cost", money(kpiCost));
+      setText("kpi-co2", fmt(kpiCo2, 0));
       setText("thermal-chip", `Thermal ${fmt(c.thermal, 1)} kW`);
       setText("temp-label", `${c.T}°C`);
       $("glycol-pct-label").textContent = `${$("glycol-pct").value}%`;
+      if (!c.motor.custom) $("motor-eff").value = c.mot;
       setText("machine-eff-val", `${Number($("machine-eff").value)}%`);
       setText("motor-eff-val", `${Number($("motor-eff").value).toFixed(1)}%`);
       setText("drive-eff-val", `${Number($("drive-eff").value)}%`);
       setText("machine-note", c.machine.note || "");
-      const sizeNote = c.motor.custom || c.motor.bundled ? "as entered" : (Number($("motor-kw").value) < 2.2 ? "−2% below 2.2 kW" : Number($("motor-kw").value) < 7.5 ? "−1% below 7.5 kW" : "no size derate ≥ 7.5 kW");
+      const sizeNote = c.motor.custom || c.motor.bundled ? "as entered" : (c.existKw < 2.2 ? "−2% below 2.2 kW" : c.existKw < 7.5 ? "−1% below 7.5 kW" : "no size derate ≥ 7.5 kW");
       setText("motor-adj-note", `(${sizeNote})`);
+      $("exist-frame-note").innerHTML = frameNote(c.existSuggest, c.existKw, c.elec, $("motor-frame").value === "auto" ? "Auto from existing duty." : "Manual IEC frame.").html;
+      $("ex-size").innerHTML = frameNote(c.existSuggest, c.existKw, c.elec, "Existing motor / packaged pump size.").html;
+      $("pr-size").innerHTML = frameNote(c.propSuggest, c.propKw, c.propElec, "Proposed motor / packaged pump size.").html;
       setText("st-m", fmt(c.hyd, 1) + "%");
       setText("st-mot", fmt(c.mot, 1) + "%");
       setText("st-d", fmt(c.drv, 1) + "%");
       setText("st-w2w-lbl", `Wire-to-${w2wName}`);
       setText("st-w2w", fmt(c.w2w, 1) + "%");
       setText("ex-kw", `${fmt(c.elec, 3)} kW`);
-      setText("ex-meta", `${c.machine.year} · ${c.machine.label} ${fmt(c.hyd, 1)}% · ${c.motor.label} ${fmt(c.mot, 1)}% · ${c.drive.label} · ${fmt(c.kwh, 0)} kWh/yr · ${money(c.gbp)}/yr`);
+      setText("ex-meta", `${c.machine.year} · ${c.machine.label} ${fmt(c.hyd, 1)}% · ${c.motor.label} ${fmt(c.mot, 1)}% · ${c.drive.label} · ${c.existKw} kW frame · ${fmt(c.kwh, 0)} kWh/yr · ${money(c.gbp)}/yr`);
       setText("pr-kw", `${fmt(c.propElec, 3)} kW`);
-      setText("pr-meta", `${c.prop.machine.year} · ${c.prop.machine.label} ${fmt(c.prop.hyd, 1)}% · ${c.prop.motor.label} ${fmt(c.prop.mot, 1)}% · ${c.prop.drive.label} · W2${w2wName[0]} ${fmt(c.propW2w, 1)}%`);
-      setText("sv-kw", fmt(c.saveKw, 2));
-      setText("sv-gbp", money(c.saveGbp));
-      setText("sv-kwh", fmt(c.saveKwh, 0));
-      setText("sv-co2", fmt(c.saveCo2, 0));
-      setText("sv-pct", fmt(c.savePct, 1) + "%");
-      setText("sv-pb", c.saveGbp > 0 ? `${fmt(c.payback, 1)} yr` : "—");
+      setText("pr-meta", `${c.prop.machine.year} · ${c.prop.machine.label} ${fmt(c.prop.hyd, 1)}% · ${c.prop.motor.label} ${fmt(c.prop.mot, 1)}% · ${c.prop.drive.label} · ${c.propKw} kW frame · W2${w2wName[0]} ${fmt(c.propW2w, 1)}%`);
+      setText("overview-title", hasExisting() ? "Overview — existing vs proposed" : "Overview — new installation");
+      setText("overview-pill", hasExisting() ? "Proposed defaults to 2026 premium" : "Specify the new plant only");
+      setText("prop-side-title", hasExisting() ? "Proposed 2026" : "New plant — 2026");
+      $("new-install-note").hidden = hasExisting();
+      document.body.classList.toggle("new-job", !hasExisting());
+      if (hasExisting()) {
+        setText("sv-kw-k", "kW saved");
+        setText("sv-gbp-k", "£ saved / year");
+        setText("sv-kwh-k", "kWh saved / year");
+        setText("sv-co2-k", "CO₂ kg saved / year");
+        setText("sv-pct-k", "Reduction");
+        setText("sv-pb-k", "Simple payback");
+        setText("sv-kw", fmt(c.saveKw, 2));
+        setText("sv-gbp", money(c.saveGbp));
+        setText("sv-kwh", fmt(c.saveKwh, 0));
+        setText("sv-co2", fmt(c.saveCo2, 0));
+        setText("sv-pct", fmt(c.savePct, 1) + "%");
+        setText("sv-pb", c.saveGbp > 0 ? `${fmt(c.payback, 1)} yr` : "—");
+      } else {
+        setText("sv-kw-k", "New plant kW");
+        setText("sv-gbp-k", "£ / year");
+        setText("sv-kwh-k", "kWh / year");
+        setText("sv-co2-k", "CO₂ kg / year");
+        setText("sv-pct-k", "Job");
+        setText("sv-pb-k", "Payback");
+        setText("sv-kw", fmt(c.propElec, 2));
+        setText("sv-gbp", money(c.propElec * c.hours * c.tariff));
+        setText("sv-kwh", fmt(c.propElec * c.hours, 0));
+        setText("sv-co2", fmt(c.propElec * c.hours * c.carbon, 0));
+        setText("sv-pct", "New");
+        setText("sv-pb", "—");
+      }
       const highPipe = c.vel > 1.5;
       $("vel-out").className = highPipe ? "warnbox" : "okbox";
       $("vel-out").textContent = `v = Q/A = ${fmt(c.vel, 2)} m/s ${c.vel > 2.5 ? "— VERY HIGH (>2.5)" : highPipe ? "— HIGH (>1.5 m/s CIBSE)" : "— OK"}`;
@@ -834,30 +986,38 @@
       }
       setText("affinity-title", c.system === "fan" ? "Affinity / fan laws — speed vs consumption" : "Affinity / pump laws — speed vs consumption");
       setText("law-power", `P₂ / P₁ = (N₂ / N₁)${c.curve.exp === 3 ? "³" : c.curve.exp === 2 ? "²" : "²·⁵"}`);
-      setText("affinity-intro", `${c.curve.note} Speed control needs a VSD or EC. Values below use the existing electrical load as the 100% design point.`);
+      const plantName = c.affPlant === "proposed" ? "proposed / new plant" : "existing plant";
+      setText("affinity-intro", `${c.curve.note} Speed control needs a VSD or EC. The table and slider now use the ${plantName} electrical load as the 100% design point, including that plant's IEC motor frame.`);
+      document.querySelectorAll("[data-aff]").forEach((btn) => btn.classList.toggle("active", btn.dataset.aff === c.affPlant));
       setText("speed-val", `${c.speed}%`);
-      const vs100 = c.elec - c.selected.power;
+      const vs100 = c.design.elec - c.selected.power;
       const vs100gbp = vs100 * c.hours * c.tariff;
       setText("aff-hero-kw", `${fmt(c.selected.power, 3)} kW`);
-      setText("aff-hero-sub", `${fmt(c.selected.powerRatio * 100, 1)}% of design power · ${fmt(c.selected.kwh, 0)} kWh/yr · ${fmt(c.selected.co2, 0)} kg CO₂/yr`);
+      setText("aff-hero-sub", `${fmt(c.selected.powerRatio * 100, 1)}% of ${plantName} power · ${fmt(c.selected.kwh, 0)} kWh/yr · ${fmt(c.selected.co2, 0)} kg CO₂/yr`);
       const box = $("aff-hero-box");
       box.className = "sidebox" + (vs100gbp < 0 ? " cost" : "");
-      setText("aff-hero-k", vs100gbp >= 0 ? "Saving vs 100% design" : "Extra cost vs 100% design");
+      setText("aff-hero-k", vs100gbp >= 0 ? `Saving vs 100% ${c.affPlant}` : `Extra cost vs 100% ${c.affPlant}`);
       setText("aff-hero-gbp", money(Math.abs(vs100gbp)) + "/yr");
       setText("aff-hero-detail", `${fmt(Math.abs(vs100), 3)} kW · ${fmt(Math.abs(vs100 * c.hours), 0)} kWh/yr · ${fmt(Math.abs(vs100 * c.hours * c.carbon), 0)} kg CO₂/yr`);
+      const frameKw = c.design.motorKw;
+      const loadWarn = c.selected.motorLoad > 100 ? " — OVERLOAD at this speed" : "";
+      setText("aff-hero-motor", `${c.affPlant === "proposed" ? "Proposed" : "Existing"} frame ${frameKw} kW IEC · shaft ${fmt(c.selected.shaftNow, 3)} kW · nameplate load ${fmt(c.selected.motorLoad, 0)}%${loadWarn}`);
+      const duoEx = hasExisting() ? `<div class="side"><h4>Existing @ ${c.speed}%</h4><div class="mono">${fmt(c.existAtSpeed.power, 3)} kW · ${money(c.existAtSpeed.gbp)}/yr</div><div class="note">${c.existKw} kW frame · load ${fmt(c.existAtSpeed.motorLoad, 0)}% · vs 100% ${money((c.elec - c.existAtSpeed.power) * c.hours * c.tariff)}</div></div>` : "";
+      const duoPr = `<div class="side proposed"><h4>${hasExisting() ? "Proposed" : "New plant"} @ ${c.speed}%</h4><div class="mono">${fmt(c.propAtSpeed.power, 3)} kW · ${money(c.propAtSpeed.gbp)}/yr</div><div class="note">${c.propKw} kW frame · load ${fmt(c.propAtSpeed.motorLoad, 0)}% · vs 100% ${money((c.propElec - c.propAtSpeed.power) * c.hours * c.tariff)}</div></div>`;
+      $("aff-duo").innerHTML = duoEx + duoPr;
       setText("aff-q", `${fmt(c.selected.flow * 1000, 2)} L/s  (${fmt(c.selected.n * 100, 0)}%)`);
       setText("aff-h", `${fmt(c.selected.head, 1)} kPa  (${fmt(c.selected.n * c.selected.n * 100, 1)}%)`);
       setText("aff-d1", `−1% saves ${money(c.marginalDown)} · +1% costs ${money(c.marginalUp)}`);
       const chartAt = [40, 50, 60, 70, 80, 90, 100, 110, 120];
       const nearest = chartAt.reduce((best, n) => Math.abs(n - c.speed) < Math.abs(best - c.speed) ? n : best, chartAt[0]);
       $("aff-chart").innerHTML = chartAt.map((n) => {
-        const row = affinityRow(n, c.curve.exp, { Q: c.Q, dP: c.dP, elec: c.elec, hours: c.hours, tariff: c.tariff, carbon: c.carbon });
+        const row = affinityRow(n, c.curve.exp, c.design);
         const h = Math.min(100, row.powerRatio / 1.8 * 100);
         const cls = n === nearest ? "active" : n > 100 ? "over" : "save";
         return `<div class="bar ${cls}" data-speed="${n}"><em>${fmt(row.power, 2)}</em><i style="height:${Math.max(6, h)}%"></i><em>${n}%</em></div>`;
       }).join("");
       $("aff-body").innerHTML = c.steps.map((row, i) => {
-        const vs = (c.elec - row.power) * c.hours * c.tariff;
+        const vs = (c.design.elec - row.power) * c.hours * c.tariff;
         const prev = c.steps[i - 1];
         const stepGbp = prev ? (prev.power - row.power) * c.hours * c.tariff : 0;
         const cls = row.nPct === c.speed ? "sel" : row.nPct > 100 ? "over" : "";
@@ -865,10 +1025,11 @@
         const stepCls = stepGbp >= 0 ? "pos" : "neg";
         const vsTxt = row.nPct === 100 ? "—" : (vs >= 0 ? "save " : "extra ") + money(Math.abs(vs));
         const stepTxt = !prev ? "—" : (stepGbp >= 0 ? "save " : "extra ") + money(Math.abs(stepGbp));
-        return `<tr class="${cls}" data-speed="${row.nPct}"><td>${row.nPct}%</td><td>${fmt(row.flow * 1000, 2)} L/s</td><td>${fmt(row.head, 1)} kPa</td><td>${fmt(row.power, 3)}</td><td>${fmt(row.powerRatio * 100, 1)}%</td><td>${fmt(row.kwh, 0)}</td><td>${money(row.gbp)}</td><td class="${vsCls}">${vsTxt}</td><td class="${stepCls}">${stepTxt}</td></tr>`;
+        const loadCls = row.motorLoad > 100 ? "neg" : "";
+        return `<tr class="${cls}" data-speed="${row.nPct}"><td>${row.nPct}%</td><td>${fmt(row.flow * 1000, 2)} L/s</td><td>${fmt(row.head, 1)} kPa</td><td>${fmt(row.power, 3)}</td><td>${fmt(row.powerRatio * 100, 1)}%</td><td class="${loadCls}">${fmt(row.motorLoad, 0)}% of ${frameKw} kW</td><td>${fmt(row.kwh, 0)}</td><td>${money(row.gbp)}</td><td class="${vsCls}">${vsTxt}</td><td class="${stepCls}">${stepTxt}</td></tr>`;
       }).join("");
       const cube80 = Math.pow(0.8, c.curve.exp) * 100;
-      setText("aff-footnote", `Worked check: 80% speed → ${fmt(cube80, 1)}% power with this curve (N^${c.curve.exp}). A 10% speed cut is not a 10% energy cut — cube law leaves 72.9% power, i.e. about 27% saved. Rows show both the cumulative saving versus 100% and the extra £ from each 5% step. Overspeed (>100%) is shown as extra annual cost.`);
+      setText("aff-footnote", `Worked check: 80% speed → ${fmt(cube80, 1)}% power with this curve (N^${c.curve.exp}). Motor frame is the next typical IEC size ≥ 1.15 × shaft. Toggle Existing / Proposed to rerun the table on that plant — use Proposed for a new installation with no existing pump. Overspeed (>100%) is extra annual cost and can overload the nameplate.`);
       $("defence").value = defenceText(c);
       if (S.showWork) renderWork(c);
     }
@@ -877,14 +1038,10 @@
       const kind = c.system === "pump" ? "pump" : "fan";
       const w = c.system === "pump" ? "water" : "air";
       const fluid = c.fluid === "air" ? "air" : c.fluid === "glycol" ? `${$("glycol-pct").value}% ${S.glycol} glycol` : "water";
-      const vs = (c.elec - c.selected.power) * c.hours * c.tariff;
-      return `DEFENCE NOTE - Flow2kW
-Duty: ${c.flow} ${$("flow-unit").value} ${fluid} @ ${c.T}°C, ΔT ${c.dT}K => Thermal ${fmt(c.thermal, 1)} kW
-Head: ${c.head} ${$("head-unit").value} (${fmt(c.dP, 1)} kPa), Qv=${fmt(c.Q * 1000, 2)} L/s, ṁ=${fmt(c.mdot, 3)} kg/s
-
-EXISTING (defaulted from 2026 catalogue unless changed):
+      const vs = (c.design.elec - c.selected.power) * c.hours * c.tariff;
+      const existingBlock = hasExisting() ? `EXISTING (defaulted from 2026 catalogue unless changed):
 - ${kind} ${c.machine.year} ${c.machine.label}: η=${fmt(c.hyd, 1)}%
-- Motor ${c.motor.label}: η=${fmt(c.mot, 1)}% (rated ${$("motor-kw").value} kW)
+- Motor ${c.motor.label}: η=${fmt(c.mot, 1)}% · IEC frame ${c.existKw} kW (${c.existSuggest.band.label}, shaft ${fmt(c.existShaft, 3)} kW)
 - Drive ${c.drive.label}: η=${fmt(c.drv, 1)}%
 - Hydraulic power Ph = Qv·ΔP = ${fmt(c.Ph, 3)} kW
 - Shaft Ps = Ph/η = ${fmt(c.shaft, 3)} kW
@@ -892,23 +1049,36 @@ EXISTING (defaulted from 2026 catalogue unless changed):
 - Wire-to-${w} = ${fmt(c.w2w, 1)}%
 - Annual @ ${c.hours}h: ${fmt(c.kwh, 0)} kWh/yr, ${money(c.gbp)}/yr, ${fmt(c.co2, 0)} kgCO2/yr
 ${c.fluid !== "air" ? `- Pipe ${$("pipe-mm").value}mm velocity = ${fmt(c.vel, 2)} m/s` : `- Duct ${$("duct-w").value}x${$("duct-h").value}mm velocity = ${fmt(c.ductV, 2)} m/s`}
-
-PROPOSED:
-- ${c.prop.machine.year} ${c.prop.machine.label} ${fmt(c.prop.hyd, 1)}% + ${c.prop.motor.label} ${fmt(c.prop.mot, 1)}% + ${c.prop.drive.label} ${fmt(c.prop.drv, 1)}% => Wire-to-${w} ${fmt(c.propW2w, 1)}%
-- New electrical ${fmt(c.propElec, 3)} kW
-
-SAVINGS (equipment change at 100% speed):
+` : `NEW INSTALLATION — no existing plant.
+- Duty Ph = ${fmt(c.Ph, 3)} kW
+${c.fluid !== "air" ? `- Pipe ${$("pipe-mm").value}mm velocity = ${fmt(c.vel, 2)} m/s` : `- Duct ${$("duct-w").value}x${$("duct-h").value}mm velocity = ${fmt(c.ductV, 2)} m/s`}
+`;
+      const savingsBlock = hasExisting() ? `SAVINGS (equipment change at 100% speed):
 - Saving ${fmt(c.saveKw, 3)} kW continuous, ${fmt(c.savePct, 1)}% reduction
 - ${fmt(c.saveKwh, 0)} kWh/yr = ${money(c.saveGbp)}/yr, ${fmt(c.saveCo2, 0)} kgCO2/yr
 - Simple payback ${c.capex > 0 && c.saveGbp > 0 ? `${fmt(c.payback, 1)} years on ${money(c.capex)}` : "N/A - add CAPEX"}
+` : `NEW PLANT ANNUAL:
+- ${fmt(c.propElec, 3)} kW · ${fmt(c.propElec * c.hours, 0)} kWh/yr = ${money(c.propElec * c.hours * c.tariff)}/yr
+`;
+      return `DEFENCE NOTE - Flow2kW
+Job: ${hasExisting() ? "Upgrade existing" : "New installation"}
+Duty: ${c.flow} ${$("flow-unit").value} ${fluid} @ ${c.T}°C, ΔT ${c.dT}K => Thermal ${fmt(c.thermal, 1)} kW
+Head: ${c.head} ${$("head-unit").value} (${fmt(c.dP, 1)} kPa), Qv=${fmt(c.Q * 1000, 2)} L/s, ṁ=${fmt(c.mdot, 3)} kg/s
 
-AFFINITY / FAN LAWS @ ${c.speed}% speed, exponent ${c.curve.exp} (${c.curve.id}):
+${existingBlock}
+PROPOSED / NEW PLANT:
+- ${c.prop.machine.year} ${c.prop.machine.label} ${fmt(c.prop.hyd, 1)}% + ${c.prop.motor.label} ${fmt(c.prop.mot, 1)}% + ${c.prop.drive.label} ${fmt(c.prop.drv, 1)}% => Wire-to-${w} ${fmt(c.propW2w, 1)}%
+- New electrical ${fmt(c.propElec, 3)} kW · IEC frame ${c.propKw} kW (${c.propSuggest.band.label}, shaft ${fmt(c.propShaft, 3)} kW)
+
+${savingsBlock}
+AFFINITY / FAN LAWS @ ${c.speed}% on ${c.affPlant}, exponent ${c.curve.exp} (${c.curve.id}):
 - Flow × ${fmt(c.selected.n, 3)}, Head × ${fmt(c.selected.n * c.selected.n, 3)}, Power × ${fmt(c.selected.powerRatio, 3)}
 - Electrical ${fmt(c.selected.power, 3)} kW, ${fmt(c.selected.kwh, 0)} kWh/yr, ${money(c.selected.gbp)}/yr
-- Versus 100% design: ${vs >= 0 ? "save" : "extra"} ${fmt(Math.abs(c.elec - c.selected.power), 3)} kW = ${money(Math.abs(vs))}/yr, ${fmt(Math.abs((c.elec - c.selected.power) * c.hours), 0)} kWh, ${fmt(Math.abs((c.elec - c.selected.power) * c.hours * c.carbon), 0)} kgCO2
+- Frame ${c.design.motorKw} kW IEC, nameplate load ${fmt(c.selected.motorLoad, 0)}%
+- Versus 100% ${c.affPlant}: ${vs >= 0 ? "save" : "extra"} ${fmt(Math.abs(c.design.elec - c.selected.power), 3)} kW = ${money(Math.abs(vs))}/yr
 ${c.meas ? `- Measured data: ${$("meas-q").value} L/s @ ${$("meas-h").value}m, Pe=${fmt(c.meas.elec, 2)}kW => actual wire-to-water ${fmt(c.meas.w2w, 1)}%, back-calc machine η ${fmt(c.meas.pumpBack, 1)}%` : ""}
 
-Quick defence: Existing ${c.machine.label.toLowerCase()} (${c.machine.year}) at ${fmt(c.hyd, 0)}% ${kind} with ${c.motor.label} ~${fmt(c.mot, 1)}% and ${c.drive.label}. Wire-to-${w} ~${fmt(c.w2w, 0)}%. Proposed ${c.prop.machine.label} ${fmt(c.prop.hyd, 0)}% with ${c.prop.motor.label} ${fmt(c.prop.mot, 1)}% = ${fmt(c.propW2w, 0)}% wire-to-${w}. Equipment saving ${fmt(c.saveKw, 2)} kW = ${money(c.saveGbp)}/yr. At ${c.speed}% speed, affinity ${c.curve.exp === 3 ? "cube" : "power"} law gives ${fmt(c.selected.powerRatio * 100, 0)}% power (${money(Math.abs(vs))}/yr ${vs >= 0 ? "saved" : "extra"} versus full speed).
+Quick defence: ${hasExisting() ? `Existing ${c.machine.label.toLowerCase()} (${c.machine.year}) ${c.existKw} kW IEC at ${fmt(c.hyd, 0)}% ${kind}. ` : "New installation. "}Proposed ${c.prop.machine.label} ${c.propKw} kW IEC ${fmt(c.prop.hyd, 0)}% = ${fmt(c.propW2w, 0)}% wire-to-${w}${hasExisting() ? `. Equipment saving ${fmt(c.saveKw, 2)} kW = ${money(c.saveGbp)}/yr` : ""}. At ${c.speed}% on the ${c.affPlant} plant, affinity gives ${fmt(c.selected.powerRatio * 100, 0)}% power (${money(Math.abs(vs))}/yr ${vs >= 0 ? "saved" : "extra"} versus full speed).
 
 Calc ref: Qth = ṁ·Cp·ΔT, Ph = Qv·ΔP (or ρgQH), Ps=Ph/ηp, Pe=Ps/ηm/ηd, P ∝ N^${c.curve.exp}
 `;
@@ -933,11 +1103,12 @@ Calc ref: Qth = ṁ·Cp·ΔT, Ph = Qv·ΔP (or ρgQH), Ps=Ph/ηp, Pe=Ps/ηm/ηd,
           <h4 style="margin-top:14px">// 5. Shaft & electrical</h4>
           <div>Ps = Ph/η = ${fmt(c.Ph, 5)}/${fmt(c.hyd / 100, 3)} = ${fmt(c.shaft, 4)} kW</div>
           <div>Pe = Ps/ηm/ηd = ${fmt(c.elec, 4)} kW · wire-to-${c.system === "pump" ? "water" : "air"} = ${fmt(c.w2w, 1)}%</div>
+          <div>IEC frame = next typical size ≥ 1.15 × motor shaft. Existing ${c.existKw} kW (${c.existSuggest.band.label}). Proposed ${c.propKw} kW (${c.propSuggest.band.label}).</div>
           <h4 style="margin-top:14px">// 6. Affinity / fan laws</h4>
-          <div>N = ${c.speed}% · exponent n = ${c.curve.exp}</div>
+          <div>N = ${c.speed}% · exponent n = ${c.curve.exp} · plant = ${c.affPlant}</div>
           <div>Q₂ = Q₁·N · H₂ = H₁·N² · P₂ = P₁·N^n</div>
-          <div>P₂ = ${fmt(c.elec, 4)} · ${fmt(c.selected.powerRatio, 4)} = ${fmt(c.selected.power, 4)} kW</div>
-          <div>vs 100%: ${fmt(c.elec - c.selected.power, 4)} kW · ${money((c.elec - c.selected.power) * c.hours * c.tariff)}/yr</div>
+          <div>P₂ = ${fmt(c.design.elec, 4)} · ${fmt(c.selected.powerRatio, 4)} = ${fmt(c.selected.power, 4)} kW · frame load ${fmt(c.selected.motorLoad, 0)}%</div>
+          <div>vs 100%: ${fmt(c.design.elec - c.selected.power, 4)} kW · ${money((c.design.elec - c.selected.power) * c.hours * c.tariff)}/yr</div>
           <h4 style="margin-top:14px">// 7. Annual & equipment savings</h4>
           <div>Existing ${fmt(c.kwh, 0)} kWh · ${money(c.gbp)} · ${fmt(c.co2, 0)} kgCO₂</div>
           <div>Proposed ${fmt(c.propElec * c.hours, 0)} kWh · save ${money(c.saveGbp)}/yr · payback ${fmt(c.payback, 1)} yr</div>
@@ -968,8 +1139,17 @@ Calc ref: Qth = ṁ·Cp·ΔT, Ph = Qv·ΔP (or ρgQH), Ps=Ph/ηp, Pe=Ps/ηm/ηd,
 
     function syncMotorFromSelect() {
       const motor = byId(MOTORS, $("motor-select").value);
-      if (!motor.custom) $("motor-eff").value = motorAdjusted(motor.eff, Number($("motor-kw").value) || 4, false);
+      const kw = $("motor-frame").value === "auto" ? 0.75 : (Number($("motor-frame").value) || 0.75);
+      if (!motor.custom) $("motor-eff").value = motorAdjusted(motor.eff, kw, false);
       markEraFromCurrent();
+    }
+
+    function setJob(job) {
+      S.job = job;
+      if (job === "new") S.affPlant = "proposed";
+      document.querySelectorAll("[data-job]").forEach((btn) => btn.classList.toggle("active", btn.dataset.job === job));
+      document.body.classList.toggle("new-job", job === "new");
+      update();
     }
 
     function syncDriveFromSelect() {
@@ -1070,6 +1250,8 @@ Calc ref: Qth = ṁ·Cp·ΔT, Ph = Qv·ΔP (or ρgQH), Ps=Ph/ηp, Pe=Ps/ηm/ηd,
       fillSelect($("drive-select"), DRIVES, (x) => x.label, "vsd");
       fillSelect($("prop-motor"), MOTORS.filter((x) => x.id !== "preie"), (x) => `${x.year} — ${x.label}`, "ie5");
       fillSelect($("prop-drive"), DRIVES, (x) => x.label, "vsd");
+      fillMotorFrameSelect($("motor-frame"), "auto");
+      fillMotorFrameSelect($("prop-motor-frame"), "auto");
       fillUnits($("flow-unit"), FLOW_LIQ, "L/s");
       fillUnits($("head-unit"), HEAD_PUMP, "m");
       refreshMachineSelects();
@@ -1082,6 +1264,12 @@ Calc ref: Qth = ṁ·Cp·ΔT, Ph = Qv·ΔP (or ρgQH), Ps=Ph/ηp, Pe=Ps/ηm/ηd,
     function bind() {
       document.querySelectorAll("[data-fluid]").forEach((btn) => btn.addEventListener("click", () => setFluid(btn.dataset.fluid)));
       document.querySelectorAll("[data-system]").forEach((btn) => btn.addEventListener("click", () => setSystem(btn.dataset.system)));
+      document.querySelectorAll("[data-job]").forEach((btn) => btn.addEventListener("click", () => setJob(btn.dataset.job)));
+      document.querySelectorAll("[data-aff]").forEach((btn) => btn.addEventListener("click", () => {
+        if (btn.dataset.aff === "existing" && !hasExisting()) return;
+        S.affPlant = btn.dataset.aff;
+        update();
+      }));
       document.querySelectorAll("[data-glycol]").forEach((btn) => btn.addEventListener("click", () => {
         S.glycol = btn.dataset.glycol;
         document.querySelectorAll("[data-glycol]").forEach((b) => b.classList.toggle("active", b.dataset.glycol === S.glycol));
@@ -1126,7 +1314,8 @@ Calc ref: Qth = ṁ·Cp·ΔT, Ph = Qv·ΔP (or ρgQH), Ps=Ph/ηp, Pe=Ps/ηm/ηd,
       $("machine-eff").addEventListener("input", () => { $("machine-select").value = "custom"; markEraFromCurrent(); update(); });
       $("motor-eff").addEventListener("input", () => { $("motor-select").value = "custom"; markEraFromCurrent(); update(); });
       $("drive-eff").addEventListener("input", () => { $("drive-select").value = "custom"; markEraFromCurrent(); update(); });
-      $("motor-kw").addEventListener("input", () => { syncMotorFromSelect(); update(); });
+      $("motor-frame").addEventListener("change", () => { syncMotorFromSelect(); update(); });
+      $("prop-motor-frame").addEventListener("change", () => update());
       $("temp").addEventListener("input", () => { $("temp-num").value = $("temp").value; update(); });
       $("temp-num").addEventListener("input", () => { $("temp").value = $("temp-num").value; update(); });
       $("use-meas").addEventListener("change", () => { $("meas-box").classList.toggle("hidden", !$("use-meas").checked); update(); });
