@@ -1,5 +1,5 @@
 
-const CACHE = 'flow2kw-v4';
+const CACHE = 'flow2kw-v6';
 const ASSETS = ['./','./index.html','./manifest.json','./favicon.png','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()));
