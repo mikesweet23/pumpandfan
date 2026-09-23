@@ -2,7 +2,7 @@
 
 PWA tool for HVAC / Building Services engineers to quickly defend pump & fan energy.
 
-**Live demo:** Enable GitHub Pages on this repo (Settings > Pages > main / root) → https://YOURNAME.github.io/flow2kw/
+**Live demo:** Enable GitHub Pages on this repo (Settings > Pages > main / root) → https://mikesweet23.github.io/pumpandfan/
 
 ### Features
 - **Fluid toggle:** Water | Glycol Mix (EG/PG %) | Air — temperature slider affects density
@@ -41,7 +41,7 @@ PWA tool for HVAC / Building Services engineers to quickly defend pump & fan ene
 - **Working & Learning box:** Every formula shown with live numbers for an audit trail
 
 ### How to use
-1. The calculator opens on a **typical 2026** pump + IE4 + VSD (or EC plug fan in air/fan mode)
+1. The calculator opens as a **new installation** — 2.5 L/s at 150 kPa, ΔT 20 K — on a 2026 premium pump + IE5 + VSD (or EC plug fan in air/fan mode). Switch to **Upgrade existing** to compare against old plant
 2. Change era or pick any catalogue item if the existing plant is older, worn, or a premium EC machine
 3. Set flow, temperature, glycol % if needed, ΔT and head → thermal and hydraulic kW
 4. Review existing vs 2026 premium proposed savings
@@ -55,7 +55,7 @@ Chrome/Edge on desktop or phone → Install icon in address bar. Works offline.
 Single-page HTML/CSS/JS, no build needed. Just `index.html`.
 
 ### Upload to GitHub
-1. Create repo `flow2kw`
+1. Create repo `pumpandfan`
 2. Upload all files in this folder
 3. Settings > Pages > Deploy from main / root
 4. Done.
