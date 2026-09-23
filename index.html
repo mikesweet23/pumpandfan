@@ -246,8 +246,8 @@
       </div>
       <div class="seg job-seg" role="group" aria-label="Job type">
         <div class="lbl">Job</div>
-        <button type="button" data-job="upgrade" class="active">Upgrade existing</button>
-        <button type="button" data-job="new">New installation</button>
+        <button type="button" data-job="upgrade">Upgrade existing</button>
+        <button type="button" data-job="new" class="active">New installation</button>
       </div>
     </div>
 
@@ -293,7 +293,7 @@
               <label class="field"><span>Concentration <b id="glycol-pct-label">30%</b></span><input id="glycol-pct" type="range" min="0" max="60" value="30"></label>
             </div>
             <div class="row auto">
-              <label class="field"><span>ΔT (°C / K)</span><input id="dt" type="number" step="0.1" value="10" style="width:110px"></label>
+              <label class="field"><span>ΔT (°C / K)</span><input id="dt" type="number" step="0.1" value="20" style="width:110px"></label>
               <label class="field" style="align-content:end">
                 <span>Use ΔT for thermal kW</span>
                 <input id="use-dt" type="checkbox" checked>
@@ -301,7 +301,7 @@
               <div class="pill" id="thermal-chip">Thermal —</div>
             </div>
             <div class="row 2">
-              <label class="field"><span id="head-label">Head</span><input id="head" type="number" step="0.1" value="15"></label>
+              <label class="field"><span id="head-label">Head</span><input id="head" type="number" step="1" value="150"></label>
               <label class="field"><span>Unit</span><select id="head-unit"></select></label>
             </div>
             <div class="row 2e">
@@ -470,8 +470,8 @@
           <div class="card-b">
             <div class="seg aff-toggle" role="group" aria-label="Affinity plant">
               <div class="lbl">Show plant</div>
-              <button type="button" data-aff="existing" class="active existing-only" id="aff-btn-existing">Existing</button>
-              <button type="button" data-aff="proposed" id="aff-btn-proposed">Proposed</button>
+              <button type="button" data-aff="existing" class="existing-only" id="aff-btn-existing">Existing</button>
+              <button type="button" data-aff="proposed" class="active" id="aff-btn-proposed">Proposed</button>
             </div>
             <div class="laws">
               <div class="law"><b>Flow</b><span id="law-flow">Q₂ / Q₁ = N₂ / N₁</span></div>
@@ -698,8 +698,8 @@
       glycol: "EG",
       era: "y2026",
       curve: "propp",
-      job: "upgrade",
-      affPlant: "existing",
+      job: "new",
+      affPlant: "proposed",
       showWork: false,
       suppress: false
     };
@@ -1479,7 +1479,7 @@ Motor η: IEC 60034-30-1 full-load, 4-pole, at the rated kW.
 
     function setJob(job) {
       S.job = job;
-      if (job === "new") S.affPlant = "proposed";
+      S.affPlant = job === "new" ? "proposed" : "existing";
       document.querySelectorAll("[data-job]").forEach((btn) => btn.classList.toggle("active", btn.dataset.job === job));
       document.body.classList.toggle("new-job", job === "new");
       update();
@@ -1525,7 +1525,7 @@ Motor η: IEC 60034-30-1 full-load, 4-pole, at the rated kW.
       $("glycol-box").classList.toggle("hidden", fluid !== "glycol");
       if (fluid === "air") {
         S.system = "fan";
-        if ($("head-unit").value === "m" && Number($("head").value) === 15) $("head").value = 450;
+        if ($("head-unit").value === "kPa" && Number($("head").value) === 150) $("head").value = 450;
         if (Number($("flow").value) === 2.5) $("flow").value = 1.2;
         $("temp").min = -20; $("temp").max = 60;
         if (prev !== "air") { $("temp").value = 20; $("temp-num").value = 20; $("dt").value = 12; }
@@ -1536,14 +1536,14 @@ Motor η: IEC 60034-30-1 full-load, 4-pole, at the rated kW.
       } else {
         if (prev === "air") {
           S.system = "pump";
-          if (Number($("head").value) === 450) $("head").value = 15;
+          if (Number($("head").value) === 450) $("head").value = 150;
           if (Number($("flow").value) === 1.2) $("flow").value = 2.5;
-          $("temp").value = 60; $("temp-num").value = 60; $("dt").value = 10;
+          $("temp").value = 60; $("temp-num").value = 60; $("dt").value = 20;
         }
         $("temp").min = -10; $("temp").max = 90;
         // Water ↔ glycol keeps the units already chosen; only coming back from air resets them.
         const keepFlow = prev !== "air" && FLOW_LIQ.includes($("flow-unit").value) ? $("flow-unit").value : "L/s";
-        const keepHead = prev !== "air" && HEAD_PUMP.includes($("head-unit").value) ? $("head-unit").value : "m";
+        const keepHead = prev !== "air" && HEAD_PUMP.includes($("head-unit").value) ? $("head-unit").value : "kPa";
         fillUnits($("flow-unit"), FLOW_LIQ, keepFlow);
         fillUnits($("head-unit"), HEAD_PUMP, keepHead);
         $("pipe-box").classList.remove("hidden");
@@ -1575,11 +1575,11 @@ Motor η: IEC 60034-30-1 full-load, 4-pole, at the rated kW.
       });
       if (system === "fan" && S.fluid !== "air") {
         fillUnits($("head-unit"), HEAD_FAN, $("head-unit").value === "m" ? "Pa" : $("head-unit").value);
-        if ($("head-unit").value === "Pa" && Number($("head").value) === 15) $("head").value = 450;
+        if ($("head-unit").value === "Pa" && Number($("head").value) === 150) $("head").value = 450;
       }
       if (system === "pump" && S.fluid !== "air") {
-        fillUnits($("head-unit"), HEAD_PUMP, HEAD_PUMP.includes($("head-unit").value) ? $("head-unit").value : "m");
-        if (Number($("head").value) === 450) $("head").value = 15;
+        fillUnits($("head-unit"), HEAD_PUMP, HEAD_PUMP.includes($("head-unit").value) ? $("head-unit").value : "kPa");
+        if (Number($("head").value) === 450) $("head").value = 150;
       }
       refreshMachineSelects();
       applyEra(S.era || "y2026", false);
@@ -1597,7 +1597,7 @@ Motor η: IEC 60034-30-1 full-load, 4-pole, at the rated kW.
       fillMotorFrameSelect($("motor-frame"), "auto");
       fillMotorFrameSelect($("prop-motor-frame"), "auto");
       fillUnits($("flow-unit"), FLOW_LIQ, "L/s");
-      fillUnits($("head-unit"), HEAD_PUMP, "m");
+      fillUnits($("head-unit"), HEAD_PUMP, "kPa");
       refreshMachineSelects();
       applyEra("y2026", false);
       applyEra("y2026", true);
@@ -1699,6 +1699,12 @@ Motor η: IEC 60034-30-1 full-load, 4-pole, at the rated kW.
         a.click();
         URL.revokeObjectURL(url);
       });
+      // A focused number box steps its value on the mouse wheel — too easy to change by accident.
+      // Drop focus instead so the wheel just scrolls the page.
+      document.addEventListener("wheel", (e) => {
+        const el = e.target;
+        if (el instanceof HTMLInputElement && el.type === "number" && document.activeElement === el) el.blur();
+      }, { passive: true });
       document.querySelectorAll("input, select").forEach((el) => {
         el.addEventListener("input", update);
         el.addEventListener("change", update);
