@@ -80,16 +80,18 @@
     }
     .seg button.active { background: #0f172a; color: #fff; border-color: #0f172a; }
     .seg button.active.sky { background: var(--sky); border-color: var(--sky); }
-    .kpis { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; padding: 16px 0 8px; }
+    .kpis { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; padding: 16px 0 8px; }
     .kpi { padding: 14px 14px 12px; }
     .kpi .k { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
     .kpi .v { margin-top: 6px; font-family: var(--mono); font-size: 22px; font-weight: 600; letter-spacing: -0.03em; }
     .kpi .u { color: var(--muted); font-size: 11px; margin-top: 4px; }
     .layout { display: grid; grid-template-columns: 0.92fr 1.08fr; gap: 20px; padding: 12px 0 28px; align-items: start; }
-    .col { display: grid; gap: 16px; }
-    .card-h { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 18px 0; }
+    .col { display: grid; gap: 16px; min-width: 0; }
+    .card-h { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 18px 0; }
     .card-h h2, .card-h h3 { margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
     .card-b { padding: 16px 18px 18px; display: grid; gap: 14px; }
+    .card-b > *, .side > *, .compare > *, .row > * { min-width: 0; }
+    .side .big { overflow-wrap: anywhere; }
     .field { display: grid; gap: 6px; }
     .field span, .field .name { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
     input[type="number"], input[type="text"], select, textarea {
@@ -115,7 +117,7 @@
     .stack b { display: block; font-family: var(--mono); font-size: 14px; }
     .stack small { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
     .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .side { border: 1px solid var(--line); border-radius: 16px; padding: 12px; background: #f8fafc; display: grid; gap: 8px; }
+    .side { border: 1px solid var(--line); border-radius: 16px; padding: 12px; background: #f8fafc; display: grid; gap: 8px; align-content: start; }
     .side.proposed { background: #f0fdf4; border-color: #bbf7d0; }
     .side h4 { margin: 0; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
     .side .big { font-family: var(--mono); font-size: 28px; font-weight: 600; }
@@ -127,6 +129,27 @@
     .size-legend b { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--sky-ink); }
     .size-legend .sizes { font-family: var(--mono); font-size: 12px; }
     .size-legend .apps { font-size: 11px; color: var(--muted); }
+    .chain { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .chain div { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; display: grid; gap: 2px; }
+    .chain small { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+    .chain b { font-family: var(--mono); font-size: 17px; }
+    .chain em { font-style: normal; font-size: 11px; color: var(--muted); }
+    .chain div.key { background: #0f172a; border-color: #0f172a; color: #fff; }
+    .chain div.key small, .chain div.key em { color: #7dd3fc; }
+    .chain div.amp { background: #fffbeb; border-color: #fde68a; }
+    .quick { display: grid; gap: 14px; }
+    .quick .eq { background: #0f172a; color: #e2e8f0; border-radius: 14px; padding: 14px 16px; font-family: var(--mono); font-size: 15px; line-height: 1.7; }
+    .quick .eq b { color: #7dd3fc; font-weight: 600; }
+    .quick table td { white-space: normal; vertical-align: top; }
+    .quick table td:first-child { font-family: var(--sans); font-weight: 600; }
+    .quick table td:nth-child(2) { font-family: var(--sans); color: #475569; }
+    .keys { display: inline-flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+    .keys kbd { font-family: var(--mono); font-size: 12px; background: #f1f5f9; border: 1px solid #cbd5e1; border-bottom-width: 2px; border-radius: 6px; padding: 2px 6px; }
+    .keys kbd.op { background: #e0f2fe; border-color: #7dd3fc; }
+    .keys kbd.eqk { background: #0369a1; border-color: #0369a1; color: #fff; }
+    .thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .thumbs div { background: #f8fafc; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; font-size: 12px; color: #475569; }
+    .thumbs b { display: block; font-family: var(--mono); font-size: 14px; color: var(--ink); margin-bottom: 4px; }
     .aff-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .aff-toggle { margin: 0; }
     body.new-job .existing-only { display: none !important; }
@@ -144,13 +167,13 @@
     .hero-save .main .v { font-family: var(--mono); font-size: 32px; font-weight: 600; }
     .hero-save .sidebox { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 16px; padding: 14px; }
     .hero-save .sidebox.cost { background: #fff1f2; border-color: #fecdd3; }
-    .chart { display: grid; grid-template-columns: repeat(9, 1fr); gap: 6px; align-items: end; height: 140px; padding: 8px 0 0; }
+    .chart { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 6px; align-items: end; height: 140px; padding: 8px 0 0; }
     .bar { display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: end; }
     .bar i { display: block; width: 100%; border-radius: 8px 8px 3px 3px; background: #cbd5e1; min-height: 4px; }
     .bar.active i { background: var(--sky); }
     .bar.over i { background: var(--rose); }
     .bar.save i { background: var(--emerald); }
-    .bar em { font-style: normal; font-size: 10px; color: var(--muted); font-family: var(--mono); }
+    .bar em { font-style: normal; font-size: 10px; overflow-wrap: anywhere; text-align: center; color: var(--muted); font-family: var(--mono); }
     .table-wrap { overflow: auto; border: 1px solid var(--line); border-radius: 14px; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; }
     th { text-align: left; background: #f8fafc; padding: 8px; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); position: sticky; top: 0; }
@@ -174,15 +197,17 @@
     .warnbox { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
     footer { color: rgba(255,255,255,0.55); font-size: 12px; padding: 8px 0 28px; }
     .mono { font-family: var(--mono); }
+    @media (max-width: 1300px) { .kpis { grid-template-columns: repeat(4, 1fr); } }
     @media (max-width: 1100px) {
       .toolbar, .layout, .hero-save, .kpis, .compare, .aff-duo, .work.open { grid-template-columns: 1fr; }
       .kpis { grid-template-columns: repeat(2, 1fr); }
       .savings, .laws, .stack { grid-template-columns: 1fr 1fr; }
+      .thumbs { grid-template-columns: 1fr; }
     }
     @media (max-width: 720px) {
       .wrap { width: min(100% - 20px, 1440px); }
       .header-actions .badge { display: none; }
-      .row.2, .row.2e, .row.3, .row.auto, .glycol, .size-legend .rowish { grid-template-columns: 1fr; }
+      .row.2, .row.2e, .row.3, .row.auto, .glycol, .size-legend .rowish, .chain { grid-template-columns: 1fr; }
       .seg { flex-wrap: wrap; }
     }
   </style>
@@ -227,12 +252,14 @@
     </div>
 
     <section class="kpis" aria-label="Overview">
-      <article class="card kpi"><div class="k">Thermal</div><div class="v" id="kpi-thermal">—</div><div class="u">kW from flow × ΔT</div></article>
-      <article class="card kpi"><div class="k">Hydraulic Ph</div><div class="v" id="kpi-hyd">—</div><div class="u">Q · ΔP</div></article>
-      <article class="card kpi"><div class="k">Electrical Pe</div><div class="v" id="kpi-elec">—</div><div class="u" id="kpi-elec-u">Existing wire power</div></article>
+      <article class="card kpi"><div class="k">Thermal</div><div class="v" id="kpi-thermal">—</div><div class="u">kW heat carried (flow × ΔT)</div></article>
+      <article class="card kpi"><div class="k" id="kpi-hyd-k">Water power</div><div class="v" id="kpi-hyd">—</div><div class="u">kW = L/s × kPa ÷ 1000</div></article>
+      <article class="card kpi"><div class="k" id="kpi-shaft-k">Pump shaft power</div><div class="v" id="kpi-shaft">—</div><div class="u" id="kpi-shaft-u">kW absorbed by the pump</div></article>
+      <article class="card kpi"><div class="k">Motor rating</div><div class="v" id="kpi-rating">—</div><div class="u" id="kpi-rating-u">kW nameplate (IEC size)</div></article>
+      <article class="card kpi"><div class="k">Electrical input</div><div class="v" id="kpi-elec">—</div><div class="u" id="kpi-elec-u">kW from the supply</div></article>
+      <article class="card kpi"><div class="k">Running current</div><div class="v" id="kpi-amps">—</div><div class="u" id="kpi-amps-u">A per phase</div></article>
       <article class="card kpi"><div class="k" id="kpi-w2w-label">Wire-to-water</div><div class="v" id="kpi-w2w">—</div><div class="u">η machine × motor × drive</div></article>
       <article class="card kpi"><div class="k" id="kpi-cost-k">Existing cost</div><div class="v" id="kpi-cost">—</div><div class="u" id="kpi-cost-u">£ / year at entered hours</div></article>
-      <article class="card kpi"><div class="k">CO₂</div><div class="v" id="kpi-co2">—</div><div class="u">kg / year</div></article>
     </section>
 
     <div class="layout">
@@ -289,7 +316,7 @@
             <div>
               <div class="name" style="margin-bottom:8px">Existing plant era</div>
               <div class="eras" id="eras"></div>
-              <p class="note" style="margin:8px 0 0">Defaults to a typical 2026 selection. Switch era or pick any catalogue item if the plant is older, worn, or a premium EC machine. Motor frame defaults from duty onto the next IEC size.</p>
+              <p class="note" style="margin:8px 0 0">Defaults to a typical 2026 selection. Switch era or pick any catalogue item if the plant is older, worn, or a premium EC machine. Motor rating defaults from duty onto the next standard IEC size; motor efficiency is looked up for that size (IEC 60034-30-1, 4-pole).</p>
             </div>
             <label class="field">
               <span id="machine-label">Pump</span>
@@ -305,9 +332,9 @@
             <div class="machine-note" id="machine-note"></div>
             <div class="row 2">
               <label class="field"><span>Motor</span><select id="motor-select"></select></label>
-              <label class="field"><span>Motor frame (IEC kW)</span><select id="motor-frame"></select></label>
+              <label class="field"><span>Motor rating (nameplate kW)</span><select id="motor-frame"></select></label>
             </div>
-            <div class="size-card" id="exist-frame-note">Typical motor size from duty</div>
+            <div class="size-card" id="exist-frame-note">Typical motor rating from duty</div>
             <label class="field">
               <span>Motor efficiency <small id="motor-adj-note"></small></span>
               <div class="row auto">
@@ -343,6 +370,12 @@
               <label class="field"><span>£ / kWh</span><input id="tariff" type="number" step="0.01" value="0.28"></label>
               <label class="field"><span>kg CO₂ / kWh</span><input id="carbon" type="number" step="0.001" value="0.207"></label>
             </div>
+            <div class="row 3">
+              <label class="field"><span>Supply</span><select id="supply"><option value="3">3-phase</option><option value="1">1-phase</option></select></label>
+              <label class="field"><span>Volts</span><input id="volts" type="number" value="400"></label>
+              <label class="field"><span>Power factor</span><input id="pf" type="number" step="0.01" min="0.3" max="1" placeholder="auto"></label>
+            </div>
+            <div class="machine-note" id="pf-note"></div>
             <label class="field"><span>Proposed CAPEX £ (for payback)</span><input id="capex" type="number" value="4500"></label>
             <div id="pipe-box">
               <label class="field"><span>Pipe ID mm</span><input id="pipe-mm" type="number" value="65"></label>
@@ -392,7 +425,7 @@
               <div class="side existing-only">
                 <h4>Existing</h4>
                 <div class="big" id="ex-kw">—</div>
-                <div class="size-card" id="ex-size"></div>
+                <div class="chain" id="ex-chain"></div>
                 <div class="note" id="ex-meta"></div>
               </div>
               <div class="side proposed">
@@ -403,10 +436,10 @@
                 </div>
                 <div class="row 2e">
                   <label class="field"><span>Drive</span><select id="prop-drive"></select></label>
-                  <label class="field"><span>Motor frame (IEC kW)</span><select id="prop-motor-frame"></select></label>
+                  <label class="field"><span>Motor rating (nameplate kW)</span><select id="prop-motor-frame"></select></label>
                 </div>
                 <div class="big" id="pr-kw">—</div>
-                <div class="size-card" id="pr-size"></div>
+                <div class="chain" id="pr-chain"></div>
                 <div class="note" id="pr-meta"></div>
               </div>
             </div>
@@ -479,6 +512,7 @@
                     <th>Head</th>
                     <th>Power kW</th>
                     <th>Power %</th>
+                    <th>Amps</th>
                     <th>Frame load</th>
                     <th>kWh/yr</th>
                     <th>£/yr</th>
@@ -518,7 +552,15 @@
       </div>
     </section>
 
-    <footer>Q = ṁ·Cp·ΔT · Ph = Q·ΔP · Pe = Ph / (ηm·ηmot·ηd) · Affinity power ∝ N<sup>n</sup> · UK SI · g = 9.81</footer>
+    <section class="card" style="margin-bottom:24px;">
+      <div class="card-h">
+        <h2>Quick method — L/s and kPa to motor kW and amps</h2>
+        <span class="pill" id="quick-pill">Live numbers</span>
+      </div>
+      <div class="card-b quick" id="quick"></div>
+    </section>
+
+    <footer>Q = ṁ·Cp·ΔT · Ph = Q·ΔP · Pe = Ph / (ηm·ηmot·ηd) · I = Pe / (√3·V·PF) · Motor η per IEC 60034-30-1 · Affinity power ∝ N<sup>n</sup> · UK SI · g = 9.81</footer>
   </main>
 
   <div class="modal" id="modal">
@@ -546,7 +588,7 @@
       { id: "2006", year: "2006–15", label: "Standard ErP generation", eff: 76, note: "First MEI / ErP pumps, IE2–IE3 motors typical." },
       { id: "2016", year: "2016–22", label: "High-eff Grundfos / Wilo class", eff: 82, note: "MEI ≥ 0.40–0.70, IE3 common, VSD becoming normal." },
       { id: "2026", year: "2026 typical", label: "Specified 2026 packaged pump", eff: 84, typical2026: true, note: "Typical 2026 commercial selection: MEI ≥ 0.70, matched duty, IE4 motor, packaged or matched VSD. Hydraulic ~84% at a well-chosen BEP." },
-      { id: "2026ec", year: "2026 premium", label: "EC / mag-drive circulator", eff: 88, bundled: "motor", note: "Best-available 2026 wet-rotor EC or mag-drive. Motor is in the machine rating; keep a VSD/EC electronics allowance." },
+      { id: "2026ec", year: "2026 premium", label: "Best-in-class hydraulics + PM / EC motor", eff: 86, note: "Best-available 2026 hydraulic at BEP, paired with an IE5 permanent-magnet / EC motor and integrated drive. Hydraulic η only — motor and drive losses are added separately so the electrical load is not understated." },
       { id: "custom", year: "Custom", label: "Enter hydraulic efficiency", eff: 80, custom: true, note: "Type or slide to a tested / catalogue figure." }
     ];
     const FANS = [
@@ -555,17 +597,17 @@
       { id: "bc-old", year: "1990s", label: "Backward curved belt", eff: 62, note: "Better aero, belt and leaky plenum still cost efficiency." },
       { id: "bc-2000", year: "2000s", label: "Backward curved direct", eff: 70, note: "Direct-drive BC, IE2/IE3 motor typical." },
       { id: "2010", year: "2010+", label: "Plug / plenum", eff: 78, note: "Modern plug fan, still often AC + VSD." },
-      { id: "2026", year: "2026 typical", label: "EC plug fan / IE5", eff: 86, typical2026: true, bundled: "motor+drive", note: "Typical 2026 AHU spec: EC plug fan with integrated IE5 electronics. Catalogue total efficiency is treated as machine η; motor and drive are included." },
-      { id: "2026ax", year: "2026 premium", label: "Premium aerofoil / EC axial", eff: 89, bundled: "motor+drive", note: "Best-available 2026 high-volume EC axial or aerofoil plug, integrated electronics." },
-      { id: "custom", year: "Custom", label: "Enter fan total efficiency", eff: 75, custom: true, note: "Use a catalogue total or measured wire-to-air if you already have it." }
+      { id: "2026", year: "2026 typical", label: "EC plug fan — overall 66%", eff: 66, typical2026: true, bundled: "motor+drive", note: "Typical 2026 AHU spec: EC plug fan. 66% is the overall wire-to-air (ErP static ηe) figure including the EC motor and electronics, so no separate motor or drive loss is added." },
+      { id: "2026ax", year: "2026 premium", label: "Premium EC plug / axial — overall 72%", eff: 72, bundled: "motor+drive", note: "Best-available 2026 EC plug or axial. 72% overall wire-to-air including motor and electronics — check the ErP data sheet." },
+      { id: "custom", year: "Custom", label: "Enter fan efficiency", eff: 70, custom: true, note: "Fan (impeller) efficiency. If you only have an overall wire-to-air figure, set the motor to 'Included' and the drive to 'Integrated EC'." }
     ];
     const MOTORS = [
-      { id: "preie", year: "Pre-IE", label: "Rewound / pre-1990", eff: 80, note: "Rewinds and old standard motors." },
-      { id: "ie1", year: "IE1", label: "Standard 85%", eff: 85, note: "IE1 catalogue motor." },
-      { id: "ie2", year: "IE2", label: "High 88.5%", eff: 88.5, note: "IE2 high efficiency." },
-      { id: "ie3", year: "IE3", label: "Premium 92.5%", eff: 92.5, note: "Still the legal minimum on many frame sizes." },
-      { id: "ie4", year: "IE4", label: "Super Premium — typical 2026 spec", eff: 94.5, typical2026: true, note: "Typical 2026 specified motor for new HVAC plant. Size-corrected below 7.5 kW." },
-      { id: "ie5", year: "IE5", label: "Ultra / PM / EC", eff: 96.5, note: "Permanent-magnet or EC, 2026 premium." },
+      { id: "preie", year: "Pre-IE", label: "Rewound / pre-1990", eff: 80, iec: "preie", note: "Rewinds and old standard motors — taken as IE1 less 3 points." },
+      { id: "ie1", year: "IE1", label: "Standard", eff: 85, iec: "ie1", note: "IE1 catalogue motor." },
+      { id: "ie2", year: "IE2", label: "High", eff: 88.5, iec: "ie2", note: "IE2 high efficiency." },
+      { id: "ie3", year: "IE3", label: "Premium", eff: 92.5, iec: "ie3", note: "Still the legal minimum on many frame sizes." },
+      { id: "ie4", year: "IE4", label: "Super Premium — typical 2026 spec", eff: 94.5, iec: "ie4", typical2026: true, note: "Typical 2026 specified motor for new HVAC plant." },
+      { id: "ie5", year: "IE5", label: "Ultra / PM / EC", eff: 96.5, iec: "ie5", note: "Permanent-magnet or EC, 2026 premium." },
       { id: "included", year: "EC", label: "Included in machine rating", eff: 100, bundled: true, note: "Do not stack a second motor loss on an integrated machine." },
       { id: "custom", year: "Custom", label: "Enter motor efficiency", eff: 92, custom: true, note: "Nameplate or test-sheet value." }
     ];
@@ -616,6 +658,20 @@
       }
     ];
     const IEC_KW = MOTOR_BANDS.flatMap((band) => band.sizes.map((kw) => ({ kw, band })));
+    // Full-load efficiency % by rated kW — IEC 60034-30-1, 4-pole, 50 Hz. IE5 = 20% lower losses than IE4.
+    const IEC_EFF = {
+      kw:  [0.75, 1.1,  1.5,  2.2,  3.0,  4.0,  5.5,  7.5,  11,   15,   18.5, 22,   30,   37,   45,   55,   75],
+      ie1: [72.1, 75.0, 77.2, 79.7, 81.5, 83.1, 84.7, 86.0, 87.6, 88.7, 89.3, 89.9, 90.7, 91.2, 91.7, 92.1, 92.7],
+      ie2: [79.6, 81.4, 82.8, 84.3, 85.5, 86.6, 87.7, 88.7, 89.8, 90.6, 91.2, 91.6, 92.3, 92.7, 93.1, 93.5, 94.0],
+      ie3: [82.5, 84.1, 85.3, 86.7, 87.7, 88.6, 89.6, 90.4, 91.4, 92.1, 92.6, 93.0, 93.6, 93.9, 94.2, 94.6, 95.0],
+      ie4: [85.7, 87.2, 88.2, 89.5, 90.4, 91.1, 91.9, 92.6, 93.3, 93.9, 94.2, 94.5, 94.9, 95.2, 95.4, 95.7, 96.0],
+      ie5: [88.6, 89.8, 90.6, 91.6, 92.3, 92.9, 93.5, 94.1, 94.6, 95.1, 95.4, 95.6, 95.9, 96.2, 96.3, 96.6, 96.8]
+    };
+    // Typical full-load motor power factor, 4-pole, by rated kW (same kW steps as IEC_EFF).
+    const MOTOR_PF = [0.75, 0.78, 0.80, 0.81, 0.82, 0.82, 0.83, 0.84, 0.84, 0.85, 0.85, 0.86, 0.86, 0.86, 0.86, 0.87, 0.87];
+    const VSD_PF = 0.95;
+    // Water Cp kJ/kgK at 0, 10 … 100 °C (steam tables). Cp has a minimum near 35 °C and rises again.
+    const WATER_CP = [4.217, 4.192, 4.182, 4.178, 4.179, 4.181, 4.185, 4.190, 4.197, 4.205, 4.216];
 
     const S = {
       fluid: "water",
@@ -638,14 +694,23 @@
     function waterDensity(T) {
       return 1000 * (1 - ((T + 288.9414) / (508929.2 * (T + 68.12963))) * Math.pow(T - 3.9863, 2));
     }
+    function waterCp(T) {
+      const t = Math.min(100, Math.max(0, T)) / 10;
+      const i = Math.min(9, Math.floor(t));
+      return WATER_CP[i] + (WATER_CP[i + 1] - WATER_CP[i]) * (t - i);
+    }
     function fluidProps(fluid, T, glycolType, pct) {
       if (fluid === "air") return { rho: 353.1 / (T + 273.15), cp: 1.006, notes: `Air @ ${T}°C, 101.3 kPa` };
       const rhoW = waterDensity(T);
-      const cpW = 4.186 - 0.0002 * T - 0.000003 * T * T + 0.0008;
+      const cpW = waterCp(T);
       if (fluid === "water") return { rho: rhoW, cp: cpW, notes: `Water @ ${T}°C` };
-      const rho = glycolType === "EG" ? rhoW + pct * 1.65 - T * 0.35 : rhoW + pct * 1.2 - T * 0.33;
-      let cp = glycolType === "EG" ? 4.19 - 0.022 * pct - 0.00015 * pct * T : 4.19 - 0.025 * pct - 0.00012 * pct * T;
-      return { rho, cp: Math.max(2.4, cp), notes: `${pct}% ${glycolType} @ ${T}°C` };
+      // Glycol by mass: density fitted to ASHRAE / Dow tables; Cp = mass-weighted mix of water and
+      // pure glycol (Cp rising with T), plus the known positive excess for PG. Within ~2% for 10–50%.
+      const x = pct / 100;
+      const rho = glycolType === "EG" ? rhoW + pct * (1.46 - 0.0033 * T) : rhoW + pct * (1.017 - 0.002 * T);
+      const cpG = glycolType === "EG" ? 2.29 + 0.0045 * T : 2.39 + 0.0045 * T;
+      const cp = x * cpG + (1 - x) * cpW + (glycolType === "PG" ? 0.8 * x * (1 - x) : 0);
+      return { rho, cp, notes: `${pct}% ${glycolType} @ ${T}°C` };
     }
     function toM3s(value, unit, rho, fluid) {
       if (fluid === "air") {
@@ -675,12 +740,41 @@
       if (unit === "in w.g.") return head * 0.24884;
       return head / 1000;
     }
-    function motorAdjusted(base, kw, custom) {
-      if (custom || base >= 99.9) return Number(base.toFixed(1));
-      let e = base;
-      if (kw < 2.2) e -= 2;
-      else if (kw < 7.5) e -= 1;
-      return Number(e.toFixed(1));
+    function iecIndex(kw) {
+      let i = 0;
+      while (i < IEC_EFF.kw.length - 1 && IEC_EFF.kw[i + 1] <= kw + 1e-9) i++;
+      return i;
+    }
+    // Full-load motor efficiency for a rated kW, from the IEC 60034-30-1 table (not a flat % per class).
+    function motorEff(motor, kw) {
+      if (motor.custom || motor.bundled || !motor.iec) return motor.eff;
+      const i = iecIndex(kw);
+      if (motor.iec === "preie") return Number((IEC_EFF.ie1[i] - 3).toFixed(1));
+      return IEC_EFF[motor.iec][i];
+    }
+    function motorPf(kw) {
+      return MOTOR_PF[iecIndex(kw)];
+    }
+    function hasVsd(drive) {
+      return drive.id === "vsd" || drive.id === "included";
+    }
+    // Per-phase line current. 3-phase: I = P / (√3 · V · PF). 1-phase: I = P / (V · PF).
+    function ampsFor(kw, elecSupply, pf) {
+      const k = elecSupply.phases === 3 ? Math.sqrt(3) : 1;
+      return elecSupply.volts > 0 && pf > 0 ? kw * 1000 / (k * elecSupply.volts * pf) : 0;
+    }
+    // Running current at duty plus the full-load supply current at the motor's nameplate rating.
+    function electrical(elecKw, ratedKw, motEffPct, drvEffPct, drive, elecSupply) {
+      const autoPf = hasVsd(drive) ? VSD_PF : motorPf(ratedKw);
+      const pf = elecSupply.pf > 0 ? elecSupply.pf : autoPf;
+      const ratedMotEff = motEffPct >= 99.9 ? IEC_EFF.ie5[iecIndex(ratedKw)] : motEffPct;
+      const fullLoadKw = ratedKw / (ratedMotEff / 100) / (drvEffPct / 100);
+      return {
+        pf, autoPf: !(elecSupply.pf > 0),
+        amps: ampsFor(elecKw, elecSupply, pf),
+        flcAmps: ampsFor(fullLoadKw, elecSupply, pf),
+        fullLoadKw
+      };
     }
     function isMechanicalDrive(drive) {
       return drive.id === "belt-old" || drive.id === "belt-new";
@@ -777,7 +871,7 @@
       const motor = byId(MOTORS, motorSel);
       const drive = byId(DRIVES, driveSel);
       const frameGuess = $("motor-frame") && $("motor-frame").value !== "auto" ? Number($("motor-frame").value) || 0.75 : 0.75;
-      if (!motor.custom) $("motor-eff").value = motorAdjusted(motor.eff, frameGuess, false);
+      if (!motor.custom) $("motor-eff").value = motorEff(motor, frameGuess);
       if (!drive.custom) $("drive-eff").value = drive.eff;
     }
 
@@ -791,7 +885,7 @@
       } else if (machine.bundled === "motor" && $("prop-motor").value !== "custom") {
         motor = byId(MOTORS, "included");
       }
-      const motEff = motorAdjusted(motor.eff, motorKw, motor.custom);
+      const motEff = motorEff(motor, motorKw);
       return { machine, motor, drive, hyd: machine.eff, mot: motEff, drv: drive.eff };
     }
 
@@ -808,7 +902,8 @@
         nPct, n,
         flow: design.Q * n,
         head: design.dP * n * n,
-        powerRatio, power, shaftNow, motorLoad, kwh, gbp, co2
+        powerRatio, power, shaftNow, motorLoad, kwh, gbp, co2,
+        amps: design.supply ? ampsFor(power, design.supply, design.pf) : 0
       };
     }
 
@@ -834,7 +929,7 @@
       const existShaft = shaftKw(Ph, hyd, drive);
       const existSuggest = nextIecMotor(existShaft);
       const existKw = frameKwFromSelect("motor-frame", existSuggest);
-      const mot = motor.custom ? (Number($("motor-eff").value) || motor.eff) : motorAdjusted(motor.eff, existKw, false);
+      const mot = motor.custom ? (Number($("motor-eff").value) || motor.eff) : motorEff(motor, existKw);
       const shaft = hyd > 0 ? Ph / (hyd / 100) : 0;
       const elec = (mot > 0 && drv > 0) ? shaft / (mot / 100) / (drv / 100) : 0;
       const w2w = elec > 0 ? Ph / elec * 100 : 0;
@@ -842,6 +937,13 @@
       const tariff = Number($("tariff").value) || 0;
       const carbon = Number($("carbon").value) || 0;
       const capex = Number($("capex").value) || 0;
+      const supply = {
+        phases: Number($("supply").value) === 1 ? 1 : 3,
+        volts: Number($("volts").value) || 0,
+        pf: Math.min(1, Number($("pf").value) || 0)
+      };
+      const pumpShaft = shaft;
+      const exEl = electrical(elec, existKw, mot, drv, drive, supply);
       const kwh = elec * hours;
       const gbp = kwh * tariff;
       const co2 = kwh * carbon;
@@ -853,6 +955,7 @@
       const propHydShaft = prop.hyd > 0 ? Ph / (prop.hyd / 100) : 0;
       const propElec = (prop.hyd > 0 && prop.mot > 0 && prop.drv > 0) ? propHydShaft / (prop.mot / 100) / (prop.drv / 100) : 0;
       const propW2w = propElec > 0 ? Ph / propElec * 100 : 0;
+      const prEl = electrical(propElec, propKw, prop.mot, prop.drv, prop.drive, supply);
       const saveKw = elec - propElec;
       const saveKwh = saveKw * hours;
       const saveGbp = saveKwh * tariff;
@@ -872,8 +975,8 @@
       const curve = byId(CURVES, S.curve);
       const speed = Number($("speed").value) || 100;
       const affPlant = hasExisting() ? S.affPlant : "proposed";
-      const existDesign = { Q, dP, elec, shaft: existShaft, motorKw: existKw, hours, tariff, carbon, Ph };
-      const propDesign = { Q, dP, elec: propElec, shaft: propShaft, motorKw: propKw, hours, tariff, carbon, Ph };
+      const existDesign = { Q, dP, elec, shaft: existShaft, motorKw: existKw, hours, tariff, carbon, Ph, supply, pf: exEl.pf, amps: exEl.amps };
+      const propDesign = { Q, dP, elec: propElec, shaft: propShaft, motorKw: propKw, hours, tariff, carbon, Ph, supply, pf: prEl.pf, amps: prEl.amps };
       const design = affPlant === "proposed" ? propDesign : existDesign;
       const selected = affinityRow(speed, curve.exp, design);
       const steps = AFF_STEPS.map((n) => affinityRow(n, curve.exp, design));
@@ -894,7 +997,7 @@
         const dPm = h * props.rho * G / 1000;
         const ph = q * dPm;
         const elecM = $("use-vapf").checked
-          ? Math.sqrt(3) * (Number($("meas-v").value) || 0) * (Number($("meas-a").value) || 0) * (Number($("meas-pf").value) || 0) / 1000
+          ? (supply.phases === 3 ? Math.sqrt(3) : 1) * (Number($("meas-v").value) || 0) * (Number($("meas-a").value) || 0) * (Number($("meas-pf").value) || 0) / 1000
           : (Number($("meas-p").value) || 0);
         const w2wM = elecM > 0 ? ph / elecM * 100 : 0;
         const pumpBack = elecM > 0 ? ph / elecM / (mot / 100) / (drv / 100) * 100 : 0;
@@ -904,7 +1007,7 @@
         fluid, system, T, props, flow, Q, mdot, dT, thermal, head, dP, Ph,
         machine, hyd, motor, mot, drive, drv, shaft, elec, w2w,
         existShaft, existSuggest, existKw,
-        hours, tariff, carbon, capex, kwh, gbp, co2,
+        hours, tariff, carbon, capex, kwh, gbp, co2, supply, pumpShaft, exEl, prEl, propHydShaft,
         prop, propElec, propW2w, propShaft, propSuggest, propKw, saveKw, saveKwh, saveGbp, saveCo2, savePct, payback,
         vel, ductV, curve, speed, affPlant, design, selected, steps, marginalDown, marginalUp,
         existAtSpeed, propAtSpeed, meas
@@ -912,24 +1015,137 @@
     }
 
     function setText(id, value) { $(id).textContent = value; }
+    function supplyLabel(sup) { return `${sup.volts} V ${sup.phases === 3 ? "3-ph" : "1-ph"}`; }
+    function sizeLabel(size, ratedKw) { return size.oversize && ratedKw === size.kw ? `${fmt(size.need, 1)}+` : `${ratedKw}`; }
+
+    // Water/air power → pump/fan shaft → motor rating → electrical input → current, for one plant.
+    function chainHtml(c, proposed) {
+      const machine = proposed ? c.prop.machine : c.machine;
+      const hyd = proposed ? c.prop.hyd : c.hyd;
+      const mot = proposed ? c.prop.mot : c.mot;
+      const drive = proposed ? c.prop.drive : c.drive;
+      const drv = proposed ? c.prop.drv : c.drv;
+      const pumpShaft = proposed ? c.propHydShaft : c.pumpShaft;
+      const motorShaft = proposed ? c.propShaft : c.existShaft;
+      const size = proposed ? c.propSuggest : c.existSuggest;
+      const rated = proposed ? c.propKw : c.existKw;
+      const elec = proposed ? c.propElec : c.elec;
+      const el = proposed ? c.prEl : c.exEl;
+      const Kind = c.system === "pump" ? "Pump" : "Fan";
+      const bundled = machine.bundled === "motor+drive";
+      const belt = isMechanicalDrive(drive);
+      const load = rated > 0 ? motorShaft / rated * 100 : 0;
+      return `
+        <div><small>1 · ${c.system === "pump" ? "Water" : "Air"} power</small><b>${fmt(c.Ph, 3)} kW</b><em>${fmt(c.Q * 1000, 2)} L/s × ${fmt(c.dP, 1)} kPa ÷ 1000</em></div>
+        <div><small>2 · ${bundled ? `${Kind} input (EC)` : `${Kind} shaft power`}</small><b>${fmt(pumpShaft, 3)} kW</b><em>÷ ${bundled ? "overall" : kind(c)} η ${fmt(hyd, 0)}%${belt ? ` · motor shaft ${fmt(motorShaft, 3)} kW after ${fmt(drv, 0)}% belt` : ""}</em></div>
+        <div class="key"><small>3 · Motor rating</small><b>${sizeLabel(size, rated)} kW</b><em>${fmt(motorShaft, 3)} × 1.15 = ${fmt(motorShaft * MOTOR_MARGIN, 2)} → next size · runs at ${fmt(load, 0)}%</em></div>
+        <div><small>4 · Electrical input</small><b>${fmt(elec, 3)} kW</b><em>${bundled ? "included in overall η" : `÷ motor ${fmt(mot, 1)}%${belt ? "" : ` ÷ drive ${fmt(drv, 0)}%`}`}</em></div>
+        <div class="amp"><small>5 · Running current</small><b>${fmt(el.amps, 2)} A</b><em>at duty · ${supplyLabel(c.supply)} · PF ${fmt(el.pf, 2)}</em></div>
+        <div class="amp"><small>6 · Full-load current</small><b>${fmt(el.flcAmps, 2)} A</b><em>supply A at ${sizeLabel(size, rated)} kW nameplate — cable / protection check</em></div>`;
+    }
+    function kind(c) { return c.system === "pump" ? "pump" : "fan"; }
+
+    function keys(expr) {
+      return `<span class="keys">${expr.split(" ").map((t) => {
+        const cls = t === "=" ? "eqk" : ["×", "÷", "+", "−"].includes(t) ? "op" : "";
+        return `<kbd class="${cls}">${t}</kbd>`;
+      }).join("")}</span>`;
+    }
+    // Plain-numbers walk-through, from L/s and kPa to motor kW and amps, for learning and site checks.
+    function quickHtml(c) {
+      const ex = hasExisting();
+      const machine = ex ? c.machine : c.prop.machine;
+      const hyd = ex ? c.hyd : c.prop.hyd;
+      const mot = ex ? c.mot : c.prop.mot;
+      const drive = ex ? c.drive : c.prop.drive;
+      const drv = ex ? c.drv : c.prop.drv;
+      const shaft = ex ? c.pumpShaft : c.propHydShaft;
+      const motorShaft = ex ? c.existShaft : c.propShaft;
+      const size = ex ? c.existSuggest : c.propSuggest;
+      const rated = ex ? c.existKw : c.propKw;
+      const elec = ex ? c.elec : c.propElec;
+      const el = ex ? c.exEl : c.prEl;
+      const w2w = ex ? c.w2w : c.propW2w;
+      const k = kind(c);
+      const ls = Number(fmt(c.Q * 1000, 2));
+      const kpa = Number(fmt(c.dP, 1));
+      const eP = Number(fmt(hyd / 100, 2));
+      const eM = Number(fmt(mot / 100, 3));
+      const eD = Number(fmt(drv / 100, 2));
+      const bundled = machine.bundled === "motor+drive";
+      const belt = isMechanicalDrive(drive);
+      const three = c.supply.phases === 3;
+      const V = c.supply.volts;
+      const pf = Number(fmt(el.pf, 2));
+      const perKw = three ? 1000 / (1.732 * V * pf) : 1000 / (V * pf);
+      const effChain = bundled ? `÷ ${eP}` : `÷ ${eP} ÷ ${eM} ÷ ${eD}`;
+      const headLine = $("head-unit").value === "m" && c.system === "pump"
+        ? `<div class="note">Head in metres? kPa = m × 9.81 × ρ ÷ 1000 → ${c.head} × 9.81 × ${fmt(c.props.rho, 0)} ÷ 1000 = <b>${fmt(c.dP, 1)} kPa</b> (roughly m × 10 for water).</div>`
+        : "";
+      return `
+        <div class="eq">
+          <div><b>Motor input kW</b> = L/s × kPa ÷ 1000 ÷ η${k} ÷ ηmotor ÷ ηdrive</div>
+          <div><b>Amps</b> = kW × 1000 ÷ (${three ? "1.732 × " : ""}Volts × PF)${three ? "  — 3-phase, per phase" : "  — single phase"}</div>
+          <div><b>Motor rating</b> = ${k} shaft kW × 1.15, rounded up to the next standard size</div>
+        </div>
+        ${headLine}
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Step</th><th>What it means</th><th>On a calculator</th><th>Answer</th></tr></thead>
+            <tbody>
+              <tr><td>1 · ${c.system === "pump" ? "Water" : "Air"} power</td><td>Useful power put into the ${c.system === "pump" ? "water" : "air"}: flow × pressure.</td><td>${keys(`${ls} × ${kpa} ÷ 1000 =`)}</td><td>${fmt(c.Ph, 3)} kW</td></tr>
+              <tr><td>2 · ${bundled ? `${k[0].toUpperCase() + k.slice(1)} input (EC)` : `${k[0].toUpperCase() + k.slice(1)} shaft power`}</td><td>${bundled ? "Divide by the overall EC efficiency — motor and electronics are already inside it." : `Power the motor must turn the ${k} with. Divide by the ${k} efficiency (${fmt(hyd, 0)}% → ${eP}). <b>This is "${k} power".</b>`}</td><td>${keys(`${fmt(c.Ph, 3)} ÷ ${eP} =`)}</td><td>${fmt(shaft, 3)} kW</td></tr>
+              ${belt ? `<tr><td>2b · Belt loss</td><td>With a belt the motor also drives the belt losses.</td><td>${keys(`${fmt(shaft, 3)} ÷ ${eD} =`)}</td><td>${fmt(motorShaft, 3)} kW</td></tr>` : ""}
+              <tr><td>3 · Motor rating</td><td>Add 15% margin, then pick the next standard motor size. This is the nameplate kW, not what it draws.</td><td>${keys(`${fmt(motorShaft, 3)} × 1.15 =`)}</td><td>${fmt(motorShaft * MOTOR_MARGIN, 2)} → <b>${sizeLabel(size, rated)} kW</b></td></tr>
+              <tr><td>4 · Electrical input</td><td>${bundled ? "Already included in step 2." : `What the motor takes from the supply. Divide by motor η (${fmt(mot, 1)}% → ${eM})${belt ? "" : ` and drive η (${fmt(drv, 0)}% → ${eD})`}.`} <b>This is "motor power" for the bill.</b></td><td>${bundled ? "—" : keys(belt ? `${fmt(motorShaft, 3)} ÷ ${eM} =` : `${fmt(shaft, 3)} ÷ ${eM} ÷ ${eD} =`)}</td><td>${fmt(elec, 3)} kW</td></tr>
+              <tr><td>5 · Running current</td><td>Amps per phase at this duty on ${supplyLabel(c.supply)}, PF ${pf}.</td><td>${keys(three ? `${fmt(elec, 3)} × 1000 ÷ 1.732 ÷ ${V} ÷ ${pf} =` : `${fmt(elec, 3)} × 1000 ÷ ${V} ÷ ${pf} =`)}</td><td>${fmt(el.amps, 2)} A</td></tr>
+              <tr><td>6 · Full-load current</td><td>Amps if the motor runs at its full ${sizeLabel(size, rated)} kW nameplate — use this (and the nameplate) for cable and protection.</td><td>${keys(`${sizeLabel(size, rated)} ÷ ${bundled ? Number(fmt(IEC_EFF.ie5[iecIndex(rated)] / 100, 3)) : eM}${bundled ? "" : ` ÷ ${eD}`} × 1000 ÷ ${three ? "1.732 ÷ " : ""}${V} ÷ ${pf} =`)}</td><td>${fmt(el.flcAmps, 2)} A</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div class="field"><span>All in one go on a calculator</span></div>
+          <div style="margin-top:6px">${keys(`${ls} × ${kpa} ÷ 1000 ${effChain} =`)} <b class="mono">${fmt(elec, 3)} kW</b>&nbsp;&nbsp;then&nbsp;&nbsp;${keys(three ? `× 1000 ÷ 1.732 ÷ ${V} ÷ ${pf} =` : `× 1000 ÷ ${V} ÷ ${pf} =`)} <b class="mono">${fmt(el.amps, 2)} A</b></div>
+        </div>
+        <div class="thumbs">
+          <div><b>kW ≈ L/s × kPa ÷ ${Math.round(w2w) * 10}</b>Quick check for this plant (${fmt(w2w, 0)}% overall). Use ÷ 700 for a good 2026 pump set, ÷ 500 for older plant.</div>
+          <div><b>kPa ≈ metres × 10</b>For water (exactly × 9.81). 1 bar = 100 kPa. 1 m head of water ≈ 9.8 kPa.</div>
+          <div><b>${three ? `Amps ≈ ${fmt(perKw, 2)} × kW` : `Amps ≈ ${fmt(perKw, 2)} × kW`}</b>At ${supplyLabel(c.supply)} and PF ${pf}. For a DOL motor at 400 V 3-ph, nameplate FLC is roughly 2 A per kW of rating.</div>
+        </div>`;
+    }
 
     function render(c) {
       const w2wName = c.system === "pump" ? "water" : "air";
       setText("fluid-props", `${c.props.notes} · ρ ${fmt(c.props.rho, 2)} kg/m³ · Cp ${fmt(c.props.cp, 3)}`);
-      const kpiElec = hasExisting() ? c.elec : c.propElec;
-      const kpiW2w = hasExisting() ? c.w2w : c.propW2w;
-      const kpiCost = hasExisting() ? c.gbp : c.propElec * c.hours * c.tariff;
-      const kpiCo2 = hasExisting() ? c.co2 : c.propElec * c.hours * c.carbon;
+      const ex = hasExisting();
+      const kpiElec = ex ? c.elec : c.propElec;
+      const kpiW2w = ex ? c.w2w : c.propW2w;
+      const kpiCost = ex ? c.gbp : c.propElec * c.hours * c.tariff;
+      const kpiCo2 = ex ? c.co2 : c.propElec * c.hours * c.carbon;
+      const kpiEl = ex ? c.exEl : c.prEl;
+      const kpiShaft = ex ? c.pumpShaft : c.propHydShaft;
+      const kpiRated = ex ? c.existKw : c.propKw;
+      const plantWord = ex ? "Existing" : "New plant";
+      const kind = c.system === "pump" ? "pump" : "fan";
+      const Kind = c.system === "pump" ? "Pump" : "Fan";
+      const bundledKpi = (ex ? c.machine : c.prop.machine).bundled === "motor+drive";
       setText("kpi-thermal", fmt(c.thermal, 2));
+      setText("kpi-hyd-k", `${c.system === "pump" ? "Water" : "Air"} power`);
       setText("kpi-hyd", fmt(c.Ph, 3));
+      setText("kpi-shaft-k", bundledKpi ? `${Kind} input (EC)` : `${Kind} shaft power`);
+      setText("kpi-shaft", fmt(kpiShaft, 3));
+      setText("kpi-shaft-u", bundledKpi ? "kW, overall η includes motor" : `kW absorbed by the ${kind} — ${plantWord.toLowerCase()}`);
+      setText("kpi-rating", sizeLabel(ex ? c.existSuggest : c.propSuggest, kpiRated));
+      setText("kpi-rating-u", `kW nameplate — ${plantWord.toLowerCase()} motor`);
       setText("kpi-elec", fmt(kpiElec, 3));
-      setText("kpi-elec-u", hasExisting() ? "Existing wire power" : "New plant wire power");
+      setText("kpi-elec-u", `kW from the supply — ${plantWord.toLowerCase()}`);
+      setText("kpi-amps", fmt(kpiEl.amps, 2));
+      setText("kpi-amps-u", `A per phase · ${supplyLabel(c.supply)} · PF ${fmt(kpiEl.pf, 2)} · FL ${fmt(kpiEl.flcAmps, 1)} A`);
       setText("kpi-w2w-label", `Wire-to-${w2wName}`);
       setText("kpi-w2w", fmt(kpiW2w, 1) + "%");
-      setText("kpi-cost-k", hasExisting() ? "Existing cost" : "New plant cost");
+      setText("kpi-cost-k", ex ? "Existing cost" : "New plant cost");
       setText("kpi-cost", money(kpiCost));
-      setText("kpi-cost-u", "£ / year at entered hours");
-      setText("kpi-co2", fmt(kpiCo2, 0));
+      setText("kpi-cost-u", `£ / year · ${fmt(kpiCo2, 0)} kg CO₂`);
       setText("thermal-chip", `Thermal ${fmt(c.thermal, 1)} kW`);
       setText("temp-label", `${c.T}°C`);
       $("glycol-pct-label").textContent = `${$("glycol-pct").value}%`;
@@ -937,12 +1153,15 @@
       setText("machine-eff-val", `${Number($("machine-eff").value)}%`);
       setText("motor-eff-val", `${Number($("motor-eff").value).toFixed(1)}%`);
       setText("drive-eff-val", `${Number($("drive-eff").value)}%`);
-      setText("machine-note", c.machine.note || "");
-      const sizeNote = c.motor.custom || c.motor.bundled ? "as entered" : (c.existKw < 2.2 ? "−2% below 2.2 kW" : c.existKw < 7.5 ? "−1% below 7.5 kW" : "no size derate ≥ 7.5 kW");
+      const smallDuty = c.system === "pump" && c.Q * 1000 < 5 && c.hyd > 70
+        ? ` ⚠ Small duty (${fmt(c.Q * 1000, 1)} L/s): real pump efficiencies at this size are usually 50–70% at best — check the manufacturer's curve before relying on ${fmt(c.hyd, 0)}%.`
+        : "";
+      setText("machine-note", (c.machine.note || "") + smallDuty);
+      const pfEl = hasExisting() ? c.exEl : c.prEl;
+      setText("pf-note", `Current uses ${c.supply.phases === 3 ? "I = kW × 1000 ÷ (1.732 × V × PF)" : "I = kW × 1000 ÷ (V × PF)"}. PF ${pfEl.autoPf ? `auto = ${fmt(pfEl.pf, 2)} (${hasVsd(hasExisting() ? c.drive : c.prop.drive) ? "supply side of a VSD / EC drive with DC choke" : "typical full-load motor PF for this size, DOL"})` : `entered = ${fmt(pfEl.pf, 2)}`}. Leave blank for auto.${c.supply.phases === 1 && Math.max(c.existKw, c.propKw) > 2.2 ? " ⚠ Motors above 2.2 kW are rarely on a single-phase supply — check." : ""}`);
+      const sizeNote = c.motor.custom ? "as entered" : c.motor.bundled ? "included in machine η" : `IEC 60034-30-1 full load @ ${c.existKw} kW`;
       setText("motor-adj-note", `(${sizeNote})`);
       $("exist-frame-note").innerHTML = frameNote(c.existSuggest, c.existKw, c.existShaft, $("motor-frame").value === "auto" ? "Auto from existing duty." : "Manual IEC frame.", c.elec).html;
-      $("ex-size").innerHTML = frameNote(c.existSuggest, c.existKw, c.existShaft, "Existing motor / packaged pump size.", c.elec).html;
-      $("pr-size").innerHTML = frameNote(c.propSuggest, c.propKw, c.propShaft, "Proposed motor / packaged pump size.", c.propElec).html;
       $("size-legend").innerHTML = MOTOR_BANDS.map((band) => {
             const active = (hasExisting() && c.existSuggest.band.id === band.id) || c.propSuggest.band.id === band.id;
         return `<div class="rowish"${active ? ' style="background:#e0f2fe;border-radius:10px;padding:6px 8px;margin:0 -8px;"' : ""}><div><b>${band.label}</b><div class="sizes">${band.sizes.join(" · ")} kW</div></div><div class="apps">${band.apps}</div></div>`;
@@ -952,9 +1171,11 @@
       setText("st-d", fmt(c.drv, 1) + "%");
       setText("st-w2w-lbl", `Wire-to-${w2wName}`);
       setText("st-w2w", fmt(c.w2w, 1) + "%");
-      setText("ex-kw", `${fmt(c.elec, 3)} kW`);
+      setText("ex-kw", `${fmt(c.elec, 3)} kW · ${fmt(c.exEl.amps, 2)} A`);
+      $("ex-chain").innerHTML = chainHtml(c, false);
+      $("pr-chain").innerHTML = chainHtml(c, true);
       setText("ex-meta", `${c.machine.year} · ${c.machine.label} ${fmt(c.hyd, 1)}% · ${c.motor.label} ${fmt(c.mot, 1)}% · ${c.drive.label} · ${c.existKw} kW frame · ${fmt(c.kwh, 0)} kWh/yr · ${money(c.gbp)}/yr`);
-      setText("pr-kw", `${fmt(c.propElec, 3)} kW`);
+      setText("pr-kw", `${fmt(c.propElec, 3)} kW · ${fmt(c.prEl.amps, 2)} A`);
       setText("pr-meta", `${c.prop.machine.year} · ${c.prop.machine.label} ${fmt(c.prop.hyd, 1)}% · ${c.prop.motor.label} ${fmt(c.prop.mot, 1)}% · ${c.prop.drive.label} · ${c.propKw} kW frame · W2${w2wName[0]} ${fmt(c.propW2w, 1)}%`);
       setText("overview-title", hasExisting() ? "Overview — existing vs proposed" : "Overview — new installation");
       setText("overview-pill", hasExisting() ? "Proposed defaults to 2026 premium" : "Specify the new plant only");
@@ -1014,9 +1235,9 @@
       setText("aff-hero-detail", `${fmt(Math.abs(vs100), 3)} kW · ${fmt(Math.abs(vs100 * c.hours), 0)} kWh/yr · ${fmt(Math.abs(vs100 * c.hours * c.carbon), 0)} kg CO₂/yr`);
       const frameKw = c.design.motorKw;
       const loadWarn = c.selected.motorLoad > 100 ? " — OVERLOAD at this speed" : "";
-      setText("aff-hero-motor", `${c.affPlant === "proposed" ? "Proposed" : "Existing"} frame ${frameKw} kW IEC · shaft ${fmt(c.selected.shaftNow, 3)} kW · nameplate load ${fmt(c.selected.motorLoad, 0)}%${loadWarn}`);
-      const duoEx = hasExisting() ? `<div class="side"><h4>Existing @ ${c.speed}%</h4><div class="mono">${fmt(c.existAtSpeed.power, 3)} kW · ${money(c.existAtSpeed.gbp)}/yr</div><div class="note">${c.existKw} kW frame · load ${fmt(c.existAtSpeed.motorLoad, 0)}% · vs 100% ${money((c.elec - c.existAtSpeed.power) * c.hours * c.tariff)}</div></div>` : "";
-      const duoPr = `<div class="side proposed"><h4>${hasExisting() ? "Proposed" : "New plant"} @ ${c.speed}%</h4><div class="mono">${fmt(c.propAtSpeed.power, 3)} kW · ${money(c.propAtSpeed.gbp)}/yr</div><div class="note">${c.propKw} kW frame · load ${fmt(c.propAtSpeed.motorLoad, 0)}% · vs 100% ${money((c.propElec - c.propAtSpeed.power) * c.hours * c.tariff)}</div></div>`;
+      setText("aff-hero-motor", `${c.affPlant === "proposed" ? "Proposed" : "Existing"} frame ${frameKw} kW IEC · shaft ${fmt(c.selected.shaftNow, 3)} kW · nameplate load ${fmt(c.selected.motorLoad, 0)}% · running current ${fmt(c.selected.amps, 2)} A${loadWarn}`);
+      const duoEx = hasExisting() ? `<div class="side"><h4>Existing @ ${c.speed}%</h4><div class="mono">${fmt(c.existAtSpeed.power, 3)} kW · ${fmt(c.existAtSpeed.amps, 2)} A · ${money(c.existAtSpeed.gbp)}/yr</div><div class="note">${c.existKw} kW frame · load ${fmt(c.existAtSpeed.motorLoad, 0)}% · vs 100% ${money((c.elec - c.existAtSpeed.power) * c.hours * c.tariff)}</div></div>` : "";
+      const duoPr = `<div class="side proposed"><h4>${hasExisting() ? "Proposed" : "New plant"} @ ${c.speed}%</h4><div class="mono">${fmt(c.propAtSpeed.power, 3)} kW · ${fmt(c.propAtSpeed.amps, 2)} A · ${money(c.propAtSpeed.gbp)}/yr</div><div class="note">${c.propKw} kW frame · load ${fmt(c.propAtSpeed.motorLoad, 0)}% · vs 100% ${money((c.propElec - c.propAtSpeed.power) * c.hours * c.tariff)}</div></div>`;
       $("aff-duo").innerHTML = duoEx + duoPr;
       setText("aff-q", `${fmt(c.selected.flow * 1000, 2)} L/s  (${fmt(c.selected.n * 100, 0)}%)`);
       setText("aff-h", `${fmt(c.selected.head, 1)} kPa  (${fmt(c.selected.n * c.selected.n * 100, 1)}%)`);
@@ -1039,10 +1260,12 @@
         const vsTxt = row.nPct === 100 ? "—" : (vs >= 0 ? "save " : "extra ") + money(Math.abs(vs));
         const stepTxt = !prev ? "—" : (stepGbp >= 0 ? "save " : "extra ") + money(Math.abs(stepGbp));
         const loadCls = row.motorLoad > 100 ? "neg" : "";
-        return `<tr class="${cls}" data-speed="${row.nPct}"><td>${row.nPct}%</td><td>${fmt(row.flow * 1000, 2)} L/s</td><td>${fmt(row.head, 1)} kPa</td><td>${fmt(row.power, 3)}</td><td>${fmt(row.powerRatio * 100, 1)}%</td><td class="${loadCls}">${fmt(row.motorLoad, 0)}% of ${frameKw} kW</td><td>${fmt(row.kwh, 0)}</td><td>${money(row.gbp)}</td><td class="${vsCls}">${vsTxt}</td><td class="${stepCls}">${stepTxt}</td></tr>`;
+        return `<tr class="${cls}" data-speed="${row.nPct}"><td>${row.nPct}%</td><td>${fmt(row.flow * 1000, 2)} L/s</td><td>${fmt(row.head, 1)} kPa</td><td>${fmt(row.power, 3)}</td><td>${fmt(row.powerRatio * 100, 1)}%</td><td>${fmt(row.amps, 2)}</td><td class="${loadCls}">${fmt(row.motorLoad, 0)}% of ${frameKw} kW</td><td>${fmt(row.kwh, 0)}</td><td>${money(row.gbp)}</td><td class="${vsCls}">${vsTxt}</td><td class="${stepCls}">${stepTxt}</td></tr>`;
       }).join("");
       const cube80 = Math.pow(0.8, c.curve.exp) * 100;
       setText("aff-footnote", `Worked check: 80% speed → ${fmt(cube80, 1)}% power with this curve (N^${c.curve.exp}). Motor frame is the next typical IEC size ≥ 1.15 × shaft. Toggle Existing / Proposed to rerun the table on that plant — use Proposed for a new installation with no existing pump. Overspeed (>100%) is extra annual cost and can overload the nameplate.`);
+      $("quick").innerHTML = quickHtml(c);
+      setText("quick-pill", hasExisting() ? "Live numbers — existing plant" : "Live numbers — new plant");
       $("defence").value = defenceText(c);
       if (S.showWork) renderWork(c);
     }
@@ -1059,6 +1282,7 @@
 - Hydraulic power Ph = Qv·ΔP = ${fmt(c.Ph, 3)} kW
 - Shaft Ps = Ph/η = ${fmt(c.shaft, 3)} kW
 - Electrical Pe = Ps/η_motor/η_drive = ${fmt(c.elec, 3)} kW
+- Current ${fmt(c.exEl.amps, 2)} A running, ${fmt(c.exEl.flcAmps, 2)} A at full ${c.existKw} kW (${supplyLabel(c.supply)}, PF ${fmt(c.exEl.pf, 2)})
 - Wire-to-${w} = ${fmt(c.w2w, 1)}%
 - Annual @ ${c.hours}h: ${fmt(c.kwh, 0)} kWh/yr, ${money(c.gbp)}/yr, ${fmt(c.co2, 0)} kgCO2/yr
 ${c.fluid !== "air" ? `- Pipe ${$("pipe-mm").value}mm velocity = ${fmt(c.vel, 2)} m/s` : `- Duct ${$("duct-w").value}x${$("duct-h").value}mm velocity = ${fmt(c.ductV, 2)} m/s`}
@@ -1081,19 +1305,21 @@ Head: ${c.head} ${$("head-unit").value} (${fmt(c.dP, 1)} kPa), Qv=${fmt(c.Q * 10
 ${existingBlock}
 PROPOSED / NEW PLANT:
 - ${c.prop.machine.year} ${c.prop.machine.label} ${fmt(c.prop.hyd, 1)}% + ${c.prop.motor.label} ${fmt(c.prop.mot, 1)}% + ${c.prop.drive.label} ${fmt(c.prop.drv, 1)}% => Wire-to-${w} ${fmt(c.propW2w, 1)}%
-- New electrical ${fmt(c.propElec, 3)} kW · IEC frame ${c.propKw} kW (${c.propSuggest.band.label}, shaft ${fmt(c.propShaft, 3)} kW)
+- ${kind === "pump" ? "Pump" : "Fan"} shaft ${fmt(c.propHydShaft, 3)} kW · motor rating ${c.propKw} kW IEC (${c.propSuggest.band.label})
+- New electrical ${fmt(c.propElec, 3)} kW · current ${fmt(c.prEl.amps, 2)} A running, ${fmt(c.prEl.flcAmps, 2)} A at full ${c.propKw} kW (${supplyLabel(c.supply)}, PF ${fmt(c.prEl.pf, 2)})
 
 ${savingsBlock}
 AFFINITY / FAN LAWS @ ${c.speed}% on ${c.affPlant}, exponent ${c.curve.exp} (${c.curve.id}):
 - Flow × ${fmt(c.selected.n, 3)}, Head × ${fmt(c.selected.n * c.selected.n, 3)}, Power × ${fmt(c.selected.powerRatio, 3)}
-- Electrical ${fmt(c.selected.power, 3)} kW, ${fmt(c.selected.kwh, 0)} kWh/yr, ${money(c.selected.gbp)}/yr
+- Electrical ${fmt(c.selected.power, 3)} kW, ${fmt(c.selected.amps, 2)} A, ${fmt(c.selected.kwh, 0)} kWh/yr, ${money(c.selected.gbp)}/yr
 - Frame ${c.design.motorKw} kW IEC, nameplate load ${fmt(c.selected.motorLoad, 0)}%
 - Versus 100% ${c.affPlant}: ${vs >= 0 ? "save" : "extra"} ${fmt(Math.abs(c.design.elec - c.selected.power), 3)} kW = ${money(Math.abs(vs))}/yr
 ${c.meas ? `- Measured data: ${$("meas-q").value} L/s @ ${$("meas-h").value}m, Pe=${fmt(c.meas.elec, 2)}kW => actual wire-to-water ${fmt(c.meas.w2w, 1)}%, back-calc machine η ${fmt(c.meas.pumpBack, 1)}%` : ""}
 
 Quick defence: ${hasExisting() ? `Existing ${c.machine.label.toLowerCase()} (${c.machine.year}) ${c.existKw} kW IEC at ${fmt(c.hyd, 0)}% ${kind}. ` : "New installation. "}Proposed ${c.prop.machine.label} ${c.propKw} kW IEC ${fmt(c.prop.hyd, 0)}% = ${fmt(c.propW2w, 0)}% wire-to-${w}${hasExisting() ? `. Equipment saving ${fmt(c.saveKw, 2)} kW = ${money(c.saveGbp)}/yr` : ""}. At ${c.speed}% on the ${c.affPlant} plant, affinity gives ${fmt(c.selected.powerRatio * 100, 0)}% power (${money(Math.abs(vs))}/yr ${vs >= 0 ? "saved" : "extra"} versus full speed).
 
-Calc ref: Qth = ṁ·Cp·ΔT, Ph = Qv·ΔP (or ρgQH), Ps=Ph/ηp, Pe=Ps/ηm/ηd, P ∝ N^${c.curve.exp}
+Calc ref: Qth = ṁ·Cp·ΔT, Ph = Qv·ΔP (or ρgQH), Ps=Ph/ηp, Pe=Ps/ηm/ηd, I = Pe/(${c.supply.phases === 3 ? "√3·" : ""}V·PF), P ∝ N^${c.curve.exp}
+Motor η: IEC 60034-30-1 full-load, 4-pole, at the rated kW.
 `;
     }
 
@@ -1115,7 +1341,9 @@ Calc ref: Qth = ṁ·Cp·ΔT, Ph = Qv·ΔP (or ρgQH), Ps=Ph/ηp, Pe=Ps/ηm/ηd,
           <div>ΔP = ${fmt(c.dP, 2)} kPa · Ph = Qv·ΔP = ${fmt(c.Ph, 5)} kW</div>
           <h4 style="margin-top:14px">// 5. Shaft & electrical</h4>
           <div>Ps = Ph/η = ${fmt(c.Ph, 5)}/${fmt(c.hyd / 100, 3)} = ${fmt(c.shaft, 4)} kW</div>
-          <div>Pe = Ps/ηm/ηd = ${fmt(c.elec, 4)} kW · wire-to-${c.system === "pump" ? "water" : "air"} = ${fmt(c.w2w, 1)}%</div>
+          <div>Pe = Ps/ηm/ηd = ${fmt(c.shaft, 4)}/${fmt(c.mot / 100, 3)}/${fmt(c.drv / 100, 2)} = ${fmt(c.elec, 4)} kW · wire-to-${c.system === "pump" ? "water" : "air"} = ${fmt(c.w2w, 1)}%</div>
+          <div>ηm = IEC 60034-30-1 ${c.motor.year} at ${c.existKw} kW = ${fmt(c.mot, 1)}%</div>
+          <div>I = Pe·1000/(${c.supply.phases === 3 ? "√3·" : ""}V·PF) = ${fmt(c.elec * 1000, 0)}/(${c.supply.phases === 3 ? "1.732·" : ""}${c.supply.volts}·${fmt(c.exEl.pf, 2)}) = ${fmt(c.exEl.amps, 2)} A · full load ${fmt(c.exEl.flcAmps, 2)} A</div>
           <div>IEC frame = next typical size ≥ 1.15 × motor shaft. Existing ${c.existKw} kW (${c.existSuggest.band.label}). Proposed ${c.propKw} kW (${c.propSuggest.band.label}).</div>
           <h4 style="margin-top:14px">// 6. Affinity / fan laws</h4>
           <div>N = ${c.speed}% · exponent n = ${c.curve.exp} · plant = ${c.affPlant}</div>
@@ -1153,7 +1381,7 @@ Calc ref: Qth = ṁ·Cp·ΔT, Ph = Qv·ΔP (or ρgQH), Ps=Ph/ηp, Pe=Ps/ηm/ηd,
     function syncMotorFromSelect() {
       const motor = byId(MOTORS, $("motor-select").value);
       const kw = $("motor-frame").value === "auto" ? 0.75 : (Number($("motor-frame").value) || 0.75);
-      if (!motor.custom) $("motor-eff").value = motorAdjusted(motor.eff, kw, false);
+      if (!motor.custom) $("motor-eff").value = motorEff(motor, kw);
       markEraFromCurrent();
     }
 
@@ -1221,8 +1449,11 @@ Calc ref: Qth = ṁ·Cp·ΔT, Ph = Qv·ΔP (or ρgQH), Ps=Ph/ηp, Pe=Ps/ηm/ηd,
           $("temp").value = 60; $("temp-num").value = 60; $("dt").value = 10;
         }
         $("temp").min = -10; $("temp").max = 90;
-        fillUnits($("flow-unit"), FLOW_LIQ, "L/s");
-        fillUnits($("head-unit"), HEAD_PUMP, "m");
+        // Water ↔ glycol keeps the units already chosen; only coming back from air resets them.
+        const keepFlow = prev !== "air" && FLOW_LIQ.includes($("flow-unit").value) ? $("flow-unit").value : "L/s";
+        const keepHead = prev !== "air" && HEAD_PUMP.includes($("head-unit").value) ? $("head-unit").value : "m";
+        fillUnits($("flow-unit"), FLOW_LIQ, keepFlow);
+        fillUnits($("head-unit"), HEAD_PUMP, keepHead);
         $("pipe-box").classList.remove("hidden");
         $("duct-box").classList.add("hidden");
       }
@@ -1331,6 +1562,13 @@ Calc ref: Qth = ṁ·Cp·ΔT, Ph = Qv·ΔP (or ρgQH), Ps=Ph/ηp, Pe=Ps/ηm/ηd,
       $("prop-motor-frame").addEventListener("change", () => update());
       $("temp").addEventListener("input", () => { $("temp-num").value = $("temp").value; update(); });
       $("temp-num").addEventListener("input", () => { $("temp").value = $("temp-num").value; update(); });
+      $("supply").addEventListener("change", () => {
+        const v = Number($("volts").value);
+        if ($("supply").value === "1" && (v === 400 || v === 415)) $("volts").value = 230;
+        if ($("supply").value === "3" && (v === 230 || v === 240)) $("volts").value = 400;
+        if ($("meas-v").value === "400" && $("supply").value === "1") $("meas-v").value = 230;
+        update();
+      });
       $("use-meas").addEventListener("change", () => { $("meas-box").classList.toggle("hidden", !$("use-meas").checked); update(); });
       $("use-vapf").addEventListener("change", () => { $("vapf-box").classList.toggle("hidden", !$("use-vapf").checked); update(); });
       $("btn-work").addEventListener("click", () => {

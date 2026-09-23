@@ -8,9 +8,9 @@ PWA tool for HVAC / Building Services engineers to quickly defend pump & fan ene
 - **Fluid toggle:** Water | Glycol Mix (EG/PG %) | Air — temperature slider affects density
 - **Thermal kW from Flow & ΔT:** Q = ṁ·Cp·ΔT with glycol & temp corrections (ρ, Cp shown)
 - **2026 catalogue defaults** for existing plant, with older and premium options still available:
-  - Pumps: Pre-1975 42% up to 2026 typical packaged 84% and 2026 premium EC / mag-drive 88%
-  - Fans: 1970s forward curved 45% up to 2026 typical EC plug 86% and premium aerofoil / EC axial 89%
-  - Motors: Pre-IE 80% through IE3, default **IE4 Super Premium 94.5%** (typical 2026 spec), plus IE5 / included-in-EC
+  - Pumps: Pre-1975 42% up to 2026 typical packaged 84% and 2026 premium best-in-class hydraulics 86% (motor and drive losses always added)
+  - Fans: 1970s forward curved 45% up to 2026 typical EC plug 66% and premium EC 72% overall wire-to-air (ErP ηe, motor and electronics included)
+  - Motors: Pre-IE, IE1–IE5, default **IE4 Super Premium** — efficiency looked up by rated kW from IEC 60034-30-1 (4-pole), e.g. IE4 is 85.7% at 0.75 kW but 96.0% at 75 kW
   - Drives: Direct, belt old/new, **VSD 97% (2026 typical)**, integrated EC electronics
   - Era chips: 2026 typical | 2026 premium | 2010s | 1990s | Legacy / worn
 - **Job type:** Upgrade existing, or **new installation** (no existing plant — ratings and affinity use the proposed machine only)
@@ -22,7 +22,10 @@ PWA tool for HVAC / Building Services engineers to quickly defend pump & fan ene
   - Overview shows the Small / Medium / Large catalogue and highlights the band the duty lands in
 - **Proposed side** defaults to 2026 premium (EC / IE5 / VSD) so the comparison is ready on first open
 - **Actual data mode:** Enter measured flow, head, electrical kW (or V·A·PF) to back-calc wire-to-water eff
-- **Results overview:** Hydraulic Ph = Q·ΔP, shaft, electrical, wire-to-water %, annual kWh, £/yr, CO₂, existing vs proposed
+- **Power chain for each plant:** water power → pump shaft power → motor rating (nameplate kW) → electrical input → running current → full-load current
+- **Electrical supply:** 3-phase or 1-phase, volts and power factor (auto: 0.95 on a VSD / EC, typical motor PF for DOL). Current shown at duty, at full nameplate load, and at every affinity speed
+- **Results overview:** existing vs proposed kW, amps, wire-to-water %, annual kWh, £/yr, CO₂
+- **Quick method:** step-by-step from L/s and kPa to motor kW and amps, with calculator key sequences and rules of thumb, using the live numbers
 - **Affinity / fan laws explorer:**
   - Flow ∝ N, head ∝ N², power ∝ Nⁿ
   - System curve: friction / fans (n=3), mixed (n=2.5), static-head (n=2)
