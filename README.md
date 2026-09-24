@@ -54,6 +54,8 @@ PWA tool for HVAC / Building Services engineers to quickly defend pump & fan ene
 ### Install as PWA
 Chrome/Edge on desktop or phone → Install icon in address bar. Works offline.
 
+**Updates:** opening the app online always loads the latest version (the page is fetched network-first; the saved copy is only used offline). If a new version is published while the app is open, an **"A new version of Flow2kW is ready — Update now"** bar appears; tap it to reload into the new version. The footer shows the version running (e.g. `Version v10`). Bump `CACHE` in `sw.js` with every release.
+
 ### Tech
 Single-page HTML/CSS/JS, no build needed. Just `index.html`.
 

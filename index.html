@@ -235,6 +235,9 @@
     .work { background: #020617; color: #e2e8f0; border-radius: 16px; padding: 16px; font-family: var(--mono); font-size: 12px; line-height: 1.55; display: none; }
     .work.open { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
     .work h4 { margin: 0 0 6px; color: #7dd3fc; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    .update-bar { position: fixed; left: 50%; bottom: max(16px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 70; width: min(560px, calc(100% - 32px)); display: flex; align-items: center; gap: 12px; justify-content: space-between; background: #0f172a; color: #fff; border: 1px solid #0ea5e9; border-radius: 16px; padding: 12px 14px; box-shadow: 0 12px 30px rgba(2, 8, 23, 0.35); font-size: 14px; }
+    .update-bar[hidden] { display: none; }
+    .update-bar .btn { flex: none; }
     .modal { position: fixed; inset: 0; background: rgba(2,6,23,0.6); display: none; align-items: center; justify-content: center; z-index: 60; padding: 20px; }
     .modal.open { display: flex; }
     .modal .box { width: min(640px, 100%); background: #fff; border-radius: 24px; padding: 22px; max-height: 85vh; overflow: auto; }
@@ -652,8 +655,13 @@
       <div class="card-b quick" id="quick"></div>
     </section>
 
-    <footer>Q = ṁ·Cp·ΔT · Ph = Q·ΔP · Pe = Ph / (ηm·ηmot·ηd) · I = Pe / (√3·V·PF) · Motor η per IEC 60034-30-1 · Affinity power ∝ N<sup>n</sup> · UK SI · g = 9.81</footer>
+    <footer><span id="app-version"></span>Q = ṁ·Cp·ΔT · Ph = Q·ΔP · Pe = Ph / (ηm·ηmot·ηd) · I = Pe / (√3·V·PF) · Motor η per IEC 60034-30-1 · Affinity power ∝ N<sup>n</sup> · UK SI · g = 9.81</footer>
   </main>
+
+  <div class="update-bar" id="update-bar" role="status" hidden>
+    <span>A new version of Flow2kW is ready.</span>
+    <button class="btn sky" id="btn-update" type="button">Update now</button>
+  </div>
 
   <div class="modal" id="modal">
     <div class="box">
@@ -1992,8 +2000,47 @@ Motor η: IEC 60034-30-1 full-load, 4-pole, at the rated kW.
     bind();
     update();
 
+    // Updates: when a new service worker has installed and is waiting, offer an "Update now" bar; tapping it
+    // activates the new version and reloads. The app also checks for updates each time it comes back on screen.
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js"));
+      window.addEventListener("load", async () => {
+        try {
+          // Reload on a controller change only once a version is already running — the first install's
+          // takeover just marks the page as controlled.
+          let controlled = !!navigator.serviceWorker.controller;
+          const reg = await navigator.serviceWorker.register("./sw.js");
+          const offer = (worker) => {
+            if (!worker || !navigator.serviceWorker.controller) return;
+            $("update-bar").hidden = false;
+            $("btn-update").onclick = () => {
+              $("btn-update").disabled = true;
+              $("btn-update").textContent = "Updating…";
+              worker.postMessage("SKIP_WAITING");
+            };
+          };
+          if (reg.waiting) offer(reg.waiting);
+          reg.addEventListener("updatefound", () => {
+            const worker = reg.installing;
+            if (!worker) return;
+            worker.addEventListener("statechange", () => { if (worker.state === "installed") offer(worker); });
+          });
+          let reloading = false;
+          navigator.serviceWorker.addEventListener("controllerchange", () => {
+            if (!controlled) { controlled = true; return; }
+            if (reloading) return;
+            reloading = true;
+            window.location.reload();
+          });
+          document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") reg.update().catch(() => {}); });
+          navigator.serviceWorker.addEventListener("message", (e) => {
+            if (e.data && e.data.version) $("app-version").textContent = `Version ${e.data.version.replace("flow2kw-", "")} · `;
+          });
+          const ready = await navigator.serviceWorker.ready;
+          if (ready.active) ready.active.postMessage("VERSION");
+        } catch (err) {
+          // Service workers are unavailable (e.g. opened from a file); the calculator still works.
+        }
+      });
     }
   </script>
 </body>
