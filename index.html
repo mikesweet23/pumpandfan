@@ -30,6 +30,10 @@
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; min-height: 100%; }
+    /* Keep the page from drifting sideways on phones / the installed PWA: clip (not hidden, which would
+       break the sticky header), no sideways overscroll bounce, and no double-tap zoom on buttons. */
+    html, body { overflow-x: clip; overscroll-behavior-x: none; }
+    html { touch-action: manipulation; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     body {
       font-family: var(--sans);
       background: radial-gradient(1200px 600px at 10% -10%, #123154 0%, var(--bg) 45%);
@@ -218,7 +222,7 @@
     .bar.over i { background: var(--rose); }
     .bar.save i { background: var(--emerald); }
     .bar em { font-style: normal; font-size: 10px; overflow-wrap: anywhere; text-align: center; color: var(--muted); font-family: var(--mono); }
-    .table-wrap { overflow: auto; border: 1px solid var(--line); border-radius: 14px; }
+    .table-wrap { overflow: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; border: 1px solid var(--line); border-radius: 14px; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; }
     th { text-align: left; background: #f8fafc; padding: 8px; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); position: sticky; top: 0; }
     td { padding: 8px; border-top: 1px solid #f1f5f9; font-family: var(--mono); white-space: nowrap; }
@@ -249,6 +253,7 @@
       .thumbs { grid-template-columns: 1fr; }
     }
     @media (max-width: 720px) {
+      input, select, textarea, textarea#defence { font-size: 16px; }
       .wrap { width: min(100% - 20px, 1440px); }
       .header-actions .badge { display: none; }
       .row.2, .row.2e, .row.3, .row.auto, .glycol, .size-legend .rowish, .chain { grid-template-columns: 1fr; }
