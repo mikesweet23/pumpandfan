@@ -150,6 +150,50 @@
     .thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .thumbs div { background: #f8fafc; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; font-size: 12px; color: #475569; }
     .thumbs b { display: block; font-family: var(--mono); font-size: 14px; color: var(--ink); margin-bottom: 4px; }
+    /* Key settings: anything that changes every result is outlined amber and tagged KEY. */
+    .keytag { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 6px; background: #f59e0b; color: #fff; font-size: 9px; font-weight: 800; letter-spacing: 0.08em; vertical-align: middle; text-transform: uppercase; }
+    .seg.key, .card.key { outline: 2px solid #f59e0b; outline-offset: -2px; }
+    .field.key > span:first-child { color: #92400e; }
+    .field.key input, .field.key select { border-color: #f59e0b; background: #fffbeb; }
+    .keybar { margin-top: 12px; padding: 12px 16px; display: grid; gap: 10px; border: 2px solid #f59e0b; background: #fffbeb; }
+    .keybar.ok { border-color: #10b981; background: #ecfdf5; }
+    .keybar .kb-h { font-size: 13px; color: #92400e; }
+    .keybar.ok .kb-h { color: #065f46; }
+    .kb-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .kb-chips button { border: 1px solid #fcd34d; background: #fff; border-radius: 999px; padding: 6px 10px; font-size: 12px; color: #78350f; }
+    .kb-chips button b { font-weight: 700; }
+    .keybar.ok .kb-chips button { border-color: #a7f3d0; color: #065f46; }
+    .kb-chips button.changed { animation: kbflash 1.6s ease-out; }
+    @keyframes kbflash { 0% { background: #f59e0b; color: #fff; } 100% { background: #fff; } }
+    .kb-ok { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #78350f; }
+    .keybar.ok .kb-ok { color: #065f46; }
+    .kb-ok input { width: 18px; height: 18px; accent-color: #059669; }
+    .alert { border-radius: 12px; padding: 10px 12px; font-size: 12px; line-height: 1.45; }
+    .alert.red { background: #fff1f2; border: 1px solid #fecdd3; color: #9f1239; }
+    .alert.amber { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+    .alert.info { background: #f0f9ff; border: 1px solid #bae6fd; color: #075985; }
+    .alerts { display: grid; gap: 6px; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    .modes { display: grid; gap: 8px; }
+    .mode { text-align: left; border: 1px solid var(--line); background: #f8fafc; border-radius: 14px; padding: 10px 12px; display: grid; gap: 4px; color: var(--ink); }
+    .mode b { font-size: 13px; }
+    .mode small { font-size: 12px; color: #475569; line-height: 1.4; }
+    .mode em { font-style: normal; font-family: var(--mono); font-size: 11px; color: var(--sky-ink); }
+    .mode.active { border: 2px solid #0f172a; background: #fff; }
+    .mode .tags { display: inline-flex; gap: 4px; margin-left: 6px; vertical-align: middle; }
+    .mode .tg { font-style: normal; font-size: 9px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 6px; border-radius: 6px; }
+    .mode .tg.ex { background: #e2e8f0; color: #334155; }
+    .mode .tg.pr { background: #d1fae5; color: #065f46; }
+    .mode.blocked { opacity: 0.55; }
+    .mode-banner { border-radius: 14px; padding: 12px 14px; font-size: 13px; line-height: 1.5; border: 1px solid; }
+    .mode-banner.m-fixed { background: #fff1f2; border-color: #fecdd3; color: #9f1239; }
+    .mode-banner.m-dp-pump { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+    .mode-banner.m-propp, .mode-banner.m-static { background: #f0f9ff; border-color: #bae6fd; color: #075985; }
+    .mode-banner.m-dp-index, .mode-banner.m-friction { background: #ecfdf5; border-color: #a7f3d0; color: #065f46; }
+    .strip td, .strip th { white-space: nowrap; }
+    .strip tr.cur td { background: #e0f2fe; font-weight: 600; }
+    .strip td.blk { color: #9f1239; }
+    tr.warnrow td { background: #fff7ed; }
     .aff-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .aff-toggle { margin: 0; }
     body.new-job .existing-only { display: none !important; }
@@ -167,7 +211,7 @@
     .hero-save .main .v { font-family: var(--mono); font-size: 32px; font-weight: 600; }
     .hero-save .sidebox { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 16px; padding: 14px; }
     .hero-save .sidebox.cost { background: #fff1f2; border-color: #fecdd3; }
-    .chart { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 6px; align-items: end; height: 140px; padding: 8px 0 0; }
+    .chart { display: grid; grid-template-columns: repeat(11, minmax(0, 1fr)); gap: 6px; align-items: end; height: 140px; padding: 8px 0 0; }
     .bar { display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: end; }
     .bar i { display: block; width: 100%; border-radius: 8px 8px 3px 3px; background: #cbd5e1; min-height: 4px; }
     .bar.active i { background: var(--sky); }
@@ -233,23 +277,30 @@
 
   <main class="wrap">
     <div class="toolbar">
-      <div class="seg" role="group" aria-label="Fluid">
-        <div class="lbl">Fluid</div>
+      <div class="seg key" role="group" aria-label="Fluid">
+        <div class="lbl">Fluid<span class="keytag">Key</span></div>
         <button type="button" data-fluid="water" class="active">Water</button>
         <button type="button" data-fluid="glycol">Glycol mix</button>
         <button type="button" data-fluid="air">Air</button>
       </div>
-      <div class="seg" role="group" aria-label="System">
-        <div class="lbl">System</div>
+      <div class="seg key" role="group" aria-label="System">
+        <div class="lbl">System<span class="keytag">Key</span></div>
         <button type="button" data-system="pump" class="active sky">Pump circuit</button>
         <button type="button" data-system="fan">Fan system</button>
       </div>
-      <div class="seg job-seg" role="group" aria-label="Job type">
-        <div class="lbl">Job</div>
+      <div class="seg job-seg key" role="group" aria-label="Job type">
+        <div class="lbl">Job<span class="keytag">Key</span></div>
         <button type="button" data-job="upgrade">Upgrade existing</button>
         <button type="button" data-job="new" class="active">New installation</button>
       </div>
     </div>
+
+    <section class="card keybar" id="keybar" aria-label="Key settings">
+      <div class="kb-h"><b>Key settings</b> — these change every result. Check them before you use or send the numbers. Click one to jump to it.</div>
+      <div class="kb-chips" id="kb-chips"></div>
+      <div class="alerts" id="kb-warn"></div>
+      <label class="kb-ok"><input type="checkbox" id="kb-confirm"> <span id="kb-confirm-lbl">I've checked these settings — unlock copy / export</span></label>
+    </section>
 
     <section class="kpis" aria-label="Overview">
       <article class="card kpi"><div class="k">Thermal</div><div class="v" id="kpi-thermal">—</div><div class="u">kW heat carried (flow × ΔT)</div></article>
@@ -305,16 +356,37 @@
               <label class="field"><span>Unit</span><select id="head-unit"></select></label>
             </div>
             <div class="row 2e">
-              <label class="field"><span id="run-label">Pumps running (duty + assist)</span><input id="n-run" type="number" min="1" max="6" step="1" value="1"></label>
+              <label class="field key"><span><span id="run-label">Pumps running (duty + assist)</span><span class="keytag">Key</span></span><input id="n-run" type="number" min="1" max="6" step="1" value="1"></label>
               <label class="field"><span id="stby-label">Standby pumps</span><input id="n-stby" type="number" min="0" max="4" step="1" value="0"></label>
             </div>
             <div class="machine-note" id="run-note"></div>
           </div>
         </section>
 
+        <section class="card key" id="control-card">
+          <div class="card-h">
+            <h2 id="control-title">2. System &amp; pump control</h2>
+            <span class="keytag">Key — changes results</span>
+          </div>
+          <div class="card-b">
+            <div class="seg" role="group" aria-label="Control for plant">
+              <div class="lbl">Setting for</div>
+              <button type="button" data-aff="existing" class="existing-only">Existing plant</button>
+              <button type="button" data-aff="proposed" class="active" id="ctl-btn-proposed">Proposed / new plant</button>
+            </div>
+            <p class="note" id="control-intro" style="margin:0"></p>
+            <div class="modes" id="modes"></div>
+            <div class="row 2e">
+              <label class="field hidden" id="set-wrap"><span id="set-label">Set point, % of design head</span><input id="set-val" type="number" min="0" max="95" step="1"></label>
+              <label class="field" id="hso-wrap"><span>Pump shut-off head ÷ duty head</span><input id="hso" type="number" min="1.05" max="2" step="0.05" value="1.25"></label>
+            </div>
+            <div class="alerts" id="mode-warn"></div>
+          </div>
+        </section>
+
         <section class="card existing-only">
           <div class="card-h">
-            <h2>2. Equipment — 2026 catalogue</h2>
+            <h2>3. Equipment — 2026 catalogue</h2>
             <span class="pill">Default = typical 2026 spec</span>
           </div>
           <div class="card-b">
@@ -368,17 +440,17 @@
         </section>
 
         <section class="card">
-          <div class="card-h"><h2>3. Operating &amp; checks</h2></div>
+          <div class="card-h"><h2>4. Operating &amp; checks</h2></div>
           <div class="card-b">
             <div class="row 3">
               <label class="field"><span>Hours / yr</span><input id="hours" type="number" value="8760"></label>
               <label class="field"><span>£ / kWh</span><input id="tariff" type="number" step="0.01" value="0.28"></label>
               <label class="field"><span>kg CO₂ / kWh</span><input id="carbon" type="number" step="0.001" value="0.207"></label>
             </div>
-            <label class="field"><span>Load profile — for kWh, £ and CO₂</span><select id="profile"><option value="flat">Flat — full duty for all hours</option><option value="heating">Variable heating — 25/50/75/100% flow (Grundfos standard)</option></select></label>
+            <label class="field key"><span>Load profile — for kWh, £ and CO₂<span class="keytag">Key</span></span><select id="profile"><option value="flat">Flat — full duty for all hours</option><option value="heating">Variable heating — 25/50/75/100% flow (Grundfos standard)</option></select></label>
             <div class="machine-note" id="profile-note"></div>
             <div class="row 3">
-              <label class="field"><span>Supply</span><select id="supply"><option value="3">3-phase</option><option value="1">1-phase</option></select></label>
+              <label class="field key"><span>Supply<span class="keytag">Key</span></span><select id="supply"><option value="3">3-phase</option><option value="1">1-phase</option></select></label>
               <label class="field"><span>Volts</span><input id="volts" type="number" value="400"></label>
               <label class="field"><span>Power factor</span><input id="pf" type="number" step="0.01" min="0.3" max="1" placeholder="auto"></label>
             </div>
@@ -478,21 +550,18 @@
               <div class="law"><b>Head / pressure</b><span id="law-head">H₂ / H₁ = (N₂ / N₁)²</span></div>
               <div class="law"><b>Power</b><span id="law-power">P₂ / P₁ = (N₂ / N₁)³</span></div>
             </div>
+            <div class="mode-banner" id="mode-banner"></div>
             <p class="note" id="affinity-intro"></p>
-            <div class="field">
-              <span>System curve / pump control — this sets how power falls</span>
-              <div class="eras" id="curves"></div>
-            </div>
             <label class="field">
               <span id="speed-label">Speed / flow relative to design duty</span>
               <div class="row auto">
-                <input id="speed" type="range" min="40" max="120" value="80">
+                <input id="speed" type="range" min="20" max="120" value="80">
                 <strong class="mono" id="speed-val">80%</strong>
               </div>
             </label>
             <div class="hero-save">
               <div class="main">
-                <div class="note" style="color:#7dd3fc">At selected speed</div>
+                <div class="note" style="color:#7dd3fc" id="aff-hero-at">At selected flow</div>
                 <div class="v" id="aff-hero-kw">—</div>
                 <div id="aff-hero-sub" class="note" style="color:#cbd5e1"></div>
               </div>
@@ -509,14 +578,25 @@
               <div class="machine-note"><b>Head / ΔP</b><div class="mono" id="aff-h">—</div><div class="note" id="aff-h-n">∝ N²</div></div>
               <div class="machine-note"><b>Each 1% from here</b><div class="mono" id="aff-d1">—</div><div class="note">real £ / year, reduction vs increase</div></div>
             </div>
+            <div class="field">
+              <span id="strip-title">Comparison — same flow, every control option</span>
+              <div class="table-wrap strip">
+                <table>
+                  <thead><tr><th>Control</th><th>Pump speed</th><th>Head</th><th>Power</th><th>kW</th><th id="strip-yr1">£/yr at this flow</th><th id="strip-yr2">Annual £ (profile)</th><th>vs DP at pump</th></tr></thead>
+                  <tbody id="strip-body"></tbody>
+                </table>
+              </div>
+              <p class="note" id="strip-note" style="margin:0"></p>
+            </div>
             <div class="chart" id="aff-chart" aria-hidden="true"></div>
             <div class="table-wrap">
               <table>
                 <thead>
                   <tr>
-                    <th id="th-speed">Speed</th>
+                    <th id="th-speed">Flow %</th>
                     <th>Flow</th>
                     <th>Head</th>
+                    <th>Pump speed</th>
                     <th id="th-kw">Power kW</th>
                     <th>Power %</th>
                     <th id="th-amps">Amps</th>
@@ -633,18 +713,35 @@
       { id: "y1990s", label: "1990s", pump: "1996", fan: "bc-old", motor: "ie2", drive: "belt-old" },
       { id: "legacy", label: "Legacy / worn", pump: "1975", fan: "pre1980", motor: "preie", drive: "belt-old" }
     ];
-    const CURVES = [
-      { id: "propp", label: "Proportional pressure  (DP → 50%)", h0: 0.5, note: "Variable-flow heating / chilled water with 2-port valves and the pump on proportional-pressure control: head falls in a straight line to 50% at zero flow, so power ≈ q × (0.5 + 0.5q). Matches the Grundfos TPE2 load profiles within a few % — 50% flow still takes about 37% of the power, not 12.5%." },
-      { id: "constp", label: "Constant pressure  (DP held)", h0: 1, note: "Pump held at a fixed differential pressure while valves close: head stays at 100%, so power falls only in line with flow (P ∝ q). The least saving of any control mode." },
-      { id: "friction", label: "Friction only / fans  N³", exp: 3, note: "Ducted fans, and pump circuits with no pressure control where the whole system curve moves with speed (no static head, no DP set point). Classic cube law — a 20% speed cut leaves about 51% of the power." },
-      { id: "mixed", label: "Mixed static + friction  N²·⁵", exp: 2.5, note: "Cooling towers, some open headers, or systems with a static lift plus pipe friction." },
-      { id: "static", label: "Static-head dominated  N²", exp: 2, note: "Open systems and high static lift. Power savings are closer to the square of speed, not the cube." }
+    // How the pump / fan is controlled. Each mode defines head h (share of design head) at relative flow q,
+    // so flow, head, speed and power always agree. `set` is the mode's set point as a share of design head.
+    const MODES = [
+      { id: "dp-pump", label: "Constant DP at the pump", short: "DP at pump",
+        tip: "VSD holds a fixed pressure across the {m}. Simple and robust — our usual starting point — but the {m} barely slows down, so power only falls in line with flow. The cube law does not apply." },
+      { id: "propp", label: "Proportional pressure (sensorless)", short: "Proportional", set: { key: "prop", label: "Head at zero flow, % of design head", def: 50 },
+        tip: "The {m}'s own curve lets pressure fall as flow falls. No remote sensor to wire — check the index circuit still gets enough pressure at low flow." },
+      { id: "dp-index", label: "Constant DP at the index circuit", short: "DP at index", set: { key: "index", label: "Index DP set point, % of design head", def: 30 },
+        tip: "Remote DP sensor at the far (index) circuit. Pipe friction savings come back, so you get much of the cube law. Needs the sensor wired and the index located correctly." },
+      { id: "static", label: "Open circuit / static lift", short: "Static lift", set: { key: "static", label: "Static lift, % of design head", def: 40 },
+        tip: "Cooling towers, lifting to height. The {m} must beat the static lift before any water moves, so savings are limited and flow stops below a minimum speed." },
+      { id: "friction", label: "No pressure control — cube law", short: "Cube law",
+        tip: "No pressure set point: flow and head follow the system curve (fans, constant-volume circuits trimmed on speed). The textbook best case — flow ∝ N, head ∝ N², power ∝ N³." },
+      { id: "fixed", label: "Fixed speed — no VSD", short: "Fixed speed",
+        tip: "No speed control. Valves throttle and the {m} rides up its curve, so power only falls to about 75% at half flow. Typical of old plant." }
     ];
+    const MODE_SET_DEFAULTS = { prop: 0.5, index: 0.3, static: 0.4 };
+    const HSO_DEFAULT = 1.25;
+    const MIN_SPEED = 0.3;
+    // Pump η falls as it runs away from best efficiency at its current speed: η ratio = 1 − k·(q/N − 1)².
+    // k calibrated so proportional pressure at 25% flow matches the Grundfos TPE2 load profile (≈ 18.5% power).
+    const PUMP_OFF_BEP = 0.19;
+    // Motor + drive losses at part load: 35% of the design-point loss is fixed, the rest scales with load².
+    const FIXED_LOSS_SHARE = 0.35;
     const FLOW_LIQ = ["L/s", "L/min", "m3/h", "m3/s", "kg/s"];
     const FLOW_AIR = ["m3/s", "m3/h", "L/s", "CFM", "m3/min"];
     const HEAD_PUMP = ["m", "kPa", "bar", "ft"];
     const HEAD_FAN = ["Pa", "kPa", "in w.g."];
-    const AFF_STEPS = [120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40];
+    const AFF_STEPS = [120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40, 35, 30, 25, 20];
     // Motor rating margin on shaft power. A VSD / EC pump only has to cover its duty point; a fixed-speed
     // pump must also cover the rest of its full-speed curve, so it gets more headroom.
     const MARGIN_VSD = 1.10;
@@ -697,7 +794,11 @@
       system: "pump",
       glycol: "EG",
       era: "y2026",
-      curve: "propp",
+      modes: { existing: "dp-pump", proposed: "dp-pump" },
+      set: { ...MODE_SET_DEFAULTS },
+      keySig: null,
+      keyVals: null,
+      keyFlash: {},
       job: "new",
       affPlant: "proposed",
       showWork: false,
@@ -912,38 +1013,75 @@
       return { machine, motor, drive, hyd: machine.eff, mot: motEff, drv: drive.eff };
     }
 
-    const isControl = (curve) => curve.h0 !== undefined;
-    // Head ratio at relative flow/speed n: control curves are linear from h0 at zero flow, speed curves follow N².
-    function curveHead(curve, n) {
-      return isControl(curve) ? curve.h0 + (1 - curve.h0) * n : n * n;
+    // Head as a share of design head at relative flow q.
+    function modeHead(modeId, q, set, hso) {
+      if (modeId === "fixed") return Math.max(0, hso - (hso - 1) * q * q);
+      if (modeId === "dp-pump") return 1;
+      if (modeId === "propp") return set.prop + (1 - set.prop) * q;
+      if (modeId === "dp-index") return set.index + (1 - set.index) * q * q;
+      if (modeId === "static") return set.static + (1 - set.static) * q * q;
+      return q * q;
     }
-    // Power ratio: control curves = flow × head (constant η), speed curves = N^exp.
-    function curveRatio(curve, n) {
-      return isControl(curve) ? n * curveHead(curve, n) : Math.pow(n, curve.exp);
+    // Pump speed needed to give head h at flow q, from a pump curve H = Hso·N² − (Hso − 1)·q².
+    function modeSpeed(modeId, q, h, hso) {
+      if (modeId === "fixed") return 1;
+      return Math.sqrt(Math.max(0, (h + (hso - 1) * q * q) / hso));
     }
-    function curveLaw(curve) {
-      if (!isControl(curve)) return `N^${curve.exp}`;
-      return curve.h0 >= 1 ? "q × 1 (DP held)" : `q × (${curve.h0} + ${1 - curve.h0}q)`;
+    // One operating point, all as ratios of the design duty: flow q, head h, speed n, motor shaft power and
+    // electrical input. Includes pump off-BEP and motor / drive part-load losses.
+    function operatingPoint(modeId, q, cfg) {
+      const h = modeHead(modeId, q, cfg.set, cfg.hso);
+      const n = modeSpeed(modeId, q, h, cfg.hso);
+      let shaft;
+      if (modeId === "fixed") {
+        shaft = 0.5 + 0.5 * q;
+      } else {
+        const x = n > 0 ? q / n : 0;
+        const eta = Math.max(0.4, 1 - PUMP_OFF_BEP * (x - 1) * (x - 1));
+        shaft = q * h / eta;
+      }
+      const L = cfg.loss;
+      const elec = (shaft + L * (FIXED_LOSS_SHARE + (1 - FIXED_LOSS_SHARE) * shaft * shaft)) / (1 + L);
+      return { q, h, n, shaft, elec };
     }
-    // Share of full-duty energy over the year for a load profile. Fixed-speed plant cannot turn down,
-    // so it rides its curve instead: power ≈ 50% + 50% × flow.
-    function profileFactor(profile, curve, vsd) {
-      return profile.steps.reduce((sum, st) => sum + st.t * (vsd ? curveRatio(curve, st.q) : 0.5 + 0.5 * st.q), 0);
+    // Design-point motor + drive loss per unit of output. Integrated EC machines carry theirs inside machine η.
+    function lossFor(mot, drv) {
+      const md = (mot / 100) * (drv / 100);
+      return md >= 0.999 ? 0.1 : 1 / md - 1;
     }
-    function affinityRow(nPct, curve, design) {
-      const n = nPct / 100;
-      const powerRatio = curveRatio(curve, n);
-      const power = design.elec * powerRatio;
-      const shaftNow = (design.shaft || 0) * powerRatio;
+    // A variable-flow mode needs a VSD or EC; without one the plant can only run fixed speed.
+    function effectiveMode(modeId, drive) {
+      return modeId !== "fixed" && !hasVsd(drive) ? "fixed" : modeId;
+    }
+    function modeLabel(id) { return byId(MODES, id).label; }
+    function modeTip(id, sys) { return byId(MODES, id).tip.replace(/\{m\}/g, sys === "pump" ? "pump" : "fan"); }
+    function modeLaw(id, set) {
+      const pct = (v) => Math.round(v * 100);
+      if (id === "fixed") return "H rides the pump curve · P ≈ 0.5 + 0.5q";
+      if (id === "dp-pump") return "H = 100% · P ≈ q";
+      if (id === "propp") return `H = ${pct(set.prop)}% + ${pct(1 - set.prop)}%·q · P ≈ q·H`;
+      if (id === "dp-index") return `H = ${pct(set.index)}% + ${pct(1 - set.index)}%·q² · P ≈ q·H`;
+      if (id === "static") return `H = ${pct(set.static)}% + ${pct(1 - set.static)}%·q² · P ≈ q·H`;
+      return "N = q · H = q² · P ≈ q³";
+    }
+    // Share of full-duty energy over the year for a load profile, using the plant's control mode.
+    function profileFactor(profile, modeId, cfg) {
+      return profile.steps.reduce((sum, st) => sum + st.t * operatingPoint(modeId, st.q, cfg).elec, 0);
+    }
+    function affinityRow(qPct, design) {
+      const q = qPct / 100;
+      const op = operatingPoint(design.mode, q, design.cfg);
+      const power = design.elec * op.elec;
+      const shaftNow = (design.shaft || 0) * op.shaft;
       const motorLoad = design.motorKw > 0 ? shaftNow / design.motorKw * 100 : 0;
       const kwh = power * design.hours;
-      const gbp = kwh * design.tariff;
-      const co2 = kwh * design.carbon;
       return {
-        nPct, n,
-        flow: design.Q * n,
-        head: design.dP * curveHead(curve, n),
-        powerRatio, power, shaftNow, motorLoad, kwh, gbp, co2,
+        nPct: qPct, n: q, speed: op.n, headRatio: op.h,
+        flow: design.Q * q,
+        head: design.dP * op.h,
+        powerRatio: op.elec, power, shaftNow, motorLoad, kwh,
+        gbp: kwh * design.tariff, co2: kwh * design.carbon,
+        overspeed: op.n > 1.005, underspeed: op.n < MIN_SPEED,
         amps: design.supply ? ampsFor(power / design.nRun, design.supply, design.pf) : 0
       };
     }
@@ -990,10 +1128,15 @@
       };
       const pumpShaft = shaft;
       const exEl = electrical(elecEach, existKw, mot, drv, drive, supply);
-      const curve = byId(CURVES, S.curve);
+      const set = { ...S.set };
+      const hso = Math.min(2, Math.max(1.05, Number($("hso").value) || HSO_DEFAULT));
+      const exModeReq = S.modes.existing;
+      const prModeReq = S.modes.proposed;
+      const exMode = effectiveMode(exModeReq, drive);
+      const exCfg = { set, hso, loss: lossFor(mot, drv) };
       const profileId = $("profile").value in PROFILES ? $("profile").value : "flat";
       const profile = PROFILES[profileId];
-      const exFactor = profileFactor(profile, curve, hasVsd(drive));
+      const exFactor = profileFactor(profile, exMode, exCfg);
       const kwh = elec * hours * exFactor;
       const gbp = kwh * tariff;
       const co2 = kwh * carbon;
@@ -1007,7 +1150,9 @@
       const propElec = propElecEach * nRun;
       const propW2w = propElec > 0 ? Ph / propElec * 100 : 0;
       const prEl = electrical(propElecEach, propKw, prop.mot, prop.drv, prop.drive, supply);
-      const prFactor = profileFactor(profile, curve, hasVsd(prop.drive));
+      const prMode = effectiveMode(prModeReq, prop.drive);
+      const prCfg = { set, hso, loss: lossFor(prop.mot, prop.drv) };
+      const prFactor = profileFactor(profile, prMode, prCfg);
       const propKwh = propElec * hours * prFactor;
       const saveKw = elec - propElec;
       const saveKwh = kwh - propKwh;
@@ -1027,21 +1172,21 @@
       })();
       const speed = Number($("speed").value) || 100;
       const affPlant = hasExisting() ? S.affPlant : "proposed";
-      const existDesign = { Q, dP, elec, shaft: existShaft, motorKw: existKw, hours, tariff, carbon, Ph, supply, nRun, pf: exEl.pf, amps: exEl.amps };
-      const propDesign = { Q, dP, elec: propElec, shaft: propShaft, motorKw: propKw, hours, tariff, carbon, Ph, supply, nRun, pf: prEl.pf, amps: prEl.amps };
+      const existDesign = { Q, dP, elec, shaft: existShaft, motorKw: existKw, hours, tariff, carbon, Ph, supply, nRun, pf: exEl.pf, amps: exEl.amps, mode: exMode, modeReq: exModeReq, cfg: exCfg, drive, factor: exFactor };
+      const propDesign = { Q, dP, elec: propElec, shaft: propShaft, motorKw: propKw, hours, tariff, carbon, Ph, supply, nRun, pf: prEl.pf, amps: prEl.amps, mode: prMode, modeReq: prModeReq, cfg: prCfg, drive: prop.drive, factor: prFactor };
       const design = affPlant === "proposed" ? propDesign : existDesign;
-      const selected = affinityRow(speed, curve, design);
-      const steps = AFF_STEPS.map((n) => affinityRow(n, curve, design));
+      const selected = affinityRow(speed, design);
+      const steps = AFF_STEPS.map((n) => affinityRow(n, design));
       if (!AFF_STEPS.includes(speed)) {
         steps.push(selected);
         steps.sort((a, b) => b.nPct - a.nPct);
       }
-      const down = affinityRow(Math.max(40, speed - 1), curve, design);
-      const up = affinityRow(Math.min(120, speed + 1), curve, design);
+      const down = affinityRow(Math.max(20, speed - 1), design);
+      const up = affinityRow(Math.min(120, speed + 1), design);
       const marginalDown = (selected.power - down.power) * hours * tariff;
       const marginalUp = (up.power - selected.power) * hours * tariff;
-      const existAtSpeed = affinityRow(speed, curve, existDesign);
-      const propAtSpeed = affinityRow(speed, curve, propDesign);
+      const existAtSpeed = affinityRow(speed, existDesign);
+      const propAtSpeed = affinityRow(speed, propDesign);
       let meas = null;
       if ($("use-meas").checked) {
         const q = (Number($("meas-q").value) || 0) * 0.001;
@@ -1062,7 +1207,7 @@
         existShaft, existSuggest, existKw,
         hours, tariff, carbon, capex, kwh, gbp, co2, supply, pumpShaft, exEl, prEl, propHydShaft,
         prop, propElec, propW2w, propShaft, propSuggest, propKw, saveKw, saveKwh, saveGbp, saveCo2, savePct, payback,
-        vel, ductV, curve, speed, affPlant, design, selected, steps, marginalDown, marginalUp,
+        vel, ductV, speed, affPlant, design, existDesign, propDesign, set, hso, exMode, prMode, selected, steps, marginalDown, marginalUp,
         existAtSpeed, propAtSpeed, meas
       };
     }
@@ -1183,6 +1328,106 @@
         <div class="machine-note"><b>Got a real selection?</b> Use the manufacturer's figures instead of the defaults: pump η at the duty point ("Eta pump"), P1 for the electrical input, and the nameplate "rated current at this voltage" for the electrician. Catalogue totals for duty / assist / standby sets are for all running pumps together — divide by the number running. The figures here are estimates to check against, not a replacement for the data sheet.</div>`;
     }
 
+    // Control option cards for the plant being edited, each with a live "at 50% flow" figure.
+    function renderModes(c) {
+      const d = c.design;
+      const sysWord = c.system === "pump" ? "pump" : "fan";
+      const vsd = hasVsd(d.drive);
+      $("control-title").textContent = `2. System & ${sysWord} control`;
+      setText("control-intro", `How is the ${sysWord} controlled? This sets how power falls when demand drops — it matters more than the ${sysWord} itself. Choosing for the ${c.affPlant === "proposed" ? (hasExisting() ? "proposed plant" : "new plant") : "existing plant"}${hasExisting() ? "; switch plant above to set the other" : ""}.`);
+      $("modes").innerHTML = MODES.map((m) => {
+        const half = operatingPoint(m.id, 0.5, d.cfg);
+        const blocked = m.id !== "fixed" && !vsd;
+        const tags = (hasExisting() && S.modes.existing === m.id ? `<i class="tg ex">Existing</i>` : "") + (S.modes.proposed === m.id ? `<i class="tg pr">${hasExisting() ? "Proposed" : "New"}</i>` : "");
+        const val = m.set ? ` ${Math.round(c.set[m.set.key] * 100)}%` : "";
+        return `<button type="button" class="mode${d.modeReq === m.id ? " active" : ""}${blocked ? " blocked" : ""}" data-mode="${m.id}">
+          <b>${m.label}${val}<span class="tags">${tags}</span></b>
+          <small>${modeTip(m.id, c.system)}</small>
+          <em>At 50% flow ≈ ${fmt(half.elec * 100, 0)}% power · ${sysWord} ${fmt(half.n * 100, 0)}% speed${blocked ? " · needs a VSD — this plant has none" : ""}</em>
+        </button>`;
+      }).join("");
+      const cur = byId(MODES, d.modeReq);
+      $("set-wrap").classList.toggle("hidden", !cur.set);
+      if (cur.set) {
+        setText("set-label", cur.set.label);
+        if (document.activeElement !== $("set-val")) $("set-val").value = Math.round(c.set[cur.set.key] * 100);
+      }
+      $("mode-warn").innerHTML = keyChecks(c).filter((w) => w.plant === c.affPlant).map((w) => `<div class="alert ${w.level}">${w.text}</div>`).join("");
+    }
+
+    // Same flow, every control option, for the plant on show — the teaching strip.
+    function renderStrip(c) {
+      const d = c.design;
+      const q = c.speed / 100;
+      const flat = c.profileId === "flat";
+      const vsd = hasVsd(d.drive);
+      const base = operatingPoint("dp-pump", q, d.cfg);
+      const baseYr = d.elec * c.hours * profileFactor(c.profile, "dp-pump", d.cfg) * c.tariff;
+      setText("strip-title", `Comparison — ${c.speed}% flow, every control option (${c.affPlant === "proposed" ? (hasExisting() ? "proposed" : "new") : "existing"} plant)`);
+      $("strip-body").innerHTML = MODES.map((m) => {
+        const op = operatingPoint(m.id, q, d.cfg);
+        const kw = d.elec * op.elec;
+        const yrAt = kw * c.hours * c.tariff;
+        const yr = d.elec * c.hours * profileFactor(c.profile, m.id, d.cfg) * c.tariff;
+        const diff = flat ? (base.elec - op.elec) * d.elec * c.hours * c.tariff : baseYr - yr;
+        const blocked = m.id !== "fixed" && !vsd;
+        const diffTxt = m.id === "dp-pump" ? "—" : `${diff >= 0 ? "save" : "extra"} ${money(Math.abs(diff))}`;
+        return `<tr class="${m.id === d.mode ? "cur" : ""}"><td>${m.short}${m.set ? ` ${Math.round(c.set[m.set.key] * 100)}%` : ""}</td><td>${fmt(op.n * 100, 0)}%</td><td>${fmt(op.h * 100, 0)}%</td><td>${fmt(op.elec * 100, 1)}%</td><td>${fmt(kw, 2)}</td><td>${money(yrAt)}</td><td>${flat ? "—" : money(yr)}</td><td class="${blocked ? "blk" : diff >= 0 ? "pos" : "neg"}">${blocked ? "needs VSD" : diffTxt}</td></tr>`;
+      }).join("");
+      setText("strip-note", flat
+        ? "Load profile is Flat, so every option runs 100% flow all year and the annual £ is the same. Choose Variable heating in section 4 to compare annual running costs."
+        : `Annual £ uses the ${c.profile.label.toLowerCase()} profile and ${c.hours} h. "vs DP at pump" is the yearly difference against a constant-DP-at-pump control.`);
+    }
+
+    // Settings that disagree or need a second look. level: red = results are limited / wrong until fixed.
+    function keyChecks(c) {
+      const out = [];
+      const sysWord = c.system === "pump" ? "pump" : "fan";
+      const plants = hasExisting() ? [["existing", c.existDesign, "Existing"], ["proposed", c.propDesign, "Proposed"]] : [["proposed", c.propDesign, "New plant"]];
+      plants.forEach(([id, d, name]) => {
+        if (d.modeReq !== d.mode) out.push({ plant: id, level: "red", text: `<b>${name}: "${modeLabel(d.modeReq)}" needs a VSD or EC drive</b> — this plant is on "${d.drive.label}". It is calculated as fixed speed. Change the drive, or choose Fixed speed.` });
+        if (d.modeReq === "fixed" && hasVsd(d.drive)) out.push({ plant: id, level: "amber", text: `${name}: a VSD is fitted but set to run at fixed speed — no turndown savings are counted.` });
+      });
+      if (c.selected.overspeed) out.push({ plant: c.affPlant, level: "red", text: `Selected point needs ${fmt(c.selected.speed * 100, 0)}% ${sysWord} speed — above 50 Hz. Check the ${sysWord}, motor and drive are rated for it.` });
+      if (c.selected.motorLoad > 100) out.push({ plant: c.affPlant, level: "red", text: `Motor overloaded at the selected point (${fmt(c.selected.motorLoad, 0)}% of ${c.design.motorKw} kW).` });
+      if (c.selected.underspeed) out.push({ plant: c.affPlant, level: "amber", text: `Selected point is ${fmt(c.selected.speed * 100, 0)}% speed — below a typical ${MIN_SPEED * 100}% minimum. Check the drive's minimum frequency.` });
+      if (c.profileId === "flat" && [c.exMode, c.prMode].some((x) => x !== "fixed")) out.push({ plant: "all", level: "amber", text: "Load profile is <b>Flat</b> (100% flow all year), so the control choice does not change annual kWh or £. Choose Variable heating to see it." });
+      if (c.supply.phases === 1 && Math.max(c.existKw, c.propKw) > 2.2) out.push({ plant: "all", level: "amber", text: "Single-phase supply with a motor above 2.2 kW — rarely available; check the supply." });
+      return out;
+    }
+
+    // Summary of every setting that changes the results. Changing one un-ticks the confirmation.
+    function renderKeybar(c) {
+      const fluidTxt = c.fluid === "air" ? `Air ${c.T} °C` : c.fluid === "glycol" ? `${$("glycol-pct").value}% ${S.glycol} ${c.T} °C` : `Water ${c.T} °C`;
+      const modeTxt = (d) => `${byId(MODES, d.modeReq).short}${byId(MODES, d.modeReq).set ? ` ${Math.round(c.set[byId(MODES, d.modeReq).set.key] * 100)}%` : ""}${d.modeReq !== d.mode ? " → fixed (no VSD)" : ""}`;
+      const items = [
+        ["Job", hasExisting() ? "Upgrade existing" : "New installation", "[data-job]"],
+        ["System", c.system === "pump" ? "Pump circuit" : "Fan system", "[data-system]"],
+        ["Fluid", fluidTxt, "[data-fluid]"],
+        [c.system === "pump" ? "Pumps" : "Fans", `${c.nRun} running${c.nStby ? ` + ${c.nStby} standby` : ""}`, "#n-run"],
+        ...(hasExisting() ? [["Existing control", modeTxt(c.existDesign), "#control-card"]] : []),
+        [hasExisting() ? "Proposed control" : "Control", modeTxt(c.propDesign), "#control-card"],
+        ["Load profile", c.profileId === "flat" ? "Flat, full duty" : "Variable heating", "#profile"],
+        ["Supply", supplyLabel(c.supply), "#supply"]
+      ];
+      const sig = items.map((it) => it[0] + "=" + it[1]).join("|");
+      const prev = S.keyVals || {};
+      if (S.keySig !== null && sig !== S.keySig) $("kb-confirm").checked = false;
+      const now = Date.now();
+      items.forEach(([k, v]) => { if (S.keySig !== null && prev[k] !== undefined && prev[k] !== v) S.keyFlash[k] = now; });
+      $("kb-chips").innerHTML = items.map(([k, v, t]) => `<button type="button" data-target="${t}" class="${now - (S.keyFlash[k] || 0) < 1600 ? "changed" : ""}">${k}: <b>${v}</b></button>`).join("");
+      S.keySig = sig;
+      S.keyVals = Object.fromEntries(items.map(([k, v]) => [k, v]));
+      const ok = $("kb-confirm").checked;
+      $("keybar").classList.toggle("ok", ok);
+      setText("kb-confirm-lbl", ok ? "Settings checked — copy / export unlocked. Changing any key setting locks them again." : "I've checked these settings — unlock copy / export");
+      $("btn-copy").disabled = !ok;
+      $("btn-export").disabled = !ok;
+      $("btn-copy").title = ok ? "" : "Tick 'I've checked these settings' at the top first";
+      $("btn-export").title = $("btn-copy").title;
+      $("kb-warn").innerHTML = keyChecks(c).map((w) => `<div class="alert ${w.level}">${w.text}</div>`).join("");
+    }
+
     function render(c) {
       const w2wName = c.system === "pump" ? "water" : "air";
       setText("fluid-props", `${c.props.notes} · ρ ${fmt(c.props.rho, 2)} kg/m³ · Cp ${fmt(c.props.cp, 3)}`);
@@ -1208,10 +1453,9 @@
       setText("run-note", multi
         ? `${c.nRun} ${unitWord} in parallel share the flow: each does ${fmt(c.QEach * 1000, 2)} L/s at the full ${fmt(c.dP, 1)} kPa. Motor rating and current are per ${kind}; kW, kWh and £ are totals for the ${c.nRun} running.${c.nStby ? ` ${c.nRun + c.nStby} installed incl. ${c.nStby} standby (no load).` : ""} Enter the total system flow above.`
         : `Single ${kind} on duty${c.nStby ? ` plus ${c.nStby} standby (no load) — ${1 + c.nStby} installed` : ""}. For duty / assist sets enter the total flow and the number running.`);
-      const vsdEx = hasVsd(ex ? c.drive : c.prop.drive);
       setText("profile-note", c.profileId === "flat"
         ? "Energy = full-duty kW × hours. Use the variable profile for heating / cooling circuits that turn down."
-        : `Time at 25 / 50 / 75 / 100% flow = 44 / 35 / 15 / 6% of hours (Grundfos standard heating, 6840 h). With ${c.curve.label.trim()}, the year averages ${fmt(c.prFactor * 100, 0)}% of full-duty power for the ${ex ? "proposed" : "new"} plant${ex ? ` and ${fmt(c.exFactor * 100, 0)}% for existing${vsdEx ? "" : " (fixed speed rides its curve: ≈ 50% + 50% × flow)"}` : ""}. Assumes pump η holds at part load and ignores staging pumps off.`);
+        : `Time at 25 / 50 / 75 / 100% flow = 44 / 35 / 15 / 6% of hours (Grundfos standard heating, 6840 h). The year averages ${fmt(c.prFactor * 100, 0)}% of full-duty power for the ${ex ? "proposed" : "new"} plant (${byId(MODES, c.prMode).short})${ex ? ` and ${fmt(c.exFactor * 100, 0)}% for existing (${byId(MODES, c.exMode).short})` : ""}. Includes part-load pump, motor and drive losses; ignores staging pumps off at low flow.`);
       setText("kpi-hyd", fmt(c.PhEach, 3));
       setText("kpi-shaft-k", bundledKpi ? `${Kind} input (EC)` : `${Kind} shaft power`);
       setText("kpi-shaft", fmt(kpiShaft, 3));
@@ -1299,61 +1543,74 @@
       if (c.meas) {
         $("meas-out").textContent = `Measured Ph ${fmt(c.meas.ph, 3)} kW from ${fmt(c.meas.q * 1000, 2)} L/s @ ${fmt(c.meas.h, 1)} m. Pe ${fmt(c.meas.elec, 2)} kW → wire-to-water ${fmt(c.meas.w2w, 1)}%, back-calc machine η ${fmt(c.meas.pumpBack, 1)}%.`;
       }
-      setText("affinity-title", `Affinity / ${c.system === "fan" ? "fan" : "pump"} laws — ${isControl(c.curve) ? "flow" : "speed"} vs consumption`);
-      const ctl = isControl(c.curve);
-      setText("law-flow", ctl ? "Q₂ = q · Q₁  (valves set the flow)" : "Q₂ / Q₁ = N₂ / N₁");
-      setText("law-head", ctl ? (c.curve.h0 >= 1 ? "H₂ = H₁  (DP held)" : `H₂ = H₁ · (${c.curve.h0} + ${1 - c.curve.h0}·q)`) : "H₂ / H₁ = (N₂ / N₁)²");
-      setText("law-power", ctl ? `P₂ / P₁ = q · H₂/H₁` : `P₂ / P₁ = (N₂ / N₁)${c.curve.exp === 3 ? "³" : c.curve.exp === 2 ? "²" : "²·⁵"}`);
-      setText("speed-label", ctl ? "Flow relative to design duty (q)" : "Speed relative to design duty (N)");
-      setText("th-speed", ctl ? "Flow %" : "Speed");
+      const d = c.design;
+      const mode = d.mode;
+      const m = byId(MODES, mode);
+      const sysWord = c.system === "pump" ? "pump" : "fan";
+      const isCube = mode === "friction";
+      const plantName = c.affPlant === "proposed" ? "proposed / new plant" : "existing plant";
+      document.querySelectorAll("[data-aff]").forEach((btn) => btn.classList.toggle("active", btn.dataset.aff === c.affPlant));
+      renderModes(c);
+      const half = operatingPoint(mode, 0.5, d.cfg);
+      setText("affinity-title", `Affinity / ${sysWord} laws — ${isCube ? "speed" : "flow"} vs consumption`);
+      $("mode-banner").className = `mode-banner m-${mode}`;
+      $("mode-banner").innerHTML = `<b>${c.affPlant === "proposed" ? (hasExisting() ? "Proposed" : "New plant") : "Existing"}: ${m.label}</b>${d.modeReq !== mode ? ` <b>(asked for ${byId(MODES, d.modeReq).short} — no VSD, so fixed speed)</b>` : ""}. ${modeLaw(mode, c.set)}.<br>
+        At 50% flow this ${sysWord} runs at about <b>${fmt(half.n * 100, 0)}% speed</b> and takes <b>${fmt(half.elec * 100, 0)}% of design power</b>${isCube ? "" : " — the pure cube law would say 12.5%"}.${mode === "dp-pump" ? ` Head is held at ${fmt(c.dP, 0)} kPa, so there is no N² fall in head and power only falls in line with flow.` : ""}${mode === "static" ? ` Below about ${fmt(Math.sqrt(c.set.static / c.hso) * 100, 0)}% speed the ${sysWord} cannot beat the static lift and flow stops.` : ""}`;
+      setText("law-flow", isCube ? "Q₂ / Q₁ = N₂ / N₁" : mode === "fixed" ? "Q set by valves · N = 100%" : "Q = q × design (valves / demand)");
+      setText("law-head", isCube ? "H₂ / H₁ = (N₂ / N₁)²" : modeLaw(mode, c.set).split(" · ")[0]);
+      setText("law-power", isCube ? "P₂ / P₁ = (N₂ / N₁)³" : mode === "fixed" ? "P ≈ 0.5 + 0.5q (pump curve)" : "P = Q × H ÷ η");
+      setText("speed-label", isCube ? "Speed = flow, % of design (N = q)" : mode === "fixed" ? "Flow, % of design — speed fixed at 100%" : "Flow, % of design — the tool works out the speed");
+      setText("aff-hero-at", isCube ? "At selected speed" : "At selected flow");
+      setText("th-speed", isCube ? "Speed = flow" : "Flow %");
       setText("th-kw", multi ? "kW total" : "Power kW");
       setText("th-amps", multi ? "A each" : "Amps");
-      setText("aff-q-n", ctl ? "set by demand" : "∝ N");
-      setText("aff-h-n", ctl ? (c.curve.h0 >= 1 ? "held by control" : "follows control curve") : "∝ N²");
-      const plantName = c.affPlant === "proposed" ? "proposed / new plant" : "existing plant";
-      setText("affinity-intro", `${c.curve.note} Turndown needs a VSD or EC. The table and slider now use the ${plantName} electrical load as the 100% design point, including that plant's IEC motor frame.`);
-      document.querySelectorAll("[data-aff]").forEach((btn) => btn.classList.toggle("active", btn.dataset.aff === c.affPlant));
+      setText("aff-q-n", isCube ? "∝ N" : "set by demand");
+      setText("aff-h-n", isCube ? "∝ N²" : mode === "dp-pump" ? "held by control" : mode === "fixed" ? "rides pump curve" : "follows control curve");
+      setText("affinity-intro", `Uses the ${plantName} electrical load as 100%, with that plant's motor rating. Includes pump efficiency away from its best point and motor / drive part-load losses, so low flows cost a little more than the ideal laws suggest.`);
       setText("speed-val", `${c.speed}%`);
-      const vs100 = c.design.elec - c.selected.power;
+      const vs100 = d.elec - c.selected.power;
       const vs100gbp = vs100 * c.hours * c.tariff;
       setText("aff-hero-kw", `${fmt(c.selected.power, 3)} kW`);
-      setText("aff-hero-sub", `${fmt(c.selected.powerRatio * 100, 1)}% of ${plantName} power · ${fmt(c.selected.kwh, 0)} kWh/yr · ${fmt(c.selected.co2, 0)} kg CO₂/yr`);
+      setText("aff-hero-sub", `${fmt(c.selected.powerRatio * 100, 1)}% of ${plantName} power · ${sysWord} speed ${fmt(c.selected.speed * 100, 0)}% · ${fmt(c.selected.kwh, 0)} kWh/yr if run here all year`);
       const box = $("aff-hero-box");
       box.className = "sidebox" + (vs100gbp < 0 ? " cost" : "");
       setText("aff-hero-k", vs100gbp >= 0 ? `Saving vs 100% ${c.affPlant}` : `Extra cost vs 100% ${c.affPlant}`);
       setText("aff-hero-gbp", money(Math.abs(vs100gbp)) + "/yr");
       setText("aff-hero-detail", `${fmt(Math.abs(vs100), 3)} kW · ${fmt(Math.abs(vs100 * c.hours), 0)} kWh/yr · ${fmt(Math.abs(vs100 * c.hours * c.carbon), 0)} kg CO₂/yr`);
-      const frameKw = c.design.motorKw;
-      const loadWarn = c.selected.motorLoad > 100 ? " — OVERLOAD at this speed" : "";
+      const frameKw = d.motorKw;
+      const loadWarn = c.selected.motorLoad > 100 ? " — OVERLOAD at this point" : "";
       setText("aff-hero-motor", `${c.affPlant === "proposed" ? "Proposed" : "Existing"} frame ${frameKw} kW IEC · shaft ${fmt(c.selected.shaftNow, 3)} kW · nameplate load ${fmt(c.selected.motorLoad, 0)}% · running current ${fmt(c.selected.amps, 2)} A${loadWarn}`);
-      const duoEx = hasExisting() ? `<div class="side"><h4>Existing @ ${c.speed}%</h4><div class="mono">${fmt(c.existAtSpeed.power, 3)} kW · ${fmt(c.existAtSpeed.amps, 2)} A · ${money(c.existAtSpeed.gbp)}/yr</div><div class="note">${c.existKw} kW frame · load ${fmt(c.existAtSpeed.motorLoad, 0)}% · vs 100% ${money((c.elec - c.existAtSpeed.power) * c.hours * c.tariff)}</div></div>` : "";
-      const duoPr = `<div class="side proposed"><h4>${hasExisting() ? "Proposed" : "New plant"} @ ${c.speed}%</h4><div class="mono">${fmt(c.propAtSpeed.power, 3)} kW · ${fmt(c.propAtSpeed.amps, 2)} A · ${money(c.propAtSpeed.gbp)}/yr</div><div class="note">${c.propKw} kW frame · load ${fmt(c.propAtSpeed.motorLoad, 0)}% · vs 100% ${money((c.propElec - c.propAtSpeed.power) * c.hours * c.tariff)}</div></div>`;
+      const duoEx = hasExisting() ? `<div class="side"><h4>Existing @ ${c.speed}% · ${byId(MODES, c.exMode).short}</h4><div class="mono">${fmt(c.existAtSpeed.power, 3)} kW · ${fmt(c.existAtSpeed.amps, 2)} A · ${money(c.existAtSpeed.gbp)}/yr</div><div class="note">${c.existKw} kW frame · speed ${fmt(c.existAtSpeed.speed * 100, 0)}% · load ${fmt(c.existAtSpeed.motorLoad, 0)}% · vs 100% ${money((c.elec - c.existAtSpeed.power) * c.hours * c.tariff)}</div></div>` : "";
+      const duoPr = `<div class="side proposed"><h4>${hasExisting() ? "Proposed" : "New plant"} @ ${c.speed}% · ${byId(MODES, c.prMode).short}</h4><div class="mono">${fmt(c.propAtSpeed.power, 3)} kW · ${fmt(c.propAtSpeed.amps, 2)} A · ${money(c.propAtSpeed.gbp)}/yr</div><div class="note">${c.propKw} kW frame · speed ${fmt(c.propAtSpeed.speed * 100, 0)}% · load ${fmt(c.propAtSpeed.motorLoad, 0)}% · vs 100% ${money((c.propElec - c.propAtSpeed.power) * c.hours * c.tariff)}</div></div>`;
       $("aff-duo").innerHTML = duoEx + duoPr;
       setText("aff-q", `${fmt(c.selected.flow * 1000, 2)} L/s  (${fmt(c.selected.n * 100, 0)}%)`);
-      setText("aff-h", `${fmt(c.selected.head, 1)} kPa  (${fmt(c.selected.n * c.selected.n * 100, 1)}%)`);
+      setText("aff-h", `${fmt(c.selected.head, 1)} kPa  (${fmt(c.selected.headRatio * 100, 1)}%)`);
       setText("aff-d1", `−1% saves ${money(c.marginalDown)} · +1% costs ${money(c.marginalUp)}`);
-      const chartAt = [40, 50, 60, 70, 80, 90, 100, 110, 120];
+      renderStrip(c);
+      const chartAt = [20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120];
       const nearest = chartAt.reduce((best, n) => Math.abs(n - c.speed) < Math.abs(best - c.speed) ? n : best, chartAt[0]);
       $("aff-chart").innerHTML = chartAt.map((n) => {
-        const row = affinityRow(n, c.curve, c.design);
+        const row = affinityRow(n, d);
         const h = Math.min(100, row.powerRatio / 1.8 * 100);
         const cls = n === nearest ? "active" : n > 100 ? "over" : "save";
         return `<div class="bar ${cls}" data-speed="${n}"><em>${fmt(row.power, 2)}</em><i style="height:${Math.max(6, h)}%"></i><em>${n}%</em></div>`;
       }).join("");
       $("aff-body").innerHTML = c.steps.map((row, i) => {
-        const vs = (c.design.elec - row.power) * c.hours * c.tariff;
+        const vs = (d.elec - row.power) * c.hours * c.tariff;
         const prev = c.steps[i - 1];
         const stepGbp = prev ? (prev.power - row.power) * c.hours * c.tariff : 0;
-        const cls = row.nPct === c.speed ? "sel" : row.nPct > 100 ? "over" : "";
+        const cls = row.nPct === c.speed ? "sel" : row.overspeed || row.nPct > 100 ? "over" : row.underspeed ? "warnrow" : "";
         const vsCls = vs >= 0 ? "pos" : "neg";
         const stepCls = stepGbp >= 0 ? "pos" : "neg";
         const vsTxt = row.nPct === 100 ? "—" : (vs >= 0 ? "save " : "extra ") + money(Math.abs(vs));
         const stepTxt = !prev ? "—" : (stepGbp >= 0 ? "save " : "extra ") + money(Math.abs(stepGbp));
         const loadCls = row.motorLoad > 100 ? "neg" : "";
-        return `<tr class="${cls}" data-speed="${row.nPct}"><td>${row.nPct}%</td><td>${fmt(row.flow * 1000, 2)} L/s</td><td>${fmt(row.head, 1)} kPa</td><td>${fmt(row.power, 3)}</td><td>${fmt(row.powerRatio * 100, 1)}%</td><td>${fmt(row.amps, 2)}</td><td class="${loadCls}">${fmt(row.motorLoad, 0)}% of ${frameKw} kW</td><td>${fmt(row.kwh, 0)}</td><td>${money(row.gbp)}</td><td class="${vsCls}">${vsTxt}</td><td class="${stepCls}">${stepTxt}</td></tr>`;
+        const spdTxt = `${fmt(row.speed * 100, 0)}%${row.overspeed ? " ⚠ >50 Hz" : row.underspeed ? " ⚠ below min" : ""}`;
+        return `<tr class="${cls}" data-speed="${row.nPct}"><td>${row.nPct}%</td><td>${fmt(row.flow * 1000, 2)} L/s</td><td>${fmt(row.head, 1)} kPa</td><td>${spdTxt}</td><td>${fmt(row.power, 3)}</td><td>${fmt(row.powerRatio * 100, 1)}%</td><td>${fmt(row.amps, 2)}</td><td class="${loadCls}">${fmt(row.motorLoad, 0)}% of ${frameKw} kW</td><td>${fmt(row.kwh, 0)}</td><td>${money(row.gbp)}</td><td class="${vsCls}">${vsTxt}</td><td class="${stepCls}">${stepTxt}</td></tr>`;
       }).join("");
-      const cube80 = curveRatio(c.curve, 0.8) * 100;
-      setText("aff-footnote", `Worked check: 80% ${ctl ? "flow" : "speed"} → ${fmt(cube80, 1)}% power with this curve (${curveLaw(c.curve)}). kWh and £ in this table assume the plant sits at that point for all hours — the load profile above gives the annual figure. Motor rating is the next IEC size ≥ ${MARGIN_VSD} × shaft (VSD / EC) or ${MARGIN_FIXED} × shaft (fixed speed). Toggle Existing / Proposed to rerun the table on that plant — use Proposed for a new installation with no existing pump. Overspeed (>100%) is extra annual cost and can overload the nameplate.`);
+      const at80 = operatingPoint(mode, 0.8, d.cfg);
+      setText("aff-footnote", `Worked check: 80% ${isCube ? "speed" : "flow"} → ${fmt(at80.n * 100, 0)}% speed, ${fmt(at80.h * 100, 0)}% head, ${fmt(at80.elec * 100, 1)}% power with ${m.short} (ideal ${isCube ? "cube law 51.2%" : `q × H = ${fmt(0.8 * at80.h * 100, 1)}%`}; the difference is part-load losses). Speed comes from a pump curve with shut-off at ${c.hso} × duty head. kWh and £ in this table assume the plant sits at that point all year — the load profile gives the annual figure. Rows above 100% speed need the drive above 50 Hz; rows below ${MIN_SPEED * 100}% speed are under a typical minimum.`);
+      renderKeybar(c);
       $("quick").innerHTML = quickHtml(c);
       setText("quick-pill", hasExisting() ? "Live numbers — existing plant" : "Live numbers — new plant");
       $("defence").value = defenceText(c);
@@ -1387,7 +1644,8 @@ ${c.fluid !== "air" ? `- Pipe ${$("pipe-mm").value}mm velocity = ${fmt(c.vel, 2)
 ` : `NEW PLANT ANNUAL:
 - ${fmt(c.propElec, 3)} kW · ${fmt(c.propKwh, 0)} kWh/yr = ${money(c.propKwh * c.tariff)}/yr (${c.profile.label})
 `;
-      return `DEFENCE NOTE - Flow2kW
+      const unchecked = $("kb-confirm").checked ? "" : "⚠ KEY SETTINGS NOT YET CONFIRMED — tick the key settings check before relying on this note.\n\n";
+      return `${unchecked}DEFENCE NOTE - Flow2kW
 Job: ${hasExisting() ? "Upgrade existing" : "New installation"}${c.nRun > 1 || c.nStby ? ` · ${c.nRun} running${c.nStby ? ` + ${c.nStby} standby` : ""}, ${fmt(c.QEach * 1000, 2)} L/s each` : ""}
 Duty: ${c.flow} ${$("flow-unit").value} ${fluid} @ ${c.T}°C, ΔT ${c.dT}K => Thermal ${fmt(c.thermal, 1)} kW
 Head: ${c.head} ${$("head-unit").value} (${fmt(c.dP, 1)} kPa), Qv=${fmt(c.Q * 1000, 2)} L/s, ṁ=${fmt(c.mdot, 3)} kg/s
@@ -1399,8 +1657,9 @@ PROPOSED / NEW PLANT:
 - New electrical ${fmt(c.propElec, 3)} kW${c.nRun > 1 ? ` total (${c.nRun} × ${fmt(c.propElecEach, 3)})` : ""} · current ${fmt(c.prEl.amps, 2)} A running, ${fmt(c.prEl.flcAmps, 2)} A at full ${c.propKw} kW (${supplyLabel(c.supply)}, PF ${fmt(c.prEl.pf, 2)})
 
 ${savingsBlock}
-AFFINITY / CONTROL @ ${c.speed}% ${isControl(c.curve) ? "flow" : "speed"} on ${c.affPlant}, ${c.curve.label.trim()} (P ∝ ${curveLaw(c.curve)}):
-- Flow × ${fmt(c.selected.n, 3)}, Head × ${fmt(curveHead(c.curve, c.selected.n), 3)}, Power × ${fmt(c.selected.powerRatio, 3)}
+CONTROL: ${hasExisting() ? `existing ${modeLabel(c.exMode)}${c.existDesign.modeReq !== c.exMode ? " (no VSD)" : ""}, proposed ` : ""}${modeLabel(c.prMode)}${c.propDesign.modeReq !== c.prMode ? " (no VSD)" : ""}
+AFFINITY @ ${c.speed}% flow on ${c.affPlant} (${modeLaw(c.design.mode, c.set)}):
+- Flow × ${fmt(c.selected.n, 3)}, Head × ${fmt(c.selected.headRatio, 3)}, Speed ${fmt(c.selected.speed * 100, 0)}%, Power × ${fmt(c.selected.powerRatio, 3)} (incl. part-load losses)
 - Electrical ${fmt(c.selected.power, 3)} kW, ${fmt(c.selected.amps, 2)} A, ${fmt(c.selected.kwh, 0)} kWh/yr, ${money(c.selected.gbp)}/yr
 - Frame ${c.design.motorKw} kW IEC, nameplate load ${fmt(c.selected.motorLoad, 0)}%
 - Versus 100% ${c.affPlant}: ${vs >= 0 ? "save" : "extra"} ${fmt(Math.abs(c.design.elec - c.selected.power), 3)} kW = ${money(Math.abs(vs))}/yr
@@ -1408,7 +1667,7 @@ ${c.meas ? `- Measured data: ${$("meas-q").value} L/s @ ${$("meas-h").value}m, P
 
 Quick defence: ${hasExisting() ? `Existing ${c.machine.label.toLowerCase()} (${c.machine.year}) ${c.existKw} kW IEC at ${fmt(c.hyd, 0)}% ${kind}. ` : "New installation. "}Proposed ${c.prop.machine.label} ${c.propKw} kW IEC ${fmt(c.prop.hyd, 0)}% = ${fmt(c.propW2w, 0)}% wire-to-${w}${hasExisting() ? `. Equipment saving ${fmt(c.saveKw, 2)} kW = ${money(c.saveGbp)}/yr` : ""}. At ${c.speed}% on the ${c.affPlant} plant, affinity gives ${fmt(c.selected.powerRatio * 100, 0)}% power (${money(Math.abs(vs))}/yr ${vs >= 0 ? "saved" : "extra"} versus full speed).
 
-Calc ref: Qth = ṁ·Cp·ΔT, Ph = Qv·ΔP (or ρgQH), Ps=Ph/ηp, Pe=Ps/ηm/ηd, I = Pe/(${c.supply.phases === 3 ? "√3·" : ""}V·PF), P ∝ ${curveLaw(c.curve)}
+Calc ref: Qth = ṁ·Cp·ΔT, Ph = Qv·ΔP (or ρgQH), Ps=Ph/ηp, Pe=Ps/ηm/ηd, I = Pe/(${c.supply.phases === 3 ? "√3·" : ""}V·PF), part-load P = f(control mode) incl. pump off-BEP and motor / drive losses
 Motor η: IEC 60034-30-1 full-load, 4-pole, at the rated kW.
 `;
     }
@@ -1437,8 +1696,10 @@ Motor η: IEC 60034-30-1 full-load, 4-pole, at the rated kW.
           <div>Per ${kind(c)}: Q = ${fmt(c.QEach * 1000, 2)} L/s (${c.nRun} running) · Ph = ${fmt(c.PhEach, 4)} kW</div>
           <div>IEC frame = next typical size ≥ ${c.existSuggest.margin.toFixed(2)} × motor shaft (${MARGIN_VSD} VSD / EC, ${MARGIN_FIXED} fixed speed). Existing ${c.existKw} kW (${c.existSuggest.band.label}). Proposed ${c.propKw} kW (${c.propSuggest.band.label}).</div>
           <h4 style="margin-top:14px">// 6. Affinity / fan laws</h4>
-          <div>${isControl(c.curve) ? "q" : "N"} = ${c.speed}% · P ∝ ${curveLaw(c.curve)} · plant = ${c.affPlant}</div>
-          <div>${isControl(c.curve) ? `H₂ = H₁·${c.curve.h0 >= 1 ? "1" : `(${c.curve.h0} + ${1 - c.curve.h0}q)`} · P₂ = P₁·q·H₂/H₁` : "Q₂ = Q₁·N · H₂ = H₁·N² · P₂ = P₁·N^n"}</div>
+          <div>Control ${modeLabel(c.design.mode)} · q = ${c.speed}% · plant = ${c.affPlant}</div>
+          <div>${modeLaw(c.design.mode, c.set)}</div>
+          <div>Speed N = √((H + (Hso−1)·q²) / Hso), Hso = ${c.hso} → N = ${fmt(c.selected.speed * 100, 1)}%</div>
+          <div>Pump η ratio = 1 − ${PUMP_OFF_BEP}·(q/N − 1)² · motor/drive loss = L·(${FIXED_LOSS_SHARE} + ${1 - FIXED_LOSS_SHARE}·P²)</div>
           <div>P₂ = ${fmt(c.design.elec, 4)} · ${fmt(c.selected.powerRatio, 4)} = ${fmt(c.selected.power, 4)} kW · frame load ${fmt(c.selected.motorLoad, 0)}%</div>
           <div>vs 100%: ${fmt(c.design.elec - c.selected.power, 4)} kW · ${money((c.design.elec - c.selected.power) * c.hours * c.tariff)}/yr</div>
           <h4 style="margin-top:14px">// 7. Annual & equipment savings</h4>
@@ -1553,22 +1814,22 @@ Motor η: IEC 60034-30-1 full-load, 4-pole, at the rated kW.
         btn.classList.toggle("active", btn.dataset.system === S.system);
         btn.classList.toggle("sky", btn.dataset.system === S.system);
       });
-      setDefaultCurve();
+      setDefaultModes();
       refreshMachineSelects();
       applyEra(S.era || "y2026", false);
       applyEra("y2026", true);
       update();
     }
 
-    // Pump circuits default to proportional-pressure control, fans to the cube law.
-    function setDefaultCurve() {
-      S.curve = S.system === "pump" ? "propp" : "friction";
-      document.querySelectorAll("[data-curve]").forEach((btn) => btn.classList.toggle("active", btn.dataset.curve === S.curve));
+    // Pumps start on constant DP at the pump (how most circuits are designed); fans on the cube law.
+    function setDefaultModes() {
+      const m = S.system === "pump" ? "dp-pump" : "friction";
+      S.modes = { existing: m, proposed: m };
     }
 
     function setSystem(system) {
       S.system = system;
-      setDefaultCurve();
+      setDefaultModes();
       document.querySelectorAll("[data-system]").forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.system === system);
         btn.classList.toggle("sky", btn.dataset.system === system);
@@ -1589,7 +1850,6 @@ Motor η: IEC 60034-30-1 full-load, 4-pole, at the rated kW.
 
     function initChrome() {
       $("eras").innerHTML = ERAS.map((era) => `<button type="button" data-era="${era.id}" class="${era.cls || ""}">${era.label}</button>`).join("");
-      $("curves").innerHTML = CURVES.map((curve) => `<button type="button" data-curve="${curve.id}">${curve.label}</button>`).join("");
       fillSelect($("motor-select"), MOTORS, (x) => `${x.year} — ${x.label}`, "ie4");
       fillSelect($("drive-select"), DRIVES, (x) => x.label, "vsd");
       fillSelect($("prop-motor"), MOTORS.filter((x) => x.id !== "preie"), (x) => `${x.year} — ${x.label}`, "ie5");
@@ -1602,7 +1862,7 @@ Motor η: IEC 60034-30-1 full-load, 4-pole, at the rated kW.
       applyEra("y2026", false);
       applyEra("y2026", true);
       document.querySelectorAll("[data-era]").forEach((btn) => btn.classList.toggle("active", btn.dataset.era === "y2026"));
-      setDefaultCurve();
+      setDefaultModes();
     }
 
     function bind() {
@@ -1626,12 +1886,24 @@ Motor η: IEC 60034-30-1 full-load, 4-pole, at the rated kW.
         markEraFromCurrent();
         update();
       });
-      $("curves").addEventListener("click", (e) => {
-        const btn = e.target.closest("[data-curve]");
+      $("modes").addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-mode]");
         if (!btn) return;
-        S.curve = btn.dataset.curve;
-        document.querySelectorAll("[data-curve]").forEach((b) => b.classList.toggle("active", b.dataset.curve === S.curve));
+        S.modes[hasExisting() ? S.affPlant : "proposed"] = btn.dataset.mode;
         update();
+      });
+      $("set-val").addEventListener("input", () => {
+        const cur = byId(MODES, S.modes[hasExisting() ? S.affPlant : "proposed"]);
+        const v = Number($("set-val").value);
+        if (cur.set && Number.isFinite(v)) S.set[cur.set.key] = Math.min(0.95, Math.max(0, v / 100));
+        update();
+      });
+      $("kb-chips").addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-target]");
+        const el = btn && document.querySelector(btn.dataset.target);
+        if (!el) return;
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (el.focus) el.focus({ preventScroll: true });
       });
       $("machine-select").addEventListener("change", () => { syncMachineFromSelect(); update(); });
       $("motor-select").addEventListener("change", () => { syncMotorFromSelect(); update(); });

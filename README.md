@@ -28,15 +28,18 @@ PWA tool for HVAC / Building Services engineers to quickly defend pump & fan ene
 - **Electrical supply:** 3-phase or 1-phase, volts and power factor (auto: 0.87 on a VSD / EC — matches Grundfos TPE2 nameplate currents — or typical motor PF for DOL). Current shown at duty, at full nameplate load, and at every affinity speed
 - **Results overview:** existing vs proposed kW, amps, wire-to-water %, annual kWh, £/yr, CO₂
 - **Quick method:** step-by-step from L/s and kPa to motor kW and amps, with calculator key sequences and rules of thumb, using the live numbers
-- **Affinity / fan laws explorer:**
-  - Pump control modes: **proportional pressure** (default for pumps — head falls linearly to 50% at zero flow, P ∝ q·(0.5 + 0.5q)) and **constant pressure** (P ∝ q). Matches Grundfos part-load data: 50% flow ≈ 37% power, not 12.5%
-  - Speed laws: flow ∝ N, head ∝ N², power ∝ Nⁿ — friction only / fans (n=3, default for fans), mixed (n=2.5), static-head (n=2)
-  - Every 5% speed step from 40–120% in kW, kWh/yr, £/yr and CO₂
-  - Cumulative saving vs 100% **and** the extra £ from that 5% step
-  - +1% / −1% marginal cost from the selected speed
-  - Overspeed shown as extra annual cost
+- **Key settings bar:** job, system, fluid, pumps running, control mode(s), load profile and supply are tagged **KEY** (amber) and summarised at the top. Copy / Export of the defence note stay locked until "I've checked these settings" is ticked; changing any key setting locks them again and flashes the chip that changed. Conflicts (e.g. a variable-flow control with no VSD, running above 50 Hz, below minimum speed) show in red
+- **System & pump control (section 2)** — set separately for existing and proposed plant:
+  - **Constant DP at the pump** (default for pumps) — head held, power ≈ flow; the pump barely slows (~92% speed at half flow)
+  - **Proportional pressure** (set % at zero flow, default 50%) — matches Grundfos TPE2 part-load data
+  - **Constant DP at the index circuit** (set point, default 30% of head) — friction savings come back
+  - **Open circuit / static lift** (static %, default 40%) — limited savings, flow stops below a minimum speed
+  - **No pressure control — cube law** (default for fans) — flow ∝ N, head ∝ N², power ∝ N³
+  - **Fixed speed — no VSD** — rides the pump curve, ≈ 50% + 50% × flow. Any variable mode on a plant without a VSD / EC is calculated as fixed speed and flagged
+  - Each option shows a live "at 50% flow" power and speed
+- **Affinity explorer:** the slider is flow % (speed = flow for the cube law). Pump speed is worked out from a pump curve (shut-off head ÷ duty head, default 1.25). Includes pump η away from best efficiency and motor / drive part-load losses, calibrated to the Grundfos 25% point. Flow 20–120%, with >50 Hz and below-minimum-speed rows flagged
+  - **Comparison strip:** the same flow under every control option — speed, head, power, £/yr at that flow, annual £ on the load profile and the saving vs DP at the pump
   - Toggle the table between **existing** and **proposed** (locked to proposed on a new install)
-  - At each speed: absorbed kW, £/yr, IEC frame load %, and a side-by-side existing vs proposed snapshot
 - **Extras:** Pipe/duct velocity check, glycol correction, copy-ready defence note
 - **Working & Learning box:** Every formula shown with live numbers for an audit trail
 
