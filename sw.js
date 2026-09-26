@@ -1,5 +1,6 @@
-const CACHE = 'flow2kw-v10';
-const ASSETS = ['./','./index.html','./manifest.json','./favicon.png','./icons/icon-192.png','./icons/icon-512.png'];
+const CACHE = 'flow2kw-v11';
+const ASSETS = ['./','./index.html','./project.js','./manifest.json','./favicon.png','./icons/icon-192.png','./icons/icon-512.png',
+  './assets/adi-logo.jpg','./assets/adi-footer.jpg','./lib/jspdf.umd.min.js','./lib/jspdf.plugin.autotable.min.js'];
 
 // Fetch fresh copies (bypassing the browser's HTTP cache) so a new version never caches stale files.
 self.addEventListener('install', e => {

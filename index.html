@@ -235,6 +235,20 @@
     .work { background: #020617; color: #e2e8f0; border-radius: 16px; padding: 16px; font-family: var(--mono); font-size: 12px; line-height: 1.55; display: none; }
     .work.open { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
     .work h4 { margin: 0 0 6px; color: #7dd3fc; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    .brand .adi { width: auto; height: 40px; border-radius: 8px; background: #fff; padding: 3px 6px; object-fit: contain; }
+    .project-card { margin-top: 16px; }
+    .pj-grid { display: grid; grid-template-columns: 2fr 1fr 1.4fr 1.2fr 0.6fr 1fr; gap: 10px; }
+    .pj-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pj-status { font-size: 12px; color: var(--muted); }
+    .sel-grid { display: grid; grid-template-columns: 0.6fr 1.6fr 1.4fr 2fr; gap: 10px; }
+    .sched td { white-space: nowrap; }
+    .sched td.acts { display: flex; gap: 4px; }
+    .sched td.acts button { padding: 5px 8px; font-size: 11px; }
+    .sched tr.cur td { background: #e0f2fe; }
+    .sched .empty { color: var(--muted); font-family: var(--sans); white-space: normal; }
+    .btn.warn { background: #f59e0b; color: #fff; }
+    .toast { position: fixed; left: 50%; top: 80px; transform: translateX(-50%); z-index: 80; background: #0f172a; color: #fff; border-radius: 12px; padding: 10px 14px; font-size: 13px; box-shadow: 0 12px 30px rgba(2,8,23,0.35); max-width: calc(100% - 32px); }
+    .toast[hidden] { display: none; }
     .update-bar { position: fixed; left: 50%; bottom: max(16px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 70; width: min(560px, calc(100% - 32px)); display: flex; align-items: center; gap: 12px; justify-content: space-between; background: #0f172a; color: #fff; border: 1px solid #0ea5e9; border-radius: 16px; padding: 12px 14px; box-shadow: 0 12px 30px rgba(2, 8, 23, 0.35); font-size: 14px; }
     .update-bar[hidden] { display: none; }
     .update-bar .btn { flex: none; }
@@ -250,6 +264,8 @@
     .mono { font-family: var(--mono); }
     @media (max-width: 1300px) { .kpis { grid-template-columns: repeat(4, 1fr); } }
     @media (max-width: 1100px) {
+      .pj-grid { grid-template-columns: 1fr 1fr 1fr; }
+      .sel-grid { grid-template-columns: 1fr 1fr; }
       .toolbar, .layout, .hero-save, .kpis, .compare, .aff-duo, .work.open { grid-template-columns: 1fr; }
       .kpis { grid-template-columns: repeat(2, 1fr); }
       .savings, .laws, .stack { grid-template-columns: 1fr 1fr; }
@@ -259,6 +275,7 @@
       input, select, textarea, textarea#defence { font-size: 16px; }
       .wrap { width: min(100% - 20px, 1440px); }
       .header-actions .badge { display: none; }
+      .pj-grid, .sel-grid { grid-template-columns: 1fr 1fr; }
       .row.2, .row.2e, .row.3, .row.auto, .glycol, .size-legend .rowish, .chain { grid-template-columns: 1fr; }
       .seg { flex-wrap: wrap; }
     }
@@ -268,7 +285,7 @@
   <header class="app-header">
     <div class="wrap header-row">
       <div class="brand">
-        <img src="./favicon.png" alt="Flow2kW">
+        <img class="adi" src="./assets/adi-logo.jpg" alt="adi Climate Systems">
         <div>
           <h1>Flow2kW</h1>
           <p>Hydronic &amp; air defence — 2026 plant defaults, affinity-law savings in real terms</p>
@@ -284,6 +301,63 @@
   </header>
 
   <main class="wrap">
+    <section class="card project-card" id="project-card" aria-label="Project">
+      <div class="card-h">
+        <h2>Project</h2>
+        <div class="pj-btns">
+          <button class="btn lite" id="pj-new" type="button">New project</button>
+          <button class="btn lite" id="pj-open" type="button">Open…</button>
+          <button class="btn dark" id="pj-save" type="button">Save project (.json)</button>
+          <button class="btn sky" id="pj-pdf" type="button">PDF schedule</button>
+          <button class="btn lite" id="pj-csv" type="button">Duty list (.csv)</button>
+          <input id="pj-file" type="file" accept=".json,application/json" hidden data-nosnap>
+        </div>
+      </div>
+      <div class="card-b">
+        <div class="pj-grid">
+          <label class="field"><span>Project name</span><input id="pj-name" type="text" placeholder="e.g. Watson Primary School" data-nosnap></label>
+          <label class="field"><span>Project no.</span><input id="pj-number" type="text" placeholder="e.g. 24-118" data-nosnap></label>
+          <label class="field"><span>Client</span><input id="pj-client" type="text" data-nosnap></label>
+          <label class="field"><span>Engineer</span><input id="pj-engineer" type="text" data-nosnap></label>
+          <label class="field"><span>Rev</span><input id="pj-rev" type="text" value="A" data-nosnap></label>
+          <label class="field"><span>Date</span><input id="pj-date" type="date" data-nosnap></label>
+        </div>
+        <div class="pj-status" id="pj-status"></div>
+      </div>
+    </section>
+
+    <section class="card project-card" id="schedule-card" aria-label="Schedule">
+      <div class="card-h">
+        <h2 id="sched-title">Pump schedule</h2>
+        <span class="pill" id="sel-status">New selection — not yet in the schedule</span>
+      </div>
+      <div class="card-b">
+        <div class="sel-grid">
+          <label class="field"><span>Ref</span><input id="sel-ref" type="text" value="P-01" data-nosnap></label>
+          <label class="field"><span>Service / description</span><input id="sel-service" type="text" placeholder="e.g. LTHW primary circuit" data-nosnap></label>
+          <label class="field"><span>BMS interface</span><select id="sel-bms" data-nosnap>
+            <option>Hardwired: enable, run, fault, 0–10 V speed</option>
+            <option>Modbus RTU</option>
+            <option>BACnet MS/TP</option>
+            <option>BACnet IP</option>
+            <option>Standalone — no BMS</option>
+          </select></label>
+          <label class="field"><span>Controls / electrical notes</span><input id="sel-notes" type="text" placeholder="e.g. DP sensor at AHU-3 coil; supply from MCC-1" data-nosnap></label>
+        </div>
+        <div class="pj-btns">
+          <button class="btn dark" id="sel-save" type="button">Add to schedule</button>
+          <button class="btn lite" id="sel-saveas" type="button">Save as new selection</button>
+          <button class="btn lite" id="sel-new" type="button">Start next selection</button>
+        </div>
+        <div class="table-wrap sched">
+          <table>
+            <thead><tr><th>Ref</th><th>Service</th><th>Duty</th><th>Arrangement</th><th>Motor</th><th>kW input</th><th>A running / FL</th><th>Control</th><th></th></tr></thead>
+            <tbody id="sched-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
     <div class="toolbar">
       <div class="seg key" role="group" aria-label="Fluid">
         <div class="lbl">Fluid<span class="keytag">Key</span></div>
@@ -657,6 +731,8 @@
 
     <footer><span id="app-version"></span>Q = ṁ·Cp·ΔT · Ph = Q·ΔP · Pe = Ph / (ηm·ηmot·ηd) · I = Pe / (√3·V·PF) · Motor η per IEC 60034-30-1 · Affinity power ∝ N<sup>n</sup> · UK SI · g = 9.81</footer>
   </main>
+
+  <div class="toast" id="toast" role="status" hidden></div>
 
   <div class="update-bar" id="update-bar" role="status" hidden>
     <span>A new version of Flow2kW is ready.</span>
@@ -1724,7 +1800,9 @@ Motor η: IEC 60034-30-1 full-load, 4-pole, at the rated kW.
 
     function update() {
       if (S.suppress) return;
-      render(calc());
+      const c = calc();
+      render(c);
+      if (typeof afterUpdate === "function") afterUpdate(c);
     }
 
     function syncMachineFromSelect() {
@@ -2043,5 +2121,6 @@ Motor η: IEC 60034-30-1 full-load, 4-pole, at the rated kW.
       });
     }
   </script>
+  <script src="./project.js"></script>
 </body>
 </html>

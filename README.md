@@ -5,6 +5,12 @@ PWA tool for HVAC / Building Services engineers to quickly defend pump & fan ene
 **Live demo:** Enable GitHub Pages on this repo (Settings > Pages > main / root) → https://mikesweet23.github.io/pumpandfan/
 
 ### Features
+- **Projects (adi Climate Systems):** project name, number, client, engineer, revision and date. Several pump / fan selections per project, each with a ref (P-01, F-01…), service, BMS interface and controls / electrical notes
+  - **Add to schedule** only once the key settings are confirmed; **Edit**, **Copy** or **Delete** any line; "Start next selection" carries the current inputs forward
+  - **Save project (.json)** / **Open…** — reopening recalculates every selection with the current version of the tool
+  - Autosaved in the browser (restored when you reopen the app); use the JSON file to keep or share a project
+  - **PDF schedule** (A4 landscape, adi logo and letterhead footer): pump / fan schedule, electrical requirements (supply, motors installed / running, rating, drive, PF, running and full-load amps, connected load, max demand), controls (mode, set point, sensor, speed control, BMS interface, duty / standby), annual energy, and a page of calculation notes per selection. Built in the browser with the bundled jsPDF, so it works offline
+  - **Duty list (.csv)** — per-unit flow (L/s and m³/h), head (kPa and m), liquid, running / standby, for sizing in Grundfos Product Centre or other selection software
 - **Fluid toggle:** Water | Glycol Mix (EG/PG %) | Air — temperature slider affects density
 - **Thermal kW from Flow & ΔT:** Q = ṁ·Cp·ΔT with glycol & temp corrections (ρ, Cp shown)
 - **2026 catalogue defaults** for existing plant, with older and premium options still available:
