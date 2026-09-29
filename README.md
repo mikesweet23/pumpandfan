@@ -28,7 +28,7 @@ PWA tool for HVAC / Building Services engineers to quickly defend pump & fan ene
   - Large commercial / institutional: 37, 45, 55, 75 kW
   - Frame = next catalogue size ≥ 1.10 × motor shaft with a VSD / EC, 1.25 × with fixed speed (must cover its full-speed curve); overridable
   - Overview shows the Small / Medium / Large catalogue and highlights the band the duty lands in
-- **Proposed side** defaults to 2026 premium (EC / IE5 / VSD) so the comparison is ready on first open
+- **Proposed side** defaults to premium pump hydraulics with an IE4 motor and VSD (or a premium EC fan), so the comparison is ready on first open. IE5 remains available as a premium motor option
 - **Actual data mode:** Enter measured flow, head, electrical kW (or V·A·PF) to back-calc wire-to-water eff
 - **Power chain for each plant:** water power → pump shaft power → motor rating (nameplate kW) → electrical input → running current → full-load current
 - **Electrical supply:** 3-phase or 1-phase, volts and power factor (auto: 0.87 on a VSD / EC — matches Grundfos TPE2 nameplate currents — or typical motor PF for DOL). Current shown at duty, at full nameplate load, and at every affinity speed
@@ -50,7 +50,7 @@ PWA tool for HVAC / Building Services engineers to quickly defend pump & fan ene
 - **Working & Learning box:** Every formula shown with live numbers for an audit trail
 
 ### How to use
-1. The calculator opens as a **new installation** — 2.5 L/s at 150 kPa, ΔT 20 K — on a 2026 premium pump + IE5 + VSD (or EC plug fan in air/fan mode). Switch to **Upgrade existing** to compare against old plant
+1. The calculator opens as a **new installation** — 2.5 L/s at 150 kPa, ΔT 20 K — on a 2026 premium pump hydraulics + IE4 + VSD (or EC plug fan in air/fan mode). Switch to **Upgrade existing** to compare against old plant
 2. Change era or pick any catalogue item if the existing plant is older, worn, or a premium EC machine
 3. Set flow, temperature, glycol % if needed, ΔT and head → thermal and hydraulic kW
 4. Review existing vs 2026 premium proposed savings
