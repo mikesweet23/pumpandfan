@@ -764,7 +764,7 @@
       { id: "2006", year: "2006–15", label: "Standard ErP generation", eff: 76, note: "First MEI / ErP pumps, IE2–IE3 motors typical." },
       { id: "2016", year: "2016–22", label: "High-eff Grundfos / Wilo class", eff: 82, note: "MEI ≥ 0.40–0.70, IE3 common, VSD becoming normal." },
       { id: "2026", year: "2026 typical", label: "Specified 2026 packaged pump", eff: 78, typical2026: true, note: "Typical 2026 commercial selection: MEI ≥ 0.70, IE4 motor, packaged or matched VSD. 78% is pump η at the duty point — real 2026 in-line selections at 12–23 L/s per pump give 74–79% (Grundfos TP / TPE2, Sept 2026). Use the catalogue figure once you have a selection." },
-      { id: "2026ec", year: "2026 premium", label: "Best-in-class hydraulics + PM / EC motor", eff: 81, note: "Best-available 2026 hydraulic at duty, paired with an IE5 permanent-magnet / EC motor and integrated drive. Hydraulic η only — motor and drive losses are added separately. Best of the Sept 2026 Grundfos selections was 79.4%." },
+      { id: "2026ec", year: "2026 premium", label: "Best-in-class pump hydraulics", eff: 81, note: "Best-available 2026 hydraulic at duty. Defaults to an IE4 motor and VSD; IE5 remains available as a premium option. Hydraulic η only — motor and drive losses are added separately. Best of the Sept 2026 Grundfos selections was 79.4%." },
       { id: "custom", year: "Custom", label: "Enter hydraulic efficiency", eff: 80, custom: true, note: "Type or slide to a tested / catalogue figure." }
     ];
     const FANS = [
@@ -1071,7 +1071,7 @@
           ? (S.system === "pump" ? "2026ec" : "2026ax")
           : machineId;
         const proposedMachine = byId(machines(), $("prop-machine").value);
-        const proposedBundled = applyBundling(proposedMachine, "ie5", "vsd");
+        const proposedBundled = applyBundling(proposedMachine, S.system === "pump" ? "ie4" : "ie5", "vsd");
         $("prop-motor").value = proposedBundled.motorSel;
         $("prop-drive").value = proposedBundled.driveSel;
         return;
@@ -1943,7 +1943,7 @@ Motor η: IEC 60034-30-1 full-load, 4-pole, at the rated kW.
       $("eras").innerHTML = ERAS.map((era) => `<button type="button" data-era="${era.id}" class="${era.cls || ""}">${era.label}</button>`).join("");
       fillSelect($("motor-select"), MOTORS, (x) => `${x.year} — ${x.label}`, "ie4");
       fillSelect($("drive-select"), DRIVES, (x) => x.label, "vsd");
-      fillSelect($("prop-motor"), MOTORS.filter((x) => x.id !== "preie"), (x) => `${x.year} — ${x.label}`, "ie5");
+      fillSelect($("prop-motor"), MOTORS.filter((x) => x.id !== "preie"), (x) => `${x.year} — ${x.label}`, "ie4");
       fillSelect($("prop-drive"), DRIVES, (x) => x.label, "vsd");
       fillMotorFrameSelect($("motor-frame"), "auto");
       fillMotorFrameSelect($("prop-motor-frame"), "auto");
