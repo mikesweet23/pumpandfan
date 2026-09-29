@@ -364,11 +364,13 @@
           </select></label>
           <label class="field"><span>Controls / electrical notes</span><input id="sel-notes" type="text" placeholder="e.g. DP sensor at AHU-3 coil; supply from MCC-1" data-nosnap></label>
           <label class="field"><span>Inverter arrangement</span><select id="sel-inverter" data-nosnap>
-            <option value="auto">Onboard below 11 kW; external from 11 kW</option>
+            <option value="auto">Supplier to confirm integral / packaged / external</option>
             <option value="onboard">Onboard inverter requested</option>
+            <option value="packaged">Factory packaged inverter requested</option>
             <option value="external">External inverter requested</option>
           </select></label>
         </div>
+        <p class="note">Integral drives depend on the pump range and generation, not a universal motor size cut-off. Current Grundfos TPE3 MGE models extend to 22 kW; larger TPE packages can include CUE drives. Confirm the actual model and UK availability with the supplier. <a href="https://www.grundfos.com/content/dam/global/activity-assets/ish2025/documents/ISH3_TPE3_EN.pdf" target="_blank" rel="noopener">Grundfos range update</a> · <a href="https://www.grundfos.com/content/dam/global/page-assets/products-and-services/products/documents/CBS_e_brochure_EN_new.pdf" target="_blank" rel="noopener">Drive arrangements</a></p>
         <div class="pj-btns">
           <button class="btn dark" id="sel-next" type="button">Add &amp; next selection</button>
           <button class="btn lite" id="sel-save" type="button">Add to schedule</button>
@@ -429,7 +431,7 @@
           </div>
           <div class="card-b">
             <div class="row 2">
-              <label class="field"><span>Flow</span><input id="flow" type="number" step="0.01" value="2.5"></label>
+              <label class="field"><span id="flow-label">Flow</span><input id="flow" type="number" step="0.01" value="2.5"></label>
               <label class="field"><span>Unit</span><select id="flow-unit"></select></label>
             </div>
             <label class="field">
@@ -487,6 +489,7 @@
               <label class="field hidden" id="set-wrap"><span id="set-label">Set point, % of design head</span><input id="set-val" type="number" min="0" max="95" step="1"></label>
               <label class="field" id="hso-wrap"><span>Pump shut-off head ÷ duty head</span><input id="hso" type="number" min="1.05" max="2" step="0.05" value="1.25"></label>
             </div>
+            <p class="note hidden" id="flow-track-detail"></p>
             <div class="alerts" id="mode-warn"></div>
           </div>
         </section>
@@ -843,6 +846,8 @@
         tip: "The {m}'s own curve lets pressure fall as flow falls. No remote sensor to wire — check the index circuit still gets enough pressure at low flow." },
       { id: "dp-index", label: "Constant DP at the index circuit", short: "DP at index", set: { key: "index", label: "Index DP set point, % of design head", def: 30 },
         tip: "Remote DP sensor at the far (index) circuit. Pipe friction savings come back, so you get much of the cube law. Needs the sensor wired and the index located correctly." },
+      { id: "flow-primary", label: "Primary flow tracks secondary flow", short: "Primary flow tracking", pumpOnly: true, set: { key: "tracking", label: "Primary target, % of measured secondary flow", def: 110, min: 100, max: 150 },
+        tip: "BMS sets total primary flow to 110% of total measured secondary flow (adjustable). Use primary flow feedback to regulate pump speed. Enter PRIMARY design flow in section 1. Energy estimates assume a fixed resistance primary loop with no static head; confirm minimum plant flow and the actual pump curves." },
       { id: "static", label: "Open circuit / static lift", short: "Static lift", set: { key: "static", label: "Static lift, % of design head", def: 40 },
         tip: "Cooling towers, lifting to height. The {m} must beat the static lift before any water moves, so savings are limited and flow stops below a minimum speed." },
       { id: "friction", label: "No pressure control — cube law", short: "Cube law",
@@ -850,7 +855,7 @@
       { id: "fixed", label: "Fixed speed — no VSD", short: "Fixed speed",
         tip: "No speed control. Valves throttle and the {m} rides up its curve, so power only falls to about 75% at half flow. Typical of old plant." }
     ];
-    const MODE_SET_DEFAULTS = { prop: 0.5, index: 0.3, static: 0.4 };
+    const MODE_SET_DEFAULTS = { prop: 0.5, index: 0.3, static: 0.4, tracking: 1.1 };
     const HSO_DEFAULT = 1.25;
     const MIN_SPEED = 0.3;
     // Pump η falls as it runs away from best efficiency at its current speed: η ratio = 1 − k·(q/N − 1)².
@@ -1141,6 +1146,10 @@
       if (modeId === "propp") return set.prop + (1 - set.prop) * q;
       if (modeId === "dp-index") return set.index + (1 - set.index) * q * q;
       if (modeId === "static") return set.static + (1 - set.static) * q * q;
+      // Flow tracking sets the target, not the hydraulic resistance. This estimate assumes a
+      // fixed resistance primary loop with no static head; both primary and secondary demand
+      // have the same normalised q because the tracking ratio is already in the primary duty.
+      if (modeId === "flow-primary") return q * q;
       return q * q;
     }
     // Pump speed needed to give head h at flow q, from a pump curve H = Hso·N² − (Hso − 1)·q².
@@ -1175,6 +1184,8 @@
       return modeId !== "fixed" && !hasVsd(drive) ? "fixed" : modeId;
     }
     function modeLabel(id) { return byId(MODES, id).label; }
+    function availableModes() { return MODES.filter((m) => !m.pumpOnly || S.system === "pump"); }
+    function primaryFlowTarget(secondaryFlow, set) { return secondaryFlow * (Number(set.tracking) || 1.1); }
     function modeTip(id, sys) { return byId(MODES, id).tip.replace(/\{m\}/g, sys === "pump" ? "pump" : "fan"); }
     function modeLaw(id, set) {
       const pct = (v) => Math.round(v * 100);
@@ -1183,6 +1194,7 @@
       if (id === "propp") return `H = ${pct(set.prop)}% + ${pct(1 - set.prop)}%·q · P ≈ q·H`;
       if (id === "dp-index") return `H = ${pct(set.index)}% + ${pct(1 - set.index)}%·q² · P ≈ q·H`;
       if (id === "static") return `H = ${pct(set.static)}% + ${pct(1 - set.static)}%·q² · P ≈ q·H`;
+      if (id === "flow-primary") return `Qprimary = ${pct(set.tracking)}% × Qsecondary · estimate: H ∝ Qprimary² for a fixed resistance loop with no static head`;
       return "N = q · H = q² · P ≈ q³";
     }
     // Share of full-duty energy over the year for a load profile, using the plant's control mode.
@@ -1456,14 +1468,14 @@
       const vsd = hasVsd(d.drive);
       $("control-title").textContent = `2. System & ${sysWord} control`;
       setText("control-intro", `How is the ${sysWord} controlled? This sets how power falls when demand drops — it matters more than the ${sysWord} itself. Choosing for the ${c.affPlant === "proposed" ? (hasExisting() ? "proposed plant" : "new plant") : "existing plant"}${hasExisting() ? "; switch plant above to set the other" : ""}.`);
-      $("modes").innerHTML = MODES.map((m) => {
+      $("modes").innerHTML = availableModes().map((m) => {
         const half = operatingPoint(m.id, 0.5, d.cfg);
         const blocked = m.id !== "fixed" && !vsd;
         const tags = (hasExisting() && S.modes.existing === m.id ? `<i class="tg ex">Existing</i>` : "") + (S.modes.proposed === m.id ? `<i class="tg pr">${hasExisting() ? "Proposed" : "New"}</i>` : "");
         const val = m.set ? ` ${Math.round(c.set[m.set.key] * 100)}%` : "";
         return `<button type="button" class="mode${d.modeReq === m.id ? " active" : ""}${blocked ? " blocked" : ""}" data-mode="${m.id}">
           <b>${m.label}${val}<span class="tags">${tags}</span></b>
-          <small>${modeTip(m.id, c.system)}</small>
+          <small>${modeTip(m.id, c.system).replace("110%", `${Math.round(c.set.tracking * 100)}%`)}</small>
           <em>At 50% flow ≈ ${fmt(half.elec * 100, 0)}% power · ${sysWord} ${fmt(half.n * 100, 0)}% speed${blocked ? " · needs a VSD — this plant has none" : ""}</em>
         </button>`;
       }).join("");
@@ -1471,8 +1483,18 @@
       $("set-wrap").classList.toggle("hidden", !cur.set);
       if (cur.set) {
         setText("set-label", cur.set.label);
+        $("set-val").min = cur.set.min ?? 0;
+        $("set-val").max = cur.set.max ?? 95;
         if (document.activeElement !== $("set-val")) $("set-val").value = Math.round(c.set[cur.set.key] * 100);
       }
+      const tracking = cur.id === "flow-primary";
+      $("flow-track-detail").classList.toggle("hidden", !tracking);
+      if (tracking) {
+        const secondaryDesign = c.Q * 1000 / c.set.tracking;
+        const secondaryNow = secondaryDesign * c.speed / 100;
+        setText("flow-track-detail", `Primary design duty: ${fmt(c.Q * 1000, 2)} L/s total = ${fmt(secondaryDesign, 2)} L/s secondary × ${Math.round(c.set.tracking * 100)}%. At ${c.speed}% secondary demand: secondary ${fmt(secondaryNow, 2)} L/s → primary target ${fmt(primaryFlowTarget(secondaryNow, c.set), 2)} L/s total (${fmt(primaryFlowTarget(secondaryNow, c.set) / c.nRun, 2)} L/s per running pump). BMS sums the active secondary flow signals, then regulates primary flow using a common primary flow meter. Apply minimum plant flow, maximum pump duty and staged operation limits; alarm and use an agreed fallback on sensor failure. The design flow in section 1 is the PRIMARY flow, including the margin.`);
+      }
+      setText("flow-label", c.system === "pump" && (c.propDesign.modeReq === "flow-primary" || (hasExisting() && c.existDesign.modeReq === "flow-primary")) ? "Primary design flow (total, including tracking margin)" : "Flow");
       $("mode-warn").innerHTML = keyChecks(c).filter((w) => w.plant === c.affPlant).map((w) => `<div class="alert ${w.level}">${w.text}</div>`).join("");
     }
 
@@ -1485,7 +1507,7 @@
       const base = operatingPoint("dp-pump", q, d.cfg);
       const baseYr = d.elec * c.hours * profileFactor(c.profile, "dp-pump", d.cfg) * c.tariff;
       setText("strip-title", `Comparison — ${c.speed}% flow, every control option (${c.affPlant === "proposed" ? (hasExisting() ? "proposed" : "new") : "existing"} plant)`);
-      $("strip-body").innerHTML = MODES.map((m) => {
+      $("strip-body").innerHTML = availableModes().map((m) => {
         const op = operatingPoint(m.id, q, d.cfg);
         const kw = d.elec * op.elec;
         const yrAt = kw * c.hours * c.tariff;
@@ -1506,6 +1528,7 @@
       const sysWord = c.system === "pump" ? "pump" : "fan";
       const plants = hasExisting() ? [["existing", c.existDesign, "Existing"], ["proposed", c.propDesign, "Proposed"]] : [["proposed", c.propDesign, "New plant"]];
       plants.forEach(([id, d, name]) => {
+        if (d.modeReq === "flow-primary") out.push({ plant: id, level: "amber", text: `${name}: primary flow tracking uses measured secondary flow and primary flow feedback. Energy estimates assume a fixed resistance loop with no static head; verify plant minimum flow, staging limits and sensor failure fallback.` });
         if (d.modeReq !== d.mode) out.push({ plant: id, level: "red", text: `<b>${name}: "${modeLabel(d.modeReq)}" needs a VSD or EC drive</b> — this plant is on "${d.drive.label}". It is calculated as fixed speed. Change the drive, or choose Fixed speed.` });
         if (d.modeReq === "fixed" && hasVsd(d.drive)) out.push({ plant: id, level: "amber", text: `${name}: a VSD is fitted but set to run at fixed speed — no turndown savings are counted.` });
       });
@@ -1677,10 +1700,10 @@
       $("mode-banner").className = `mode-banner m-${mode}`;
       $("mode-banner").innerHTML = `<b>${c.affPlant === "proposed" ? (hasExisting() ? "Proposed" : "New plant") : "Existing"}: ${m.label}</b>${d.modeReq !== mode ? ` <b>(asked for ${byId(MODES, d.modeReq).short} — no VSD, so fixed speed)</b>` : ""}. ${modeLaw(mode, c.set)}.<br>
         At 50% flow this ${sysWord} runs at about <b>${fmt(half.n * 100, 0)}% speed</b> and takes <b>${fmt(half.elec * 100, 0)}% of design power</b>${isCube ? "" : " — the pure cube law would say 12.5%"}.${mode === "dp-pump" ? ` Head is held at ${fmt(c.dP, 0)} kPa, so there is no N² fall in head and power only falls in line with flow.` : ""}${mode === "static" ? ` Below about ${fmt(Math.sqrt(c.set.static / c.hso) * 100, 0)}% speed the ${sysWord} cannot beat the static lift and flow stops.` : ""}`;
-      setText("law-flow", isCube ? "Q₂ / Q₁ = N₂ / N₁" : mode === "fixed" ? "Q set by valves · N = 100%" : "Q = q × design (valves / demand)");
-      setText("law-head", isCube ? "H₂ / H₁ = (N₂ / N₁)²" : modeLaw(mode, c.set).split(" · ")[0]);
+      setText("law-flow", mode === "flow-primary" ? `Qprimary = ${Math.round(c.set.tracking * 100)}% × measured Qsecondary` : isCube ? "Q₂ / Q₁ = N₂ / N₁" : mode === "fixed" ? "Q set by valves · N = 100%" : "Q = q × design (valves / demand)");
+      setText("law-head", mode === "flow-primary" ? "Estimate: H₂ / H₁ = (Qprimary₂ / Qprimary₁)²" : isCube ? "H₂ / H₁ = (N₂ / N₁)²" : modeLaw(mode, c.set).split(" · ")[0]);
       setText("law-power", isCube ? "P₂ / P₁ = (N₂ / N₁)³" : mode === "fixed" ? "P ≈ 0.5 + 0.5q (pump curve)" : "P = Q × H ÷ η");
-      setText("speed-label", isCube ? "Speed = flow, % of design (N = q)" : mode === "fixed" ? "Flow, % of design — speed fixed at 100%" : "Flow, % of design — the tool works out the speed");
+      setText("speed-label", mode === "flow-primary" ? "Secondary flow demand, % of design (primary tracks at the set ratio)" : isCube ? "Speed = flow, % of design (N = q)" : mode === "fixed" ? "Flow, % of design — speed fixed at 100%" : "Flow, % of design — the tool works out the speed");
       setText("aff-hero-at", isCube ? "At selected speed" : "At selected flow");
       setText("th-speed", isCube ? "Speed = flow" : "Flow %");
       setText("th-kw", multi ? "kW total" : "Power kW");
@@ -1779,6 +1802,7 @@ PROPOSED / NEW PLANT:
 
 ${savingsBlock}
 CONTROL: ${hasExisting() ? `existing ${modeLabel(c.exMode)}${c.existDesign.modeReq !== c.exMode ? " (no VSD)" : ""}, proposed ` : ""}${modeLabel(c.prMode)}${c.propDesign.modeReq !== c.prMode ? " (no VSD)" : ""}
+${c.propDesign.modeReq === "flow-primary" ? `PRIMARY FLOW SET POINT: Qprimary = ${Math.round(c.set.tracking * 100)}% × measured total Qsecondary. Primary design ${fmt(c.Q * 1000, 2)} L/s corresponds to secondary design ${fmt(c.Q * 1000 / c.set.tracking, 2)} L/s. Use summed secondary flow signals and common primary flow feedback; BMS regulates pump speed and stages duty / assist pumps. Apply plant minimum-flow and maximum-duty limits; agree sensor-failure fallback. Energy estimate assumes a fixed resistance primary loop with no static head.\n` : ""}
 AFFINITY @ ${c.speed}% flow on ${c.affPlant} (${modeLaw(c.design.mode, c.set)}):
 - Flow × ${fmt(c.selected.n, 3)}, Head × ${fmt(c.selected.headRatio, 3)}, Speed ${fmt(c.selected.speed * 100, 0)}%, Power × ${fmt(c.selected.powerRatio, 3)} (incl. part-load losses)
 - Electrical ${fmt(c.selected.power, 3)} kW, ${fmt(c.selected.amps, 2)} A, ${fmt(c.selected.kwh, 0)} kWh/yr, ${money(c.selected.gbp)}/yr
@@ -2018,7 +2042,7 @@ Motor η: IEC 60034-30-1 full-load, 4-pole, at the rated kW.
       $("set-val").addEventListener("input", () => {
         const cur = byId(MODES, S.modes[hasExisting() ? S.affPlant : "proposed"]);
         const v = Number($("set-val").value);
-        if (cur.set && Number.isFinite(v)) S.set[cur.set.key] = Math.min(0.95, Math.max(0, v / 100));
+        if (cur.set && Number.isFinite(v)) S.set[cur.set.key] = Math.min((cur.set.max ?? 95) / 100, Math.max((cur.set.min ?? 0) / 100, v / 100));
         update();
       });
       $("kb-chips").addEventListener("click", (e) => {

@@ -12,7 +12,7 @@ PWA tool for HVAC / Building Services engineers to quickly defend pump & fan ene
   - **PDF schedule** (A4 landscape, adi logo and letterhead footer): pump / fan schedule, electrical requirements (supply, motors installed / running, rating, drive, PF, running and full-load amps, connected load, max demand), controls (mode, set point, sensor, speed control, BMS interface, duty / standby), annual energy, and a page of calculation notes per selection. Built in the browser with the bundled jsPDF, so it works offline
   - **Duty list (.csv)** — per-unit flow (L/s and m³/h), head (kPa and m), liquid, running / standby, for sizing in Grundfos Product Centre or other selection software
   - **Supplier email** — preview and copy a pump quotation enquiry, or download an unsent `.eml` file to open in an email app or attach. Uses saved pump selections only and flags unsaved changes. Includes per-pump and total flow, head, fluid, estimated motor / shaft / electrical powers, supply, control set point, sensor, BMS and duty / assist / standby operation. Requests manufacturer Q/H, efficiency, shaft power and NPSHr curves, confirmed selections and prices
-  - **Inverter arrangement** per selection: default preference is onboard below 11 kW per motor and external from 11 kW upwards; can be overridden to onboard or external. External drive enquiries specify Danfoss, Siemens or Grundfos. The supplier must confirm availability, suitability and the final motor size; this is a project preference rather than a universal manufacturer limit. Fixed speed selections do not request inverters
+  - **Inverter arrangement** per selection: supplier confirms integral motor drive, factory packaged inverter or separate external drive. Can be overridden to onboard, factory packaged or external. External drive enquiries specify Danfoss, Siemens or Grundfos. There is no universal motor kW cut-off. Fixed speed selections do not request inverters
 - **Fluid toggle:** Water | Glycol Mix (EG/PG %) | Air — temperature slider affects density
 - **Thermal kW from Flow & ΔT:** Q = ṁ·Cp·ΔT with glycol & temp corrections (ρ, Cp shown)
 - **2026 catalogue defaults** for existing plant, with older and premium options still available:
@@ -41,6 +41,7 @@ PWA tool for HVAC / Building Services engineers to quickly defend pump & fan ene
   - **Constant DP at the pump** (default for pumps) — head held, power ≈ flow; the pump barely slows (~92% speed at half flow)
   - **Proportional pressure** (set % at zero flow, default 50%) — matches Grundfos TPE2 part-load data
   - **Constant DP at the index circuit** (set point, default 30% of head) — friction savings come back
+  - **Primary flow tracks secondary flow** (pumps only, default 110%, adjustable 100–150%) — BMS sums measured secondary flows and regulates total primary flow using a primary flow meter: `Qprimary = 1.10 × Qsecondary`. Enter the PRIMARY design duty (including the tracking margin); the tool shows the corresponding secondary design flow and target at each demand level. The ratio is across the whole set, not applied again per pump. The energy estimate assumes a fixed resistance primary loop with no static head. Specify plant minimum-flow / maximum-duty limits, duty / assist staging and sensor-failure fallback during commissioning. Included in saved JSON, PDF controls and supplier emails
   - **Open circuit / static lift** (static %, default 40%) — limited savings, flow stops below a minimum speed
   - **No pressure control — cube law** (default for fans) — flow ∝ N, head ∝ N², power ∝ N³
   - **Fixed speed — no VSD** — rides the pump curve, ≈ 50% + 50% × flow. Any variable mode on a plant without a VSD / EC is calculated as fixed speed and flagged
@@ -66,6 +67,12 @@ Chrome/Edge on desktop or phone → Install icon in address bar. Works offline.
 
 ### Tech
 Single-page HTML/CSS/JS, no build needed. Just `index.html`.
+
+### Grundfos drive guidance (checked 29 September 2026)
+- New generation TPE3: 0.25–22 kW with MGE motor and integrated frequency converter. Grundfos's [March 2025 range announcement](https://www.grundfos.com/content/dam/global/activity-assets/ish2025/documents/ISH3_TPE3_EN.pdf) expanded this from the previous 2.2 kW limit
+- TPE2/TPE3 model availability varies with generation: Grundfos's [current installation size table](https://api.grundfos.com/literature/Grundfosliterature-6910500.pdf) includes TPE2/TPE3 duties with 11, 15, 18.5 and 22 kW motors; older TPE2/TPE3 brochures list 0.25–2.2 kW
+- TPE Series 1000/2000: the [commercial building services brochure](https://www.grundfos.com/content/dam/global/page-assets/products-and-services/products/documents/CBS_e_brochure_EN_new.pdf) lists MGE integrated drives to 22 kW and integrated CUE packages at 30–55 kW. The 2025 range announcement extends larger TPE models to 90 kW. A factory packaged CUE is distinct from the electronics integrated into an MGE motor; confirm mounting and UK supply for the actual product code
+- The generic calculator motor default remains IE4. These Grundfos MGE ranges commonly use IE5; supplier enquiries accept a manufacturer-standard IE5 package and request the actual selected class
 
 ### Upload to GitHub
 1. Create repo `pumpandfan`

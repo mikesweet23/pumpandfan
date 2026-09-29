@@ -78,6 +78,7 @@ const SENSOR = {
   "dp-pump": "DP transmitter across the unit (or its built-in sensor)",
   propp: "Built-in / sensorless (proportional pressure)",
   "dp-index": "Remote DP sensor at the index circuit",
+  "flow-primary": "Summed active secondary flow measurement + common primary flow meter feedback to BMS",
   static: "Pressure transmitter to suit static lift",
   friction: "None — speed set by BMS / demand",
   fixed: "None — fixed speed"
@@ -95,7 +96,9 @@ function summarize(c, sel) {
   const mode = byId(MODES, c.prMode);
   const req = byId(MODES, c.propDesign.modeReq);
   const setVal = mode.set ? c.set[mode.set.key] : null;
-  const setpoint = mode.set
+  const setpoint = mode.id === "flow-primary"
+    ? `Primary flow = ${Math.round(c.set.tracking * 100)}% × measured total secondary flow (secondary design ${fmt(c.Q * 1000 / c.set.tracking, 2)} L/s → primary design ${fmt(c.Q * 1000, 2)} L/s)`
+    : mode.set
     ? `${Math.round(setVal * 100)}% of design (${fmt(c.dP * setVal, 0)} kPa)`
     : mode.id === "dp-pump" ? `${fmt(c.dP, 0)} kPa` : "—";
   const vsd = hasVsd(p.drive);
@@ -119,6 +122,7 @@ function summarize(c, sel) {
     connectedKw: (Number(rated) || 0) * (c.nRun + c.nStby), maxDemandKw: el.fullLoadKw * c.nRun,
     control: mode.label + (req.id !== mode.id ? ` (asked for ${req.short}; no VSD)` : ""), controlShort: mode.short,
     setpoint, sensor: SENSOR[mode.id] || "", changeover,
+    flowTracking: req.id === "flow-primary" ? { ratio: c.set.tracking, secondaryDesign: c.Q * 1000 / c.set.tracking, primaryDesign: c.Q * 1000 } : null,
     kwh: c.propKwh, gbp: c.propKwh * c.tariff, co2: c.propKwh * c.carbon, profile: c.profile.label, hours: c.hours,
     upgrade: hasExisting() ? { existingKw: c.elec, existingKwh: c.kwh, saveKwh: c.saveKwh, saveGbp: c.saveGbp, payback: c.payback } : null,
     warnings: keyChecks(c).filter((w) => w.level === "red").map((w) => stripTags(w.text))
@@ -144,7 +148,7 @@ function setSelInputs(sel) {
   $("sel-service").value = sel.service || "";
   if (sel.bms) $("sel-bms").value = sel.bms;
   $("sel-notes").value = sel.notes || "";
-  $("sel-inverter").value = ["auto", "onboard", "external"].includes(sel.inverter) ? sel.inverter : "auto";
+  $("sel-inverter").value = ["auto", "onboard", "packaged", "external"].includes(sel.inverter) ? sel.inverter : "auto";
 }
 
 // Add the current calculator state to the schedule (or update the selection being edited).
@@ -299,7 +303,7 @@ function loadProject(data, { quiet = false } = {}) {
     PJ_FIELDS.forEach((id) => { $(id).value = str(pj[id.slice(3)]); });
     P.selections = [];
     data.selections.forEach((raw) => {
-      const sel = { uid: str(raw.uid, 40) || uid(), ref: str(raw.ref, 20), service: str(raw.service), bms: str(raw.bms, 80), notes: str(raw.notes, 300), inverter: ["onboard", "external"].includes(raw.inverter) ? raw.inverter : "auto", snapshot: raw.snapshot };
+      const sel = { uid: str(raw.uid, 40) || uid(), ref: str(raw.ref, 20), service: str(raw.service), bms: str(raw.bms, 80), notes: str(raw.notes, 300), inverter: ["onboard", "packaged", "external"].includes(raw.inverter) ? raw.inverter : "auto", snapshot: raw.snapshot };
       applySnapshot(sel.snapshot, { confirmed: true });
       const c = calc();
       sel.summary = summarize(c, sel);
@@ -360,11 +364,10 @@ function pumpSelections() { return P.selections.filter((s) => s.summary.kind ===
 function inverterRequest(m) {
   if (m.driveType === "DOL" || m.driveType === "Belt, DOL") return `Fixed speed: ${m.driveType}; no inverter requested.`;
   if (m.driveType === "Integrated EC") return "Onboard motor electronics included in the pump rating; confirm the proposed package.";
-  const rated = Number(m.motorRatedKw) || parseFloat(m.motorKw);
-  const external = m.inverter === "external" || (m.inverter !== "onboard" && rated >= 11);
-  return external
-    ? "External inverter per pump: please specify Danfoss, Siemens or Grundfos, matched to the selected motor and controls."
-    : "Onboard inverter per pump preferred; please confirm availability and suitability.";
+  if (m.inverter === "external") return "External inverter per pump: please specify Danfoss, Siemens or Grundfos, matched to the selected motor and controls.";
+  if (m.inverter === "onboard") return "Onboard inverter per pump preferred; please confirm availability and suitability.";
+  if (m.inverter === "packaged") return "Factory packaged inverter per pump requested (e.g. Grundfos CUE package where applicable); confirm the mounting arrangement, model and controls.";
+  return "Integral or factory packaged inverter preferred where available. Confirm the drive arrangement for the selected model; if a separate external drive is required, quote Danfoss, Siemens or Grundfos matched to the motor and controls.";
 }
 function supplierEnquiry() {
   const pj = Object.fromEntries(PJ_FIELDS.map((id) => [id.slice(3), $(id).value.trim()]));
@@ -383,6 +386,7 @@ Supply: ${m.supply}, 50 Hz.
 Control: ${m.control}.${m.setpoint !== "—" ? " Set point: " + m.setpoint + "." : ""}
 Sensor: ${m.sensor}.
 Operation: ${m.changeover}.
+${m.flowTracking ? `Flow tracking sequence: BMS sums the active secondary flows and sets total primary flow to ${Math.round(m.flowTracking.ratio * 100)}% of that total. Regulate the running primary pumps using common primary flow feedback. Include duty / assist staging, plant minimum-flow and maximum-duty limits, sensor-failure alarm and agreed fallback. Please confirm the required flow meters, controller and signal interfaces.\n` : ""}
 BMS: ${s.bms || "Please confirm interface"}.
 Inverter: ${inverterRequest(m)}${s.notes ? "\nAdditional requirements: " + s.notes : ""}${warnings}`;
   }).join("\n\n");
@@ -392,7 +396,7 @@ Please select and quote for the following pumps${pj.name ? " for " + pj.name : "
 
 ${duties}
 
-Our default preference is onboard inverters below 11 kW per motor and external inverters from 11 kW upwards, unless a different arrangement is stated above. This is a project preference; please confirm suitability against your range and the final selected motor size. Where external drives are required, please quote Danfoss, Siemens or Grundfos inverters for each pump.
+Please confirm whether each selected pump has an integral motor drive, a factory packaged inverter or requires a separate external inverter. There is no universal motor kW cut-off. Where separate external drives are required, please quote Danfoss, Siemens or Grundfos inverters for each pump. Please confirm the actual motor efficiency class; a manufacturer-standard IE5 package is acceptable against an indicative IE4 requirement.
 
 Please return:
 - Pump make, model, impeller size and selection datasheet for each reference.
