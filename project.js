@@ -5,14 +5,15 @@
 const PROJECT_FORMAT = 1;
 const AUTOSAVE_KEY = "flow2kw-project";
 const SNAP_EXCLUDE = new Set(["kb-confirm", "defence"]);
-const SEL_FIELDS = ["sel-ref", "sel-service", "sel-bms", "sel-notes"];
+const SEL_FIELDS = ["sel-ref", "sel-service", "sel-bms", "sel-notes", "sel-inverter"];
 const PJ_FIELDS = ["pj-name", "pj-number", "pj-client", "pj-engineer", "pj-rev", "pj-date"];
 
 const P = {
   selections: [],   // { uid, ref, service, bms, notes, snapshot, summary, note }
   currentUid: null, // selection being edited, or null for a new one
   restoring: false,
-  saveTimer: 0
+  saveTimer: 0,
+  draftBaseline: null
 };
 
 const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
@@ -104,14 +105,14 @@ function summarize(c, sel) {
     ? `Duty / standby: auto changeover on fault, run-hour rotation${c.nRun > 1 ? "; duty / assist cascade" : ""}`
     : c.nRun > 1 ? "Duty / assist cascade on demand" : "Single unit";
   return {
-    ref: sel.ref, service: sel.service, bms: sel.bms, notes: sel.notes,
+    ref: sel.ref, service: sel.service, bms: sel.bms, notes: sel.notes, inverter: sel.inverter || "auto",
     kind: c.system, job: S.job,
     fluid: fluidText(c),
     flowTotal: c.Q * 1000, flowEach: c.QEach * 1000, head: c.dP, headM: c.fluid === "air" ? null : c.dP * 1000 / (c.props.rho * G),
     nRun: c.nRun, nStby: c.nStby,
     machine: `${p.machine.year} ${p.machine.label}`, unitEff: p.hyd, bundled: p.machine.bundled === "motor+drive",
     shaftEach: c.propHydShaft,
-    motorKw: sizeLabel(c.propSuggest, rated), motorClass: p.motor.year, motorEff: p.mot,
+    motorKw: sizeLabel(c.propSuggest, rated), motorRatedKw: rated, motorClass: p.motor.year, motorEff: p.mot,
     drive: p.drive.label, driveType,
     elecEach: c.propElecEach, elecTotal: c.propElec, w2w: c.propW2w,
     supply: supplyLabel(c.supply), pf: el.pf, ampsEach: el.amps, flcEach: el.flcAmps,
@@ -129,7 +130,8 @@ function selFromInputs() {
     ref: $("sel-ref").value.trim() || nextRef(),
     service: $("sel-service").value.trim(),
     bms: $("sel-bms").value,
-    notes: $("sel-notes").value.trim()
+    notes: $("sel-notes").value.trim(),
+    inverter: $("sel-inverter").value
   };
 }
 function nextRef() {
@@ -142,10 +144,11 @@ function setSelInputs(sel) {
   $("sel-service").value = sel.service || "";
   if (sel.bms) $("sel-bms").value = sel.bms;
   $("sel-notes").value = sel.notes || "";
+  $("sel-inverter").value = ["auto", "onboard", "external"].includes(sel.inverter) ? sel.inverter : "auto";
 }
 
 // Add the current calculator state to the schedule (or update the selection being edited).
-function saveSelection(asNew) {
+function saveSelection(andNext = false) {
   if (!$("kb-confirm").checked) {
     toast("Check the key settings first — tick “I've checked these settings” at the top.");
     $("keybar").scrollIntoView({ behavior: "smooth", block: "center" });
@@ -153,14 +156,14 @@ function saveSelection(asNew) {
   }
   const c = calc();
   const sel = selFromInputs();
-  const clash = P.selections.find((s) => s.ref === sel.ref && (asNew || s.uid !== P.currentUid));
+  const clash = P.selections.find((s) => s.ref === sel.ref && s.uid !== P.currentUid);
   if (clash) {
     toast(`Ref ${sel.ref} is already in the schedule — change the ref first.`);
     $("sel-ref").focus();
     return;
   }
   const record = { ...sel, snapshot: getSnapshot(), summary: summarize(c, sel), note: cleanNote(defenceText(c)) };
-  const existing = !asNew && P.currentUid ? P.selections.find((s) => s.uid === P.currentUid) : null;
+  const existing = P.currentUid ? P.selections.find((s) => s.uid === P.currentUid) : null;
   if (existing) {
     Object.assign(existing, record);
     toast(`${sel.ref} updated in the schedule.`);
@@ -169,6 +172,10 @@ function saveSelection(asNew) {
     P.selections.push(record);
     P.currentUid = record.uid;
     toast(`${sel.ref} added to the schedule.`);
+  }
+  if (andNext) {
+    startNextSelection();
+    toast(`${sel.ref} saved. ${$("sel-ref").value} is ready — change the duty for the next selection.`);
   }
   refreshProjectUi();
   scheduleAutosave();
@@ -202,18 +209,24 @@ function deleteSelection(id) {
 }
 function startNextSelection() {
   P.currentUid = null;
-  setSelInputs({ ref: nextRef(), bms: $("sel-bms").value });
+  setSelInputs({ ref: nextRef(), bms: $("sel-bms").value, inverter: $("sel-inverter").value });
   $("kb-confirm").checked = false;
+  rememberDraft();
   update();
   refreshProjectUi();
-  toast("Next selection started from the current inputs — change the duty, then add it to the schedule.");
+  $("schedule-card").scrollIntoView({ behavior: "smooth", block: "start" });
+  $("sel-service").focus({ preventScroll: true });
 }
+
+function draftSignature() { return JSON.stringify({ snapshot: getSnapshot(), sel: selFromInputs() }); }
+function rememberDraft() { P.draftBaseline = draftSignature(); }
+function hasUnsavedSelection() { return P.currentUid ? isDirty() : P.draftBaseline !== draftSignature(); }
 
 function isDirty() {
   const cur = P.selections.find((s) => s.uid === P.currentUid);
   if (!cur) return true;
   const sel = selFromInputs();
-  return JSON.stringify(getSnapshot()) !== JSON.stringify(cur.snapshot) || ["ref", "service", "bms", "notes"].some((k) => sel[k] !== cur[k]);
+  return JSON.stringify(getSnapshot()) !== JSON.stringify(cur.snapshot) || ["ref", "service", "bms", "notes", "inverter"].some((k) => sel[k] !== (cur[k] ?? (k === "inverter" ? "auto" : "")));
 }
 
 function refreshProjectUi() {
@@ -225,8 +238,11 @@ function refreshProjectUi() {
   $("sel-status").textContent = cur ? `Editing ${cur.ref}${dirty ? " — unsaved changes" : " — saved"}` : "New selection — not yet in the schedule";
   $("sel-status").className = "pill" + (cur && !dirty ? " green" : " amber");
   $("sel-save").textContent = cur ? `Update ${cur.ref}` : "Add to schedule";
+  $("finish-save").textContent = $("sel-save").textContent;
+  ["sel-next", "finish-next"].forEach((id) => { $(id).textContent = cur ? "Update & next selection" : "Add & next selection"; });
+  $("finish-status").textContent = `${cur ? "Editing" : "Next selection"}: ${$("sel-ref").value || nextRef()} · ${P.selections.length} saved`;
   const ok = $("kb-confirm").checked;
-  ["sel-save", "sel-saveas"].forEach((id) => {
+  ["sel-save", "sel-next", "finish-save", "finish-next"].forEach((id) => {
     $(id).classList.toggle("warn", !ok);
     $(id).title = ok ? "" : "Tick “I've checked these settings” at the top first";
   });
@@ -244,9 +260,10 @@ function refreshProjectUi() {
         <td class="acts"><button class="btn lite" type="button" data-act="edit" data-id="${s.uid}">Edit</button><button class="btn lite" type="button" data-act="copy" data-id="${s.uid}">Copy</button><button class="btn lite" type="button" data-act="del" data-id="${s.uid}">Delete</button></td>
       </tr>`;
     }).join("")
-    : `<tr><td class="empty" colspan="9">No selections yet. Set up a duty below, confirm the key settings, then “Add to schedule”. Each selection gets its own line on the PDF schedule.</td></tr>`;
+    : `<tr><td class="empty" colspan="9">No selections yet. Set up a duty below, confirm the key settings, then “Add & next selection”. Each saved selection gets its own line in the exports.</td></tr>`;
   const name = $("pj-name").value.trim();
   $("pj-status").textContent = `${name ? name + " · " : ""}${P.selections.length} selection${P.selections.length === 1 ? "" : "s"} · autosaved in this browser — use “Save project” to keep a file you can reopen or share.`;
+  if (!$("supplier-email-panel").hidden) refreshSupplierEmail();
 }
 
 // ---------- project file / autosave ----------
@@ -256,8 +273,8 @@ function projectData() {
     format: PROJECT_FORMAT,
     savedAt: new Date().toISOString(),
     project: Object.fromEntries(PJ_FIELDS.map((id) => [id.slice(3), $(id).value])),
-    selections: P.selections.map(({ uid: id, ref, service, bms, notes, snapshot }) => ({ uid: id, ref, service, bms, notes, snapshot })),
-    current: { uid: P.currentUid, sel: selFromInputs(), snapshot: getSnapshot() }
+    selections: P.selections.map(({ uid: id, ref, service, bms, notes, inverter, snapshot }) => ({ uid: id, ref, service, bms, notes, inverter, snapshot })),
+    current: { uid: P.currentUid, sel: selFromInputs(), snapshot: getSnapshot(), draftBaseline: P.draftBaseline }
   };
 }
 function autosaveNow() {
@@ -282,7 +299,7 @@ function loadProject(data, { quiet = false } = {}) {
     PJ_FIELDS.forEach((id) => { $(id).value = str(pj[id.slice(3)]); });
     P.selections = [];
     data.selections.forEach((raw) => {
-      const sel = { uid: str(raw.uid, 40) || uid(), ref: str(raw.ref, 20), service: str(raw.service), bms: str(raw.bms, 80), notes: str(raw.notes, 300), snapshot: raw.snapshot };
+      const sel = { uid: str(raw.uid, 40) || uid(), ref: str(raw.ref, 20), service: str(raw.service), bms: str(raw.bms, 80), notes: str(raw.notes, 300), inverter: ["onboard", "external"].includes(raw.inverter) ? raw.inverter : "auto", snapshot: raw.snapshot };
       applySnapshot(sel.snapshot, { confirmed: true });
       const c = calc();
       sel.summary = summarize(c, sel);
@@ -290,9 +307,10 @@ function loadProject(data, { quiet = false } = {}) {
       P.selections.push(sel);
     });
     const cur = data.current || {};
+    if (typeof cur.draftBaseline === "string") P.draftBaseline = cur.draftBaseline;
     P.currentUid = P.selections.some((s) => s.uid === cur.uid) ? cur.uid : null;
     if (cur.snapshot) applySnapshot(cur.snapshot, { confirmed: !!P.currentUid && JSON.stringify(cur.snapshot) === JSON.stringify(P.selections.find((s) => s.uid === P.currentUid).snapshot) });
-    setSelInputs(cur.sel ? { ref: str(cur.sel.ref, 20), service: str(cur.sel.service), bms: str(cur.sel.bms, 80), notes: str(cur.sel.notes, 300) } : { ref: nextRef() });
+    setSelInputs(cur.sel ? { ref: str(cur.sel.ref, 20), service: str(cur.sel.service), bms: str(cur.sel.bms, 80), notes: str(cur.sel.notes, 300), inverter: cur.sel.inverter } : { ref: nextRef() });
   } finally {
     P.restoring = false;
   }
@@ -310,6 +328,9 @@ function newProject() {
   setSelInputs({ ref: "P-01" });
   $("sel-service").value = "";
   $("sel-notes").value = "";
+  $("kb-confirm").checked = false;
+  rememberDraft();
+  update();
   refreshProjectUi();
   scheduleAutosave();
   toast("New project started.");
@@ -332,6 +353,115 @@ function download(blob, name) {
 function saveProjectFile() {
   download(new Blob([JSON.stringify(projectData(), null, 2)], { type: "application/json" }), fileBase("Flow2kW") + ".json");
   toast("Project saved. Open it again with “Open…”.");
+}
+
+// Supplier enquiries use saved pump duties, never the affinity explorer's simulated points.
+function pumpSelections() { return P.selections.filter((s) => s.summary.kind === "pump"); }
+function inverterRequest(m) {
+  if (m.driveType === "DOL" || m.driveType === "Belt, DOL") return `Fixed speed: ${m.driveType}; no inverter requested.`;
+  if (m.driveType === "Integrated EC") return "Onboard motor electronics included in the pump rating; confirm the proposed package.";
+  const rated = Number(m.motorRatedKw) || parseFloat(m.motorKw);
+  const external = m.inverter === "external" || (m.inverter !== "onboard" && rated >= 11);
+  return external
+    ? "External inverter per pump: please specify Danfoss, Siemens or Grundfos, matched to the selected motor and controls."
+    : "Onboard inverter per pump preferred; please confirm availability and suitability.";
+}
+function supplierEnquiry() {
+  const pj = Object.fromEntries(PJ_FIELDS.map((id) => [id.slice(3), $(id).value.trim()]));
+  const supplier = $("email-supplier").value.trim();
+  const subject = `Pump quotation enquiry${pj.number ? " - " + pj.number : ""}${pj.name ? " - " + pj.name : ""}${pj.rev ? " - Rev " + pj.rev : ""}`.replace(/[\r\n]/g, " ");
+  const duties = pumpSelections().map((s) => {
+    const m = s.summary;
+    const warnings = m.warnings.length ? `\nDesign queries to resolve: ${m.warnings.join("; ")}` : "";
+    return `${s.ref}${s.service ? " - " + s.service : ""}
+Quantity: ${m.nRun + m.nStby} pumps (${m.nRun} running${m.nStby ? " + " + m.nStby + " standby" : "; no standby"}).
+Design duty PER PUMP: ${fmt(m.flowEach, 2)} L/s (${fmt(m.flowEach * 3.6, 2)} m³/h) at ${fmt(m.head, 1)} kPa / ${fmt(m.headM, 2)} m head.
+Total set flow: ${fmt(m.flowTotal, 2)} L/s (${fmt(m.flowTotal * 3.6, 2)} m³/h), shared equally between the running pumps in parallel; each pump develops the full stated head.
+Fluid: ${m.fluid}.
+Indicative motor rating: ${m.motorKw} kW per pump, ${m.motorClass}. Estimated pump shaft power: ${fmt(m.shaftEach, 2)} kW per pump; electrical input at duty: ${fmt(m.elecEach, 2)} kW per pump (${fmt(m.elecTotal, 2)} kW for the running set). Please confirm final P2 motor rating and P1 input from your selection.
+Supply: ${m.supply}, 50 Hz.
+Control: ${m.control}.${m.setpoint !== "—" ? " Set point: " + m.setpoint + "." : ""}
+Sensor: ${m.sensor}.
+Operation: ${m.changeover}.
+BMS: ${s.bms || "Please confirm interface"}.
+Inverter: ${inverterRequest(m)}${s.notes ? "\nAdditional requirements: " + s.notes : ""}${warnings}`;
+  }).join("\n\n");
+  const body = `Hello${supplier ? " " + supplier + " team" : ""},
+
+Please select and quote for the following pumps${pj.name ? " for " + pj.name : ""}.${pj.number ? " Project reference: " + pj.number + "." : ""}${pj.client ? " Client: " + pj.client + "." : ""}
+
+${duties}
+
+Our default preference is onboard inverters below 11 kW per motor and external inverters from 11 kW upwards, unless a different arrangement is stated above. This is a project preference; please confirm suitability against your range and the final selected motor size. Where external drives are required, please quote Danfoss, Siemens or Grundfos inverters for each pump.
+
+Please return:
+- Pump make, model, impeller size and selection datasheet for each reference.
+- Manufacturer Q/H curves with the duty point marked, plus efficiency, shaft power and NPSHr curves; include the relevant variable speed operating range and minimum permitted flow.
+- Confirmed IE motor class, P2 motor rating, P1 electrical input at duty, full load current and inverter details. Motor powers above are design estimates, not final manufacturer selections.
+- Confirmation of the requested control, sensors, BMS interface and duty / assist / standby operation, with any required control panel or accessories itemised.
+- Itemised price, delivery lead time, quotation validity, exclusions and any information you need to finalise the selection.
+
+Kind regards,
+${pj.engineer || "Engineering team"}
+adi Climate Systems`;
+  return { subject, body };
+}
+function refreshSupplierEmail() {
+  const email = supplierEnquiry();
+  $("email-subject").value = email.subject;
+  $("email-body").value = email.body;
+  const omitted = P.selections.length - pumpSelections().length;
+  $("email-draft-note").textContent = [
+    hasUnsavedSelection() ? "Your current selection has unsaved changes. Add or update it to include those changes in this email." : "",
+    omitted ? `${omitted} fan selection${omitted === 1 ? " is" : "s are"} omitted from this pump enquiry.` : ""
+  ].filter(Boolean).join(" ");
+  ["email-copy", "email-download"].forEach((id) => { $(id).disabled = !pumpSelections().length; });
+}
+function openSupplierEmail() {
+  if (!pumpSelections().length) { toast("Add at least one pump selection to the schedule first."); return; }
+  $("supplier-email-panel").hidden = false;
+  $("pj-email").setAttribute("aria-expanded", "true");
+  refreshSupplierEmail();
+  $("supplier-email-panel").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+async function copySupplierEmail() {
+  if (!pumpSelections().length) return;
+  refreshSupplierEmail();
+  const email = supplierEnquiry();
+  const text = `Subject: ${email.subject}\n\n${email.body}`;
+  try {
+    await navigator.clipboard.writeText(text);
+    toast("Supplier enquiry copied — paste it into your email.");
+  } catch (e) {
+    const el = $("email-body");
+    el.value = text;
+    el.focus();
+    el.select();
+    let copied = false;
+    try { copied = document.execCommand("copy"); } catch (_) { /* manual copy below */ }
+    toast(copied ? "Supplier enquiry copied — paste it into your email." : "Email text selected — use your device's Copy command.");
+  }
+}
+function utf8Base64(text) { return btoa(Array.from(new TextEncoder().encode(text), (b) => String.fromCharCode(b)).join("")); }
+function emailHeader(text) {
+  const chunks = [];
+  let chunk = "";
+  for (const char of text.replace(/[\r\n]/g, " ")) {
+    if (new TextEncoder().encode(chunk + char).length > 42) { chunks.push(chunk); chunk = ""; }
+    chunk += char;
+  }
+  if (chunk) chunks.push(chunk);
+  return chunks.map((part) => `=?UTF-8?B?${utf8Base64(part)}?=`).join("\r\n ");
+}
+function supplierEmailFile(email) {
+  const body = utf8Base64(email.body.replace(/\r?\n/g, "\r\n")).match(/.{1,76}/g).join("\r\n");
+  return `X-Unsent: 1\r\nSubject: ${emailHeader(email.subject)}\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n${body}\r\n`;
+}
+function downloadSupplierEmail() {
+  if (!pumpSelections().length) return;
+  refreshSupplierEmail();
+  download(new Blob([supplierEmailFile(supplierEnquiry())], { type: "message/rfc822" }), fileBase("Pump enquiry") + ".eml");
+  toast("Email file downloaded — open it in your email app or attach it to your enquiry.");
 }
 function exportCsv() {
   if (!P.selections.length) { toast("Add at least one selection to the schedule first."); return; }
@@ -508,9 +638,20 @@ $("pj-file").addEventListener("change", async () => {
 $("pj-save").addEventListener("click", saveProjectFile);
 $("pj-pdf").addEventListener("click", () => exportPdf().catch((e) => toast("PDF failed: " + e.message)));
 $("pj-csv").addEventListener("click", exportCsv);
+$("pj-email").addEventListener("click", openSupplierEmail);
+$("email-supplier").addEventListener("input", refreshSupplierEmail);
+$("email-refresh").addEventListener("click", refreshSupplierEmail);
+$("email-copy").addEventListener("click", copySupplierEmail);
+$("email-download").addEventListener("click", downloadSupplierEmail);
+$("email-close").addEventListener("click", () => {
+  $("supplier-email-panel").hidden = true;
+  $("pj-email").setAttribute("aria-expanded", "false");
+  $("pj-email").focus();
+});
 $("sel-save").addEventListener("click", () => saveSelection(false));
-$("sel-saveas").addEventListener("click", () => saveSelection(true));
-$("sel-new").addEventListener("click", startNextSelection);
+$("sel-next").addEventListener("click", () => saveSelection(true));
+$("finish-save").addEventListener("click", () => saveSelection(false));
+$("finish-next").addEventListener("click", () => saveSelection(true));
 $("sched-body").addEventListener("click", (e) => {
   const btn = e.target.closest("[data-act]");
   if (!btn) return;
@@ -520,6 +661,7 @@ $("sched-body").addEventListener("click", (e) => {
 });
 
 // Restore the last session in this browser, if there is one.
+rememberDraft();
 (function restore() {
   let saved = null;
   try { saved = JSON.parse(localStorage.getItem(AUTOSAVE_KEY) || "null"); } catch (e) { saved = null; }

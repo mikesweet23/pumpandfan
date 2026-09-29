@@ -240,6 +240,11 @@
     .pj-grid { display: grid; grid-template-columns: 2fr 1fr 1.4fr 1.2fr 0.6fr 1fr; gap: 10px; }
     .pj-btns { display: flex; flex-wrap: wrap; gap: 6px; }
     .pj-status { font-size: 12px; color: var(--muted); }
+    .selection-actions { position: sticky; bottom: 12px; z-index: 20; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 12px 16px; box-shadow: 0 4px 20px rgba(2,8,23,0.12); }
+    .supplier-email { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+    .supplier-email[hidden] { display: none; }
+    .supplier-email textarea { width: 100%; min-height: 360px; resize: vertical; font: 13px/1.6 var(--sans); padding: 12px; }
+    .supplier-email .pj-btns { margin: 10px 0; }
     .sel-grid { display: grid; grid-template-columns: 0.6fr 1.6fr 1.4fr 2fr; gap: 10px; }
     .sched td { white-space: nowrap; }
     .sched td.acts { display: flex; gap: 4px; }
@@ -309,6 +314,7 @@
           <button class="btn lite" id="pj-open" type="button">Open…</button>
           <button class="btn dark" id="pj-save" type="button">Save project (.json)</button>
           <button class="btn sky" id="pj-pdf" type="button">PDF schedule</button>
+          <button class="btn sky" id="pj-email" type="button" aria-expanded="false" aria-controls="supplier-email-panel">Supplier email</button>
           <button class="btn lite" id="pj-csv" type="button">Duty list (.csv)</button>
           <input id="pj-file" type="file" accept=".json,application/json" hidden data-nosnap>
         </div>
@@ -323,6 +329,20 @@
           <label class="field"><span>Date</span><input id="pj-date" type="date" data-nosnap></label>
         </div>
         <div class="pj-status" id="pj-status"></div>
+        <div class="supplier-email" id="supplier-email-panel" hidden>
+          <h3>Supplier quotation enquiry</h3>
+          <p class="note">Includes saved pump selections. Copy into your email, or download an email file to open as a draft or attach. Motor powers are estimates for the supplier to confirm.</p>
+          <p class="note" id="email-draft-note" role="status"></p>
+          <label class="field"><span>Supplier (optional)</span><input id="email-supplier" type="text" placeholder="e.g. Grundfos or Wilo" data-nosnap></label>
+          <label class="field"><span>Subject</span><input id="email-subject" type="text" readonly data-nosnap></label>
+          <div class="pj-btns">
+            <button class="btn dark" id="email-copy" type="button">Copy email text</button>
+            <button class="btn sky" id="email-download" type="button">Download email (.eml)</button>
+            <button class="btn lite" id="email-refresh" type="button">Refresh from schedule</button>
+            <button class="btn lite" id="email-close" type="button">Close</button>
+          </div>
+          <label class="field"><span>Email text</span><textarea id="email-body" readonly data-nosnap></textarea></label>
+        </div>
       </div>
     </section>
 
@@ -343,12 +363,17 @@
             <option>Standalone — no BMS</option>
           </select></label>
           <label class="field"><span>Controls / electrical notes</span><input id="sel-notes" type="text" placeholder="e.g. DP sensor at AHU-3 coil; supply from MCC-1" data-nosnap></label>
+          <label class="field"><span>Inverter arrangement</span><select id="sel-inverter" data-nosnap>
+            <option value="auto">Onboard below 11 kW; external from 11 kW</option>
+            <option value="onboard">Onboard inverter requested</option>
+            <option value="external">External inverter requested</option>
+          </select></label>
         </div>
         <div class="pj-btns">
-          <button class="btn dark" id="sel-save" type="button">Add to schedule</button>
-          <button class="btn lite" id="sel-saveas" type="button">Save as new selection</button>
-          <button class="btn lite" id="sel-new" type="button">Start next selection</button>
+          <button class="btn dark" id="sel-next" type="button">Add &amp; next selection</button>
+          <button class="btn lite" id="sel-save" type="button">Add to schedule</button>
         </div>
+        <p class="note">Set the duty below, confirm the key settings, then add the selection. “Add &amp; next selection” saves this line and prepares the next reference with the same settings. Use Edit or Copy on any saved line.</p>
         <div class="table-wrap sched">
           <table>
             <thead><tr><th>Ref</th><th>Service</th><th>Duty</th><th>Arrangement</th><th>Motor</th><th>kW input</th><th>A running / FL</th><th>Control</th><th></th></tr></thead>
@@ -729,6 +754,13 @@
       <div class="card-b quick" id="quick"></div>
     </section>
 
+    <div class="selection-actions" aria-label="Finish selection">
+      <span id="finish-status">Finish P-01</span>
+      <div class="pj-btns">
+        <button class="btn dark" id="finish-next" type="button">Add &amp; next selection</button>
+        <button class="btn lite" id="finish-save" type="button">Add to schedule</button>
+      </div>
+    </div>
     <footer><span id="app-version"></span>Q = ṁ·Cp·ΔT · Ph = Q·ΔP · Pe = Ph / (ηm·ηmot·ηd) · I = Pe / (√3·V·PF) · Motor η per IEC 60034-30-1 · Affinity power ∝ N<sup>n</sup> · UK SI · g = 9.81</footer>
   </main>
 

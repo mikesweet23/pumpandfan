@@ -1,4 +1,4 @@
-const CACHE = 'flow2kw-v12';
+const CACHE = 'flow2kw-v13';
 const ASSETS = ['./','./index.html','./project.js','./manifest.json','./favicon.png','./icons/icon-192.png','./icons/icon-512.png',
   './assets/adi-logo.jpg','./assets/adi-footer.jpg','./lib/jspdf.umd.min.js','./lib/jspdf.plugin.autotable.min.js'];
 

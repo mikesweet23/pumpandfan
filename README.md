@@ -6,11 +6,13 @@ PWA tool for HVAC / Building Services engineers to quickly defend pump & fan ene
 
 ### Features
 - **Projects (adi Climate Systems):** project name, number, client, engineer, revision and date. Several pump / fan selections per project, each with a ref (P-01, F-01…), service, BMS interface and controls / electrical notes
-  - **Add to schedule** only once the key settings are confirmed; **Edit**, **Copy** or **Delete** any line; "Start next selection" carries the current inputs forward
+  - **Add & next selection** saves the current pump or fan and prepares the next reference, retaining duty settings and clearing the service / notes. Confirm each new selection's key settings before adding it. **Add to schedule** saves without advancing; while editing these become **Update & next selection** and **Update**. **Edit**, **Copy** or **Delete** any saved line. Finish buttons also appear below the calculator
   - **Save project (.json)** / **Open…** — reopening recalculates every selection with the current version of the tool
   - Autosaved in the browser (restored when you reopen the app); use the JSON file to keep or share a project
   - **PDF schedule** (A4 landscape, adi logo and letterhead footer): pump / fan schedule, electrical requirements (supply, motors installed / running, rating, drive, PF, running and full-load amps, connected load, max demand), controls (mode, set point, sensor, speed control, BMS interface, duty / standby), annual energy, and a page of calculation notes per selection. Built in the browser with the bundled jsPDF, so it works offline
   - **Duty list (.csv)** — per-unit flow (L/s and m³/h), head (kPa and m), liquid, running / standby, for sizing in Grundfos Product Centre or other selection software
+  - **Supplier email** — preview and copy a pump quotation enquiry, or download an unsent `.eml` file to open in an email app or attach. Uses saved pump selections only and flags unsaved changes. Includes per-pump and total flow, head, fluid, estimated motor / shaft / electrical powers, supply, control set point, sensor, BMS and duty / assist / standby operation. Requests manufacturer Q/H, efficiency, shaft power and NPSHr curves, confirmed selections and prices
+  - **Inverter arrangement** per selection: default preference is onboard below 11 kW per motor and external from 11 kW upwards; can be overridden to onboard or external. External drive enquiries specify Danfoss, Siemens or Grundfos. The supplier must confirm availability, suitability and the final motor size; this is a project preference rather than a universal manufacturer limit. Fixed speed selections do not request inverters
 - **Fluid toggle:** Water | Glycol Mix (EG/PG %) | Air — temperature slider affects density
 - **Thermal kW from Flow & ΔT:** Q = ṁ·Cp·ΔT with glycol & temp corrections (ρ, Cp shown)
 - **2026 catalogue defaults** for existing plant, with older and premium options still available:
