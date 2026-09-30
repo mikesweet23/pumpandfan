@@ -376,9 +376,10 @@
           <button class="btn lite" id="sel-save" type="button">Add to schedule</button>
         </div>
         <p class="note">Set the duty below, confirm the key settings, then add the selection. “Add &amp; next selection” saves this line and prepares the next reference with the same settings. Use Edit or Copy on any saved line.</p>
+        <p class="note">Total set flow is shared between the running pumps. Every pump develops the full stated head; standby pumps add no flow to the duty.</p>
         <div class="table-wrap sched">
           <table>
-            <thead><tr><th>Ref</th><th>Service</th><th>Duty</th><th>Arrangement</th><th>Motor</th><th>kW input</th><th>A running / FL</th><th>Control</th><th></th></tr></thead>
+            <thead><tr><th>Ref</th><th>Service</th><th>Total set duty</th><th>Arrangement</th><th>Duty per pump</th><th>Motor per pump</th><th>kW input total</th><th>A running / FL each</th><th>Control</th><th></th></tr></thead>
             <tbody id="sched-body"></tbody>
           </table>
         </div>
@@ -490,6 +491,8 @@
               <label class="field" id="hso-wrap"><span>Pump shut-off head ÷ duty head</span><input id="hso" type="number" min="1.05" max="2" step="0.05" value="1.25"></label>
             </div>
             <p class="note hidden" id="flow-track-detail"></p>
+            <label class="field"><span>Control notes for this selection</span><textarea id="control-notes" rows="3" maxlength="2000" placeholder="e.g. remote DP sensors at AHU-1 and AHU-2; use lowest-value signal; BMS to rotate duty pumps weekly" data-nosnap></textarea></label>
+            <p class="note">Saved with this selection and included in the supplier email, duty list and PDF controls.</p>
             <div class="alerts" id="mode-warn"></div>
           </div>
         </section>
@@ -606,7 +609,7 @@
         <section class="card">
           <div class="card-h">
             <h2 id="overview-title">Overview — existing vs proposed</h2>
-            <span class="pill green" id="overview-pill">Proposed defaults to 2026 premium</span>
+            <span class="pill green" id="overview-pill">Proposed defaults to typical 78% pump + IE4</span>
           </div>
           <div class="card-b">
             <p class="note" id="new-install-note" hidden>New installation — there is no existing plant. Ratings, affinity savings and annual cost use the proposed machine only.</p>
@@ -1105,7 +1108,7 @@
       driveSel = bundled.driveSel;
       if (asProposed) {
         $("prop-machine").value = (era.id === "y2026" || era.id === "y2026p")
-          ? (S.system === "pump" ? "2026ec" : "2026ax")
+          ? (S.system === "pump" ? era.pump : "2026ax")
           : machineId;
         const proposedMachine = byId(machines(), $("prop-machine").value);
         const proposedBundled = applyBundling(proposedMachine, S.system === "pump" ? "ie4" : "ie5", "vsd");
@@ -1647,7 +1650,7 @@
       setText("pr-kw", multi ? `${fmt(c.propElec, 2)} kW total · ${fmt(c.prEl.amps, 1)} A each` : `${fmt(c.propElec, 3)} kW · ${fmt(c.prEl.amps, 2)} A`);
       setText("pr-meta", `${c.prop.machine.year} · ${c.prop.machine.label} ${fmt(c.prop.hyd, 1)}% · ${c.prop.motor.label} ${fmt(c.prop.mot, 1)}% · ${c.prop.drive.label} · ${c.propKw} kW frame · W2${w2wName[0]} ${fmt(c.propW2w, 1)}%`);
       setText("overview-title", hasExisting() ? "Overview — existing vs proposed" : "Overview — new installation");
-      setText("overview-pill", hasExisting() ? "Proposed defaults to 2026 premium" : "Specify the new plant only");
+      setText("overview-pill", hasExisting() ? (c.system === "pump" ? "New selections default to 78% pump + IE4" : "Proposed defaults to premium EC fan") : "Specify the new plant only");
       setText("prop-side-title", hasExisting() ? "Proposed 2026" : "New plant — 2026");
       $("new-install-note").hidden = hasExisting();
       document.body.classList.toggle("new-job", !hasExisting());
@@ -1920,7 +1923,7 @@ Motor η: IEC 60034-30-1 full-load, 4-pole, at the rated kW.
       const keep = $("machine-select").value;
       const keepProp = $("prop-machine").value;
       fillSelect($("machine-select"), list, (x) => `${x.year} — ${x.label} — ${x.eff}%`, list.some((x) => x.id === keep) ? keep : "2026");
-      fillSelect($("prop-machine"), list, (x) => `${x.year} — ${x.label} — ${x.eff}%`, list.some((x) => x.id === keepProp) ? keepProp : (S.system === "pump" ? "2026ec" : "2026ax"));
+      fillSelect($("prop-machine"), list, (x) => `${x.year} — ${x.label} — ${x.eff}%`, list.some((x) => x.id === keepProp) ? keepProp : (S.system === "pump" ? "2026" : "2026ax"));
       $("machine-label").textContent = S.system === "pump" ? "Pump" : "Fan";
       $("prop-machine-lbl").textContent = S.system === "pump" ? "Pump" : "Fan";
       $("head-label").textContent = S.system === "pump" ? "Head" : "Pressure";

@@ -6,11 +6,12 @@ PWA tool for HVAC / Building Services engineers to quickly defend pump & fan ene
 
 ### Features
 - **Projects (adi Climate Systems):** project name, number, client, engineer, revision and date. Several pump / fan selections per project, each with a ref (P-01, F-01…), service, BMS interface and controls / electrical notes
-  - **Add & next selection** saves the current pump or fan and prepares the next reference, retaining duty settings and clearing the service / notes. Confirm each new selection's key settings before adding it. **Add to schedule** saves without advancing; while editing these become **Update & next selection** and **Update**. **Edit**, **Copy** or **Delete** any saved line. Finish buttons also appear below the calculator
+  - **Add & next selection** saves the current pump or fan and prepares the next reference, retaining duty and control settings and clearing the service / notes. New pump selections reset the proposed plant to **typical 78% hydraulic efficiency + IE4 + VSD**, with the motor frame automatically sized from duty. Copy and Edit retain saved selections' choices. Confirm each new selection's key settings before adding it. **Add to schedule** saves without advancing; while editing these become **Update & next selection** and **Update**. **Edit**, **Copy** or **Delete** any saved line. Finish buttons also appear below the calculator
   - **Save project (.json)** / **Open…** — reopening recalculates every selection with the current version of the tool
   - Autosaved in the browser (restored when you reopen the app); use the JSON file to keep or share a project
   - **PDF schedule** (A4 landscape, adi logo and letterhead footer): pump / fan schedule, electrical requirements (supply, motors installed / running, rating, drive, PF, running and full-load amps, connected load, max demand), controls (mode, set point, sensor, speed control, BMS interface, duty / standby), annual energy, and a page of calculation notes per selection. Built in the browser with the bundled jsPDF, so it works offline
-  - **Duty list (.csv)** — per-unit flow (L/s and m³/h), head (kPa and m), liquid, running / standby, for sizing in Grundfos Product Centre or other selection software
+  - **Duty list (.csv)** — total set flow and required head first, then the duty / assist / standby arrangement and quantities, then duty flow and head per pump. Total flow is shared by running pumps; each pump develops full head and standby pumps add no flow. Includes control mode, set point, sensor, control notes, supply and motor rating per unit
+  - **Control notes** under System & pump control are saved per selection, restored on Edit / Copy / JSON load, and included in supplier enquiries, duty lists and PDF controls. New selections start with blank notes
   - **Supplier email** — preview and copy a pump quotation enquiry, or download an unsent `.eml` file to open in an email app or attach. Uses saved pump selections only and flags unsaved changes. Includes per-pump and total flow, head, fluid, estimated motor / shaft / electrical powers, supply, control set point, sensor, BMS and duty / assist / standby operation. Requests manufacturer Q/H, efficiency, shaft power and NPSHr curves, confirmed selections and prices
   - **Inverter arrangement** per selection: supplier confirms integral motor drive, factory packaged inverter or separate external drive. Can be overridden to onboard, factory packaged or external. External drive enquiries specify Danfoss, Siemens or Grundfos. There is no universal motor kW cut-off. Fixed speed selections do not request inverters
 - **Fluid toggle:** Water | Glycol Mix (EG/PG %) | Air — temperature slider affects density
@@ -30,7 +31,7 @@ PWA tool for HVAC / Building Services engineers to quickly defend pump & fan ene
   - Large commercial / institutional: 37, 45, 55, 75 kW
   - Frame = next catalogue size ≥ 1.10 × motor shaft with a VSD / EC, 1.25 × with fixed speed (must cover its full-speed curve); overridable
   - Overview shows the Small / Medium / Large catalogue and highlights the band the duty lands in
-- **Proposed side** defaults to premium pump hydraulics with an IE4 motor and VSD (or a premium EC fan), so the comparison is ready on first open. IE5 remains available as a premium motor option
+- **Proposed side** defaults to a typical 78% pump with an IE4 motor and VSD (or a premium EC fan), so the comparison is ready on first open and each new selection. IE5 and premium hydraulics remain available as options
 - **Actual data mode:** Enter measured flow, head, electrical kW (or V·A·PF) to back-calc wire-to-water eff
 - **Power chain for each plant:** water power → pump shaft power → motor rating (nameplate kW) → electrical input → running current → full-load current
 - **Electrical supply:** 3-phase or 1-phase, volts and power factor (auto: 0.87 on a VSD / EC — matches Grundfos TPE2 nameplate currents — or typical motor PF for DOL). Current shown at duty, at full nameplate load, and at every affinity speed
@@ -53,10 +54,10 @@ PWA tool for HVAC / Building Services engineers to quickly defend pump & fan ene
 - **Working & Learning box:** Every formula shown with live numbers for an audit trail
 
 ### How to use
-1. The calculator opens as a **new installation** — 2.5 L/s at 150 kPa, ΔT 20 K — on a 2026 premium pump hydraulics + IE4 + VSD (or EC plug fan in air/fan mode). Switch to **Upgrade existing** to compare against old plant
+1. The calculator opens as a **new installation** — 2.5 L/s at 150 kPa, ΔT 20 K — on a typical 78% pump + IE4 + VSD (or EC plug fan in air/fan mode). Switch to **Upgrade existing** to compare against old plant
 2. Change era or pick any catalogue item if the existing plant is older, worn, or a premium EC machine
 3. Set flow, temperature, glycol % if needed, ΔT and head → thermal and hydraulic kW
-4. Review existing vs 2026 premium proposed savings
+4. Review existing vs proposed savings and enter control notes for the selection
 5. Move the affinity speed slider (or click a table row / chart bar) to see how each % change hits kW, kWh, £, CO₂ and motor-frame load
 6. Toggle affinity to **Proposed** (or choose **New installation**) when there is no existing pump
 

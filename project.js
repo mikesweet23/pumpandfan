@@ -5,7 +5,7 @@
 const PROJECT_FORMAT = 1;
 const AUTOSAVE_KEY = "flow2kw-project";
 const SNAP_EXCLUDE = new Set(["kb-confirm", "defence"]);
-const SEL_FIELDS = ["sel-ref", "sel-service", "sel-bms", "sel-notes", "sel-inverter"];
+const SEL_FIELDS = ["sel-ref", "sel-service", "sel-bms", "sel-notes", "sel-inverter", "control-notes"];
 const PJ_FIELDS = ["pj-name", "pj-number", "pj-client", "pj-engineer", "pj-rev", "pj-date"];
 
 const P = {
@@ -108,7 +108,7 @@ function summarize(c, sel) {
     ? `Duty / standby: auto changeover on fault, run-hour rotation${c.nRun > 1 ? "; duty / assist cascade" : ""}`
     : c.nRun > 1 ? "Duty / assist cascade on demand" : "Single unit";
   return {
-    ref: sel.ref, service: sel.service, bms: sel.bms, notes: sel.notes, inverter: sel.inverter || "auto",
+    ref: sel.ref, service: sel.service, bms: sel.bms, notes: sel.notes, controlNotes: sel.controlNotes || "", inverter: sel.inverter || "auto",
     kind: c.system, job: S.job,
     fluid: fluidText(c),
     flowTotal: c.Q * 1000, flowEach: c.QEach * 1000, head: c.dP, headM: c.fluid === "air" ? null : c.dP * 1000 / (c.props.rho * G),
@@ -135,7 +135,8 @@ function selFromInputs() {
     service: $("sel-service").value.trim(),
     bms: $("sel-bms").value,
     notes: $("sel-notes").value.trim(),
-    inverter: $("sel-inverter").value
+    inverter: $("sel-inverter").value,
+    controlNotes: $("control-notes").value.trim()
   };
 }
 function nextRef() {
@@ -148,6 +149,7 @@ function setSelInputs(sel) {
   $("sel-service").value = sel.service || "";
   if (sel.bms) $("sel-bms").value = sel.bms;
   $("sel-notes").value = sel.notes || "";
+  $("control-notes").value = sel.controlNotes || "";
   $("sel-inverter").value = ["auto", "onboard", "packaged", "external"].includes(sel.inverter) ? sel.inverter : "auto";
 }
 
@@ -214,12 +216,18 @@ function deleteSelection(id) {
 function startNextSelection() {
   P.currentUid = null;
   setSelInputs({ ref: nextRef(), bms: $("sel-bms").value, inverter: $("sel-inverter").value });
+  resetNewPlantDefaults();
   $("kb-confirm").checked = false;
   rememberDraft();
   update();
   refreshProjectUi();
   $("schedule-card").scrollIntoView({ behavior: "smooth", block: "start" });
   $("sel-service").focus({ preventScroll: true });
+}
+
+function resetNewPlantDefaults() {
+  applyEra("y2026", true);
+  $("prop-motor-frame").value = "auto";
 }
 
 function draftSignature() { return JSON.stringify({ snapshot: getSnapshot(), sel: selFromInputs() }); }
@@ -230,7 +238,7 @@ function isDirty() {
   const cur = P.selections.find((s) => s.uid === P.currentUid);
   if (!cur) return true;
   const sel = selFromInputs();
-  return JSON.stringify(getSnapshot()) !== JSON.stringify(cur.snapshot) || ["ref", "service", "bms", "notes", "inverter"].some((k) => sel[k] !== (cur[k] ?? (k === "inverter" ? "auto" : "")));
+  return JSON.stringify(getSnapshot()) !== JSON.stringify(cur.snapshot) || ["ref", "service", "bms", "notes", "inverter", "controlNotes"].some((k) => sel[k] !== (cur[k] ?? (k === "inverter" ? "auto" : "")));
 }
 
 function refreshProjectUi() {
@@ -256,7 +264,8 @@ function refreshProjectUi() {
       return `<tr class="${s.uid === P.currentUid ? "cur" : ""}">
         <td><b>${esc(s.ref)}</b></td><td>${esc(s.service) || "—"}</td>
         <td>${fmt(m.flowTotal, 2)} L/s @ ${pressText(m)}</td>
-        <td>${m.nRun} run${m.nStby ? ` + ${m.nStby} stby` : ""}</td>
+        <td>${esc(arrangementText(m))}</td>
+        <td>${fmt(m.flowEach, 2)} L/s @ ${pressText(m)}</td>
         <td>${esc(m.motorKw)} kW ${esc(m.motorClass)} · ${esc(m.driveType)}</td>
         <td>${fmt(m.elecTotal, 2)}</td>
         <td>${fmt(m.ampsEach, 1)} / ${fmt(m.flcEach, 1)} A</td>
@@ -264,7 +273,7 @@ function refreshProjectUi() {
         <td class="acts"><button class="btn lite" type="button" data-act="edit" data-id="${s.uid}">Edit</button><button class="btn lite" type="button" data-act="copy" data-id="${s.uid}">Copy</button><button class="btn lite" type="button" data-act="del" data-id="${s.uid}">Delete</button></td>
       </tr>`;
     }).join("")
-    : `<tr><td class="empty" colspan="9">No selections yet. Set up a duty below, confirm the key settings, then “Add & next selection”. Each saved selection gets its own line in the exports.</td></tr>`;
+    : `<tr><td class="empty" colspan="10">No selections yet. Set up a duty below, confirm the key settings, then “Add & next selection”. Each saved selection gets its own line in the exports.</td></tr>`;
   const name = $("pj-name").value.trim();
   $("pj-status").textContent = `${name ? name + " · " : ""}${P.selections.length} selection${P.selections.length === 1 ? "" : "s"} · autosaved in this browser — use “Save project” to keep a file you can reopen or share.`;
   if (!$("supplier-email-panel").hidden) refreshSupplierEmail();
@@ -277,7 +286,7 @@ function projectData() {
     format: PROJECT_FORMAT,
     savedAt: new Date().toISOString(),
     project: Object.fromEntries(PJ_FIELDS.map((id) => [id.slice(3), $(id).value])),
-    selections: P.selections.map(({ uid: id, ref, service, bms, notes, inverter, snapshot }) => ({ uid: id, ref, service, bms, notes, inverter, snapshot })),
+    selections: P.selections.map(({ uid: id, ref, service, bms, notes, inverter, controlNotes, snapshot }) => ({ uid: id, ref, service, bms, notes, inverter, controlNotes, snapshot })),
     current: { uid: P.currentUid, sel: selFromInputs(), snapshot: getSnapshot(), draftBaseline: P.draftBaseline }
   };
 }
@@ -303,7 +312,7 @@ function loadProject(data, { quiet = false } = {}) {
     PJ_FIELDS.forEach((id) => { $(id).value = str(pj[id.slice(3)]); });
     P.selections = [];
     data.selections.forEach((raw) => {
-      const sel = { uid: str(raw.uid, 40) || uid(), ref: str(raw.ref, 20), service: str(raw.service), bms: str(raw.bms, 80), notes: str(raw.notes, 300), inverter: ["onboard", "packaged", "external"].includes(raw.inverter) ? raw.inverter : "auto", snapshot: raw.snapshot };
+      const sel = { uid: str(raw.uid, 40) || uid(), ref: str(raw.ref, 20), service: str(raw.service), bms: str(raw.bms, 80), notes: str(raw.notes, 300), controlNotes: str(raw.controlNotes, 2000), inverter: ["onboard", "packaged", "external"].includes(raw.inverter) ? raw.inverter : "auto", snapshot: raw.snapshot };
       applySnapshot(sel.snapshot, { confirmed: true });
       const c = calc();
       sel.summary = summarize(c, sel);
@@ -314,7 +323,7 @@ function loadProject(data, { quiet = false } = {}) {
     if (typeof cur.draftBaseline === "string") P.draftBaseline = cur.draftBaseline;
     P.currentUid = P.selections.some((s) => s.uid === cur.uid) ? cur.uid : null;
     if (cur.snapshot) applySnapshot(cur.snapshot, { confirmed: !!P.currentUid && JSON.stringify(cur.snapshot) === JSON.stringify(P.selections.find((s) => s.uid === P.currentUid).snapshot) });
-    setSelInputs(cur.sel ? { ref: str(cur.sel.ref, 20), service: str(cur.sel.service), bms: str(cur.sel.bms, 80), notes: str(cur.sel.notes, 300), inverter: cur.sel.inverter } : { ref: nextRef() });
+    setSelInputs(cur.sel ? { ref: str(cur.sel.ref, 20), service: str(cur.sel.service), bms: str(cur.sel.bms, 80), notes: str(cur.sel.notes, 300), controlNotes: str(cur.sel.controlNotes, 2000), inverter: cur.sel.inverter } : { ref: nextRef() });
   } finally {
     P.restoring = false;
   }
@@ -332,6 +341,7 @@ function newProject() {
   setSelInputs({ ref: "P-01" });
   $("sel-service").value = "";
   $("sel-notes").value = "";
+  resetNewPlantDefaults();
   $("kb-confirm").checked = false;
   rememberDraft();
   update();
@@ -377,9 +387,11 @@ function supplierEnquiry() {
     const m = s.summary;
     const warnings = m.warnings.length ? `\nDesign queries to resolve: ${m.warnings.join("; ")}` : "";
     return `${s.ref}${s.service ? " - " + s.service : ""}
+Total set duty: ${fmt(m.flowTotal, 2)} L/s (${fmt(m.flowTotal * 3.6, 2)} m³/h) at ${fmt(m.head, 1)} kPa / ${fmt(m.headM, 2)} m head.
+Arrangement: ${arrangementText(m)}.
 Quantity: ${m.nRun + m.nStby} pumps (${m.nRun} running${m.nStby ? " + " + m.nStby + " standby" : "; no standby"}).
 Design duty PER PUMP: ${fmt(m.flowEach, 2)} L/s (${fmt(m.flowEach * 3.6, 2)} m³/h) at ${fmt(m.head, 1)} kPa / ${fmt(m.headM, 2)} m head.
-Total set flow: ${fmt(m.flowTotal, 2)} L/s (${fmt(m.flowTotal * 3.6, 2)} m³/h), shared equally between the running pumps in parallel; each pump develops the full stated head.
+Total flow is shared equally between the running pumps in parallel; each pump develops the full stated head. Standby pumps add no flow to the duty.
 Fluid: ${m.fluid}.
 Indicative motor rating: ${m.motorKw} kW per pump, ${m.motorClass}. Estimated pump shaft power: ${fmt(m.shaftEach, 2)} kW per pump; electrical input at duty: ${fmt(m.elecEach, 2)} kW per pump (${fmt(m.elecTotal, 2)} kW for the running set). Please confirm final P2 motor rating and P1 input from your selection.
 Supply: ${m.supply}, 50 Hz.
@@ -388,6 +400,7 @@ Sensor: ${m.sensor}.
 Operation: ${m.changeover}.
 ${m.flowTracking ? `Flow tracking sequence: BMS sums the active secondary flows and sets total primary flow to ${Math.round(m.flowTracking.ratio * 100)}% of that total. Regulate the running primary pumps using common primary flow feedback. Include duty / assist staging, plant minimum-flow and maximum-duty limits, sensor-failure alarm and agreed fallback. Please confirm the required flow meters, controller and signal interfaces.\n` : ""}
 BMS: ${s.bms || "Please confirm interface"}.
+${s.controlNotes ? "Control notes: " + s.controlNotes + "\n" : ""}
 Inverter: ${inverterRequest(m)}${s.notes ? "\nAdditional requirements: " + s.notes : ""}${warnings}`;
   }).join("\n\n");
   const body = `Hello${supplier ? " " + supplier + " team" : ""},
@@ -469,13 +482,20 @@ function downloadSupplierEmail() {
 }
 function exportCsv() {
   if (!P.selections.length) { toast("Add at least one selection to the schedule first."); return; }
-  const rows = [["Ref", "Service", "Type", "Liquid", "Flow per unit (L/s)", "Flow per unit (m3/h)", "Head (kPa)", "Head (m)", "Running", "Standby", "Control", "Supply", "Motor (kW)"]];
+  const rows = [["Ref", "Service", "Type", "Liquid", "Total set flow (L/s)", "Total set flow (m3/h)", "Required head (kPa)", "Required head (m)", "Arrangement", "Pumps / units installed", "Running", "Standby", "Duty flow per pump / unit (L/s)", "Duty flow per pump / unit (m3/h)", "Head per pump / unit (kPa)", "Head per pump / unit (m)", "Control", "Set point", "Sensor", "Control notes", "Supply", "Motor per pump / unit (kW)", "Motor class", "Electrical / other notes"]];
   P.selections.forEach((s) => {
     const m = s.summary;
-    rows.push([s.ref, s.service, m.kind, m.fluid, m.flowEach.toFixed(2), (m.flowEach * 3.6).toFixed(2), m.head.toFixed(1), m.headM === null ? "" : m.headM.toFixed(2), m.nRun, m.nStby, m.control, m.supply, m.motorKw]);
+    const headM = m.headM === null ? "" : m.headM.toFixed(2);
+    rows.push([s.ref, s.service, m.kind, m.fluid, m.flowTotal.toFixed(2), (m.flowTotal * 3.6).toFixed(2), m.head.toFixed(1), headM, arrangementText(m), m.nRun + m.nStby, m.nRun, m.nStby, m.flowEach.toFixed(2), (m.flowEach * 3.6).toFixed(2), m.head.toFixed(1), headM, m.control, m.setpoint, m.sensor, s.controlNotes || "", m.supply, m.motorKw, m.motorClass, s.notes || ""]);
   });
   const csv = rows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\r\n");
   download(new Blob(["﻿" + csv], { type: "text/csv" }), fileBase("Duty list") + ".csv");
+}
+
+function arrangementText(m) {
+  const units = m.kind === "fan" ? "fans" : "pumps";
+  const roles = m.nRun > 1 ? (m.nStby ? "Duty / assist / standby" : "Duty / assist") : (m.nStby ? "Duty / standby" : "Single duty");
+  return `${roles}: ${m.nRun + m.nStby} ${units} (${m.nRun} running${m.nStby ? " + " + m.nStby + " standby" : "; no standby"})`;
 }
 
 // ---------- PDF schedule ----------
@@ -569,8 +589,8 @@ async function exportPdf() {
   let y = section(title, TOP + 4);
   doc.autoTable({
     ...base, startY: y,
-    head: [["Ref", "Service", "Type / unit", "Medium", "Arrangement", "Flow total\nL/s", "Flow each\nL/s", "Head /\npressure", "Unit eff\n%", "Shaft each\nkW", "Motor\nkW", "Motor", "Drive", "Input each\nkW", "Input total\nkW"]],
-    body: sels.map(({ s, m }) => [s.ref, s.service || "-", m.machine, m.fluid, `${m.nRun} run${m.nStby ? ` + ${m.nStby} standby` : ""}`, f(m.flowTotal, 2), f(m.flowEach, 2), pressText(m), f(m.unitEff, 0) + (m.bundled ? " (overall)" : ""), f(m.shaftEach, 2), m.motorKw, `${m.motorClass} ${f(m.motorEff, 1)}%`, m.driveType, f(m.elecEach, 2), f(m.elecTotal, 2)].map(pdfText)),
+    head: [["Ref", "Service", "Type / unit", "Medium", "Flow total\nL/s", "Arrangement", "Flow each\npump / fan L/s", "Head across\neach unit", "Unit eff\n%", "Shaft each\nkW", "Motor each\nkW", "Motor", "Drive", "Input each\nkW", "Input total\nkW"]],
+    body: sels.map(({ s, m }) => [s.ref, s.service || "-", m.machine, m.fluid, f(m.flowTotal, 2), arrangementText(m), f(m.flowEach, 2), pressText(m), f(m.unitEff, 0) + (m.bundled ? " (overall)" : ""), f(m.shaftEach, 2), m.motorKw, `${m.motorClass} ${f(m.motorEff, 1)}%`, m.driveType, f(m.elecEach, 2), f(m.elecTotal, 2)].map(pdfText)),
     columnStyles: { 0: { fontStyle: "bold" }, 2: { cellWidth: 38 } }
   });
 
@@ -585,8 +605,8 @@ async function exportPdf() {
   y = section("Controls", doc.lastAutoTable.finalY + 8, Math.min(sels.length, 4));
   doc.autoTable({
     ...base, startY: y,
-    head: [["Ref", "Control mode", "Set point", "Sensor", "Speed control", "BMS interface", "Duty / standby"]],
-    body: sels.map(({ s, m }) => [s.ref, m.control, m.setpoint, m.sensor, m.driveType === "DOL" || m.driveType === "Belt, DOL" ? "None (fixed speed)" : m.driveType, s.bms, m.changeover].map(pdfText)),
+    head: [["Ref", "Control mode", "Set point", "Sensor", "Speed control", "BMS interface", "Duty / standby", "Control notes"]],
+    body: sels.map(({ s, m }) => [s.ref, m.control, m.setpoint, m.sensor, m.driveType === "DOL" || m.driveType === "Belt, DOL" ? "None (fixed speed)" : m.driveType, s.bms, m.changeover, s.controlNotes || "-"].map(pdfText)),
     columnStyles: { 0: { fontStyle: "bold" } }
   });
 
@@ -626,6 +646,7 @@ function afterUpdate() {
   scheduleAutosave();
 }
 window.afterUpdate = afterUpdate;
+$("control-notes").addEventListener("input", update);
 
 $("pj-new").addEventListener("click", newProject);
 $("pj-open").addEventListener("click", () => $("pj-file").click());
